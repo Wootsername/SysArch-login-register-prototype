@@ -1,1069 +1,144 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CCS Sit‑in Monitoring System</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>CCS Sitâ€‘in Monitoring System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        /* ── Reset & Base ────────────────────────────────── */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --purple: #5B1FA3;
-            --purple-light: #7B3FCF;
-            --purple-dark: #3D1170;
-            --gold: #D4A017;
-            --gold-light: #E8BF44;
-            --gold-dark: #A67C00;
-            --bg-primary: #0D0B14;
-            --bg-secondary: #15112A;
-            --bg-card: rgba(25, 20, 50, 0.65);
-            --bg-card-hover: rgba(35, 28, 65, 0.75);
-            --text-primary: #F0ECF9;
-            --text-secondary: #A89DC8;
-            --text-muted: #6B5F8A;
-            --border-glass: rgba(91, 31, 163, 0.25);
-            --border-glass-hover: rgba(212, 160, 23, 0.35);
-            --success: #22C55E;
-            --error: #EF4444;
-            --warning: #F59E0B;
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 22px;
-            --radius-xl: 30px;
-            --shadow-glass: 0 8px 32px rgba(0,0,0,0.4);
-            --shadow-glow-purple: 0 0 40px rgba(91,31,163,0.3);
-            --shadow-glow-gold: 0 0 40px rgba(212,160,23,0.2);
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-heading: 'Syne', sans-serif;
-            --font-body: 'DM Sans', sans-serif;
-        }
-        html { font-size: 16px; scroll-behavior: smooth; }
         body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: #f5f5f5;
             min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); }
-        a { color: var(--gold); text-decoration: none; transition: color var(--transition); }
-        a:hover { color: var(--gold-light); }
-
-        /* ── Animated Background ─────────────────────────── */
-        .bg-orbs {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-        }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.45;
-            animation: orbFloat 18s ease-in-out infinite alternate;
-        }
-        .orb-1 { width: 420px; height: 420px; background: var(--purple); top: -10%; left: -8%; animation-delay: 0s; }
-        .orb-2 { width: 350px; height: 350px; background: var(--gold); bottom: -12%; right: -6%; animation-delay: -6s; }
-        .orb-3 { width: 250px; height: 250px; background: var(--purple-light); top: 50%; left: 50%; animation-delay: -12s; }
-        @keyframes orbFloat {
-            0%   { transform: translate(0, 0) scale(1); }
-            33%  { transform: translate(40px, -50px) scale(1.08); }
-            66%  { transform: translate(-30px, 30px) scale(0.95); }
-            100% { transform: translate(20px, -20px) scale(1.03); }
         }
 
-        /* ── Glass Card ──────────────────────────────────── */
-        .glass {
-            background: var(--bg-card);
-            backdrop-filter: blur(24px) saturate(1.6);
-            -webkit-backdrop-filter: blur(24px) saturate(1.6);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-glass);
-            transition: border-color var(--transition), box-shadow var(--transition);
-        }
-        .glass:hover {
-            border-color: var(--border-glass-hover);
-        }
-
-        /* ── Page wrapper ────────────────────────────────── */
-        .page-wrapper {
-            position: relative; z-index: 1;
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            padding: 24px;
-        }
-
-        /* ── Transition Animations ───────────────────────── */
-        .page-enter { animation: pageIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        @keyframes pageIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.97); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* ── Navbar ──────────────────────────────────────── */
+        /* Navbar */
         .navbar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 32px;
-            background: rgba(13, 11, 20, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-glass);
+            background-color: #1a3a6b;
         }
         .navbar-brand {
-            font-family: var(--font-heading);
-            font-weight: 700; font-size: 1.1rem;
-            color: var(--text-primary);
-            display: flex; align-items: center; gap: 10px;
+            color: #fff !important;
+            font-size: 1rem;
+            font-weight: 500;
         }
-        .navbar-brand img { height: 34px; width: 34px; border-radius: 50%; }
-        .navbar-links { display: flex; gap: 8px; }
-        .navbar-links button {
-            background: transparent; border: 1px solid transparent;
-            color: var(--text-secondary); font-family: var(--font-body);
-            font-size: 0.9rem; font-weight: 500;
-            padding: 8px 18px; border-radius: var(--radius-sm); cursor: pointer;
-            transition: all var(--transition);
+        .nav-link {
+            color: #fff !important;
+            font-size: 0.95rem;
         }
-        .navbar-links button:hover,
-        .navbar-links button.active {
-            color: var(--gold); border-color: var(--border-glass-hover);
-            background: rgba(212, 160, 23, 0.08);
-        }
-        .navbar-links button.cta {
-            background: linear-gradient(135deg, var(--purple), var(--purple-light));
-            color: #fff; border: none;
-        }
-        .navbar-links button.cta:hover { opacity: 0.9; }
-
-        /* ── Login Page ──────────────────────────────────── */
-        .login-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            max-width: 1050px; width: 100%;
-            min-height: 580px;
-            overflow: hidden;
-        }
-        .login-brand {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding: 48px 36px;
-            background: linear-gradient(160deg, var(--purple-dark) 0%, var(--purple) 50%, rgba(212,160,23,0.15) 100%);
-            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .login-brand::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at 30% 70%, rgba(212,160,23,0.12) 0%, transparent 60%);
-        }
-        .login-brand > * { position: relative; z-index: 1; }
-        .login-brand .logo-img {
-            width: 160px; height: 160px; border-radius: 50%;
-            border: 3px solid var(--gold);
-            box-shadow: 0 0 30px rgba(212,160,23,0.3);
-            margin-bottom: 24px;
-            object-fit: cover;
-        }
-        .login-brand h2 {
-            font-size: 1.35rem; font-weight: 700; color: #fff;
-            margin-bottom: 6px;
-        }
-        .login-brand p { color: rgba(255,255,255,0.7); font-size: 0.88rem; margin-bottom: 28px; }
-        .clock-display {
-            font-family: var(--font-heading);
-            font-size: 2.4rem; font-weight: 800;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 6px;
-        }
-        .clock-date { color: rgba(255,255,255,0.6); font-size: 0.82rem; margin-bottom: 30px; }
-        .stats-row { display: flex; gap: 16px; }
-        .stat-card {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--radius-md);
-            padding: 14px 18px; text-align: center; min-width: 100px;
-        }
-        .stat-card .stat-num {
-            font-family: var(--font-heading); font-size: 1.7rem; font-weight: 800; color: var(--gold);
-        }
-        .stat-card .stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
-
-        .login-form-panel {
-            padding: 48px 40px;
-            display: flex; flex-direction: column; justify-content: center;
-            background: var(--bg-card);
-            backdrop-filter: blur(24px);
-            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-            border: 1px solid var(--border-glass);
-            border-left: none;
-        }
-        .login-form-panel h2 {
-            font-size: 1.8rem; font-weight: 700; margin-bottom: 4px;
-        }
-        .login-form-panel .subtitle { color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 32px; }
-
-        /* ── Form Elements ───────────────────────────────── */
-        .form-group { margin-bottom: 20px; position: relative; }
-        .form-group label {
-            display: block; font-size: 0.82rem; font-weight: 500;
-            color: var(--text-secondary); margin-bottom: 6px;
-            text-transform: uppercase; letter-spacing: 0.04em;
-        }
-        .input-wrapper { position: relative; }
-        .input-wrapper .icon-left {
-            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-            color: var(--text-muted); font-size: 1rem; pointer-events: none;
-        }
-        .form-input {
-            width: 100%; padding: 13px 16px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: var(--font-body); font-size: 0.95rem;
-            transition: all var(--transition);
-            outline: none;
-        }
-        .form-input::placeholder { color: var(--text-muted); }
-        .form-input:focus {
-            border-color: var(--purple-light);
-            box-shadow: 0 0 0 3px rgba(91,31,163,0.2);
-            background: rgba(255,255,255,0.06);
-        }
-        .form-input.has-icon { padding-left: 42px; }
-        .form-input.has-toggle { padding-right: 44px; }
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23A89DC8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 36px;
-        }
-        .toggle-password {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; font-size: 1.1rem; padding: 4px;
-            transition: color var(--transition);
-        }
-        .toggle-password:hover { color: var(--gold); }
-
-        .form-row { display: flex; gap: 16px; }
-        .form-row .form-group { flex: 1; }
-        .form-options {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 24px; font-size: 0.85rem;
-        }
-        .form-options label { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); cursor: pointer; }
-        .form-options input[type=checkbox] {
-            accent-color: var(--purple); width: 16px; height: 16px; cursor: pointer;
+        .nav-link:hover {
+            color: #ddd !important;
         }
 
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 14px 28px; font-family: var(--font-heading); font-weight: 600;
-            font-size: 1rem; border: none; border-radius: var(--radius-sm);
-            cursor: pointer; transition: all var(--transition);
-            text-transform: uppercase; letter-spacing: 0.04em;
+        /* Hero Section */
+        .hero-section {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--purple), var(--purple-light));
-            color: #fff; width: 100%;
-            box-shadow: 0 4px 20px rgba(91,31,163,0.35);
+        .hero-logo {
+            max-width: 280px;
+            margin-bottom: 30px;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(91,31,163,0.5);
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a3a6b;
+            margin-bottom: 10px;
         }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-            color: #1a1a1a;
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 36px;
         }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-        }
-        .btn-outline:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(212,160,23,0.06);
-        }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        .form-footer {
-            text-align: center; margin-top: 20px; font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* ── Register Page ───────────────────────────────── */
-        .register-container {
-            max-width: 640px; width: 100%;
-            padding: 44px 48px;
-        }
-        .register-container h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; text-align: center; }
-        .register-container .subtitle { color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 28px; text-align: center; }
-        .progress-bar-container {
-            width: 100%; height: 5px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px; margin-bottom: 32px; overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%; border-radius: 10px;
-            background: linear-gradient(90deg, var(--purple), var(--gold));
-            transition: width 0.4s ease;
-        }
-
-        /* ── Admin Dashboard ─────────────────────────────── */
-        .dashboard-wrapper {
-            width: 100%;
-            max-width: 1280px;
-            padding-top: 80px;
-        }
-        .dashboard-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
-        }
-        .dashboard-header h2 { font-size: 1.6rem; font-weight: 700; }
-        .dashboard-stats {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px; margin-bottom: 28px;
-        }
-        .dash-stat-card {
-            padding: 24px; text-align: center;
-        }
-        .dash-stat-card .stat-icon {
-            font-size: 1.8rem; margin-bottom: 8px;
-        }
-        .dash-stat-card .stat-num {
-            font-family: var(--font-heading); font-size: 2rem; font-weight: 800;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-        .dash-stat-card .stat-label {
-            font-size: 0.78rem; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px;
-        }
-
-        .table-card { padding: 0; overflow: hidden; }
-        .table-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 24px; border-bottom: 1px solid var(--border-glass);
-            flex-wrap: wrap; gap: 12px;
-        }
-        .table-header h3 { font-size: 1.1rem; font-weight: 600; }
-        .search-input {
-            padding: 9px 16px; width: 260px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary); font-size: 0.88rem;
-            outline: none; transition: all var(--transition);
-        }
-        .search-input:focus { border-color: var(--purple-light); box-shadow: 0 0 0 3px rgba(91,31,163,0.15); }
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th {
-            text-align: left; padding: 14px 20px;
-            font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em;
-            color: var(--text-muted); background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--border-glass);
+        .hero-buttons .btn {
+            padding: 12px 36px;
+            font-size: 1rem;
             font-weight: 600;
+            border-radius: 6px;
+            margin: 0 8px;
         }
-        .data-table td {
-            padding: 14px 20px; font-size: 0.9rem; color: var(--text-secondary);
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+        .btn-hero-login {
+            background-color: #2196F3;
+            border: none;
+            color: #fff;
         }
-        .data-table tbody tr { transition: background var(--transition); }
-        .data-table tbody tr:hover { background: rgba(91,31,163,0.06); }
-        .status-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        .btn-hero-login:hover {
+            background-color: #1976D2;
+            color: #fff;
         }
-        .status-active {
-            background: rgba(34,197,94,0.12); color: var(--success);
+        .btn-hero-register {
+            background-color: #fff;
+            border: 2px solid #1a3a6b;
+            color: #1a3a6b;
         }
-        .status-active::before {
-            content: ''; width: 6px; height: 6px; border-radius: 50%;
-            background: var(--success); animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .btn-sm {
-            padding: 6px 14px; font-size: 0.78rem; border-radius: 6px;
-        }
-        .btn-danger { background: rgba(239,68,68,0.15); color: var(--error); border: 1px solid rgba(239,68,68,0.25); }
-        .btn-danger:hover { background: rgba(239,68,68,0.25); }
-
-        .empty-state {
-            text-align: center; padding: 60px 20px; color: var(--text-muted);
-        }
-        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
-
-        /* ── Toast Notifications ─────────────────────────── */
-        .toast-container {
-            position: fixed; top: 80px; right: 24px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast {
-            padding: 14px 22px; border-radius: var(--radius-sm);
-            font-size: 0.88rem; font-weight: 500;
-            display: flex; align-items: center; gap: 10px;
-            backdrop-filter: blur(16px); border: 1px solid;
-            animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            max-width: 380px;
-        }
-        .toast-success { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: var(--success); }
-        .toast-error   { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--error); }
-        .toast-warning  { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: var(--warning); }
-        .toast-exit { animation: toastOut 0.3s ease forwards; }
-        @keyframes toastIn  { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateX(60px); } }
-
-        /* ── Responsive ──────────────────────────────────── */
-        @media (max-width: 768px) {
-            .login-container { grid-template-columns: 1fr; }
-            .login-brand {
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-                padding: 32px 24px;
-            }
-            .login-brand .logo-img { width: 100px; height: 100px; }
-            .clock-display { font-size: 1.8rem; }
-            .stats-row { gap: 10px; }
-            .stat-card { padding: 10px 12px; min-width: 80px; }
-            .stat-card .stat-num { font-size: 1.3rem; }
-            .login-form-panel {
-                border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-                padding: 32px 24px; border-left: 1px solid var(--border-glass); border-top: none;
-            }
-            .register-container { padding: 32px 24px; }
-            .form-row { flex-direction: column; gap: 0; }
-            .navbar { padding: 12px 16px; }
-            .navbar-brand { font-size: 0.9rem; }
-            .navbar-links button { padding: 6px 12px; font-size: 0.82rem; }
-            .dashboard-wrapper { padding-top: 70px; }
-            .search-input { width: 100%; }
-            .data-table { font-size: 0.8rem; }
-            .data-table th, .data-table td { padding: 10px 12px; }
-        }
-        @media (max-width: 480px) {
-            .login-brand .logo-img { width: 80px; height: 80px; }
-            .stats-row { flex-wrap: wrap; justify-content: center; }
+        .btn-hero-register:hover {
+            background-color: #1a3a6b;
+            color: #fff;
         }
 
-        /* ── Loading Spinner ─────────────────────────────── */
-        .spinner {
-            width: 20px; height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+        @media (max-width: 576px) {
+            .hero-logo { max-width: 200px; }
+            .hero-title { font-size: 1.5rem; }
+            .hero-buttons .btn { display: block; width: 100%; margin: 8px 0; }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Error field */
-        .form-input.error { border-color: var(--error); }
-        .field-error { color: var(--error); font-size: 0.76rem; margin-top: 4px; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useCallback, useRef, createContext, useContext } = React;
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">College of Computer Studies Sit-in Monitoring System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Community
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Announcements</a></li>
+                            <li><a class="dropdown-item" href="#">Events</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        // ── Config ──────────────────────────────────
-        const API_BASE = 'backend/api/index.php';
-        const CCS_LOGO = 'assets/ccs-logo.png';
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div>
+            <img src="assets/ccs-logo.png" alt="CCS Logo" class="hero-logo">
+            <h1 class="hero-title">College of Computer Studies</h1>
+            <p class="hero-subtitle">University of Cebu Sit-in Monitoring System</p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-hero-login">Login</a>
+                <a href="register.html" class="btn btn-hero-register">Register</a>
+            </div>
+        </div>
+    </div>
 
-        // ── Toast Context ───────────────────────────
-        const ToastContext = createContext();
-        function ToastProvider({ children }) {
-            const [toasts, setToasts] = useState([]);
-            const idRef = useRef(0);
-            const addToast = useCallback((message, type = 'success') => {
-                const id = ++idRef.current;
-                setToasts(prev => [...prev, { id, message, type }]);
-                setTimeout(() => {
-                    setToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
-                    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 300);
-                }, 3500);
-            }, []);
-            return (
-                <ToastContext.Provider value={addToast}>
-                    {children}
-                    <div className="toast-container">
-                        {toasts.map(t => (
-                            <div key={t.id} className={`toast toast-${t.type} ${t.exiting ? 'toast-exit' : ''}`}>
-                                <span>{t.type === 'success' ? '✓' : t.type === 'error' ? '✕' : '⚠'}</span>
-                                <span>{t.message}</span>
-                            </div>
-                        ))}
-                    </div>
-                </ToastContext.Provider>
-            );
-        }
-        const useToast = () => useContext(ToastContext);
-
-        // ── Animated Counter ─────────────────────────
-        function AnimatedCounter({ target, duration = 1200 }) {
-            const [count, setCount] = useState(0);
-            useEffect(() => {
-                if (target === 0) { setCount(0); return; }
-                let start = 0;
-                const step = Math.max(1, Math.ceil(target / (duration / 30)));
-                const timer = setInterval(() => {
-                    start += step;
-                    if (start >= target) { setCount(target); clearInterval(timer); }
-                    else setCount(start);
-                }, 30);
-                return () => clearInterval(timer);
-            }, [target, duration]);
-            return <span>{count}</span>;
-        }
-
-        // ── Live Clock ───────────────────────────────
-        function LiveClock() {
-            const [now, setNow] = useState(new Date());
-            useEffect(() => {
-                const timer = setInterval(() => setNow(new Date()), 1000);
-                return () => clearInterval(timer);
-            }, []);
-            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            return (
-                <>
-                    <div className="clock-display">{timeStr}</div>
-                    <div className="clock-date">{dateStr}</div>
-                </>
-            );
-        }
-
-        // ── Navbar ───────────────────────────────────
-        function Navbar({ page, setPage, user, onLogout }) {
-            return (
-                <nav className="navbar">
-                    <div className="navbar-brand">
-                        <img src={CCS_LOGO} alt="CCS" onError={e => e.target.style.display='none'} />
-                        <span>CCS Sit‑in Monitoring</span>
-                    </div>
-                    <div className="navbar-links">
-                        {user ? (
-                            <>
-                                {user.role === 'admin' && (
-                                    <button className={page === 'dashboard' ? 'active' : ''} onClick={() => setPage('dashboard')}>Dashboard</button>
-                                )}
-                                <button onClick={onLogout} className="btn-outline" style={{borderRadius:8}}>Logout</button>
-                            </>
-                        ) : (
-                            <>
-                                <button className={page === 'login' ? 'active' : ''} onClick={() => setPage('login')}>Login</button>
-                                <button className={page === 'register' ? 'cta' : ''} onClick={() => setPage('register')}>Register</button>
-                            </>
-                        )}
-                    </div>
-                </nav>
-            );
-        }
-
-        // ── Password Toggle ──────────────────────────
-        function PasswordInput({ value, onChange, placeholder, className = '', ...rest }) {
-            const [show, setShow] = useState(false);
-            return (
-                <div className="input-wrapper">
-                    <input
-                        type={show ? 'text' : 'password'}
-                        value={value} onChange={onChange}
-                        placeholder={placeholder}
-                        className={`form-input has-toggle ${className}`}
-                        {...rest}
-                    />
-                    <button type="button" className="toggle-password" onClick={() => setShow(s => !s)} aria-label="Toggle password">
-                        {show ? '🙈' : '👁'}
-                    </button>
-                </div>
-            );
-        }
-
-        // ── Login Page ──────────────────────────────
-        function LoginPage({ setPage, onLogin }) {
-            const toast = useToast();
-            const [idNumber, setIdNumber] = useState('');
-            const [password, setPassword] = useState('');
-            const [remember, setRemember] = useState(false);
-            const [loading, setLoading] = useState(false);
-            const [errors, setErrors] = useState({});
-            const [stats, setStats] = useState({ active_sessions: 0, today_sessions: 0, total_students: 0 });
-
-            useEffect(() => {
-                const saved = localStorage.getItem('ccs_remember_id');
-                if (saved) { setIdNumber(saved); setRemember(true); }
-            }, []);
-
-            useEffect(() => {
-                fetch(`${API_BASE}?action=stats`)
-                    .then(r => r.json())
-                    .then(d => { if (d.success) setStats(d.stats); })
-                    .catch(() => {});
-                const interval = setInterval(() => {
-                    fetch(`${API_BASE}?action=stats`)
-                        .then(r => r.json())
-                        .then(d => { if (d.success) setStats(d.stats); })
-                        .catch(() => {});
-                }, 15000);
-                return () => clearInterval(interval);
-            }, []);
-
-            const validate = () => {
-                const e = {};
-                if (!idNumber.trim()) e.idNumber = 'ID Number is required';
-                if (!password) e.password = 'Password is required';
-                setErrors(e);
-                return Object.keys(e).length === 0;
-            };
-
-            const handleSubmit = async (ev) => {
-                ev.preventDefault();
-                if (!validate()) { toast('Please fill in all required fields', 'error'); return; }
-                setLoading(true);
-                try {
-                    const res = await fetch(`${API_BASE}?action=login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id_number: idNumber, password })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        if (remember) localStorage.setItem('ccs_remember_id', idNumber);
-                        else localStorage.removeItem('ccs_remember_id');
-                        toast('Login successful! Welcome back.', 'success');
-                        onLogin(data.user);
-                    } else {
-                        toast(data.message || 'Login failed', 'error');
-                    }
-                } catch {
-                    toast('Network error. Please try again.', 'error');
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            return (
-                <div className="page-wrapper page-enter">
-                    <div className="login-container glass" style={{border:'none'}}>
-                        <div className="login-brand">
-                            <img src={CCS_LOGO} alt="College of Computer Studies" className="logo-img" onError={e => { e.target.src=''; e.target.alt='CCS'; }} />
-                            <h2>College of Computer Studies</h2>
-                            <p>University of Cebu — Sit‑in Monitoring System</p>
-                            <LiveClock />
-                            <div className="stats-row">
-                                <div className="stat-card">
-                                    <div className="stat-num"><AnimatedCounter target={stats.active_sessions} /></div>
-                                    <div className="stat-label">Active Now</div>
-                                </div>
-                                <div className="stat-card">
-                                    <div className="stat-num"><AnimatedCounter target={stats.today_sessions} /></div>
-                                    <div className="stat-label">Today</div>
-                                </div>
-                                <div className="stat-card">
-                                    <div className="stat-num"><AnimatedCounter target={stats.total_students} /></div>
-                                    <div className="stat-label">Students</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="login-form-panel">
-                            <h2>Welcome Back</h2>
-                            <p className="subtitle">Sign in to continue to the monitoring system</p>
-                            <form onSubmit={handleSubmit} noValidate>
-                                <div className="form-group">
-                                    <label>ID Number</label>
-                                    <input
-                                        type="text" className={`form-input ${errors.idNumber ? 'error' : ''}`}
-                                        placeholder="Enter a valid ID number"
-                                        value={idNumber} onChange={e => { setIdNumber(e.target.value); setErrors(p => ({...p, idNumber:''})); }}
-                                    />
-                                    {errors.idNumber && <div className="field-error">{errors.idNumber}</div>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Password</label>
-                                    <PasswordInput
-                                        value={password} onChange={e => { setPassword(e.target.value); setErrors(p => ({...p, password:''})); }}
-                                        placeholder="Enter password"
-                                        className={errors.password ? 'error' : ''}
-                                    />
-                                    {errors.password && <div className="field-error">{errors.password}</div>}
-                                </div>
-                                <div className="form-options">
-                                    <label>
-                                        <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
-                                        Remember me
-                                    </label>
-                                    <a href="#" onClick={e => { e.preventDefault(); toast('Please contact admin to reset your password.', 'warning'); }}>Forgot password?</a>
-                                </div>
-                                <button type="submit" className="btn btn-primary" disabled={loading}>
-                                    {loading ? <><div className="spinner"></div> Signing in...</> : 'Login'}
-                                </button>
-                            </form>
-                            <div className="form-footer">
-                                Don't have an account?{' '}
-                                <a href="#" onClick={e => { e.preventDefault(); setPage('register'); }}>Register</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ── Register Page ───────────────────────────
-        function RegisterPage({ setPage }) {
-            const toast = useToast();
-            const [form, setForm] = useState({
-                id_number: '', last_name: '', first_name: '', middle_name: '',
-                course: '', year_level: '', email: '', password: '', confirm_password: '', address: ''
-            });
-            const [errors, setErrors] = useState({});
-            const [loading, setLoading] = useState(false);
-
-            const fields = ['id_number','last_name','first_name','course','year_level','email','password','confirm_password'];
-            const filled = fields.filter(f => form[f] && String(form[f]).trim()).length;
-            const progress = Math.round((filled / fields.length) * 100);
-
-            const set = (key, val) => {
-                setForm(p => ({ ...p, [key]: val }));
-                setErrors(p => ({ ...p, [key]: '' }));
-            };
-
-            const validate = () => {
-                const e = {};
-                if (!form.id_number.trim()) e.id_number = 'Required';
-                if (!form.last_name.trim()) e.last_name = 'Required';
-                if (!form.first_name.trim()) e.first_name = 'Required';
-                if (!form.course) e.course = 'Required';
-                if (!form.year_level) e.year_level = 'Required';
-                if (!form.email.trim()) e.email = 'Required';
-                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email';
-                if (!form.password) e.password = 'Required';
-                else if (form.password.length < 8) e.password = 'Min 8 characters';
-                if (!form.confirm_password) e.confirm_password = 'Required';
-                else if (form.password !== form.confirm_password) e.confirm_password = 'Passwords don\'t match';
-                setErrors(e);
-                return Object.keys(e).length === 0;
-            };
-
-            const handleSubmit = async (ev) => {
-                ev.preventDefault();
-                if (!validate()) { toast('Please fix the errors in the form', 'error'); return; }
-                setLoading(true);
-                try {
-                    const res = await fetch(`${API_BASE}?action=register`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(form)
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        toast(data.message, 'success');
-                        setTimeout(() => setPage('login'), 1500);
-                    } else {
-                        toast(data.message || 'Registration failed', 'error');
-                    }
-                } catch {
-                    toast('Network error. Please try again.', 'error');
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            return (
-                <div className="page-wrapper page-enter" style={{paddingTop: 80}}>
-                    <div className="register-container glass">
-                        <h2>Create Account</h2>
-                        <p className="subtitle">Register for the CCS Sit‑in Monitoring System</p>
-                        <div className="progress-bar-container">
-                            <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
-                        </div>
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="form-group">
-                                <label>ID Number</label>
-                                <input type="text" className={`form-input ${errors.id_number?'error':''}`} placeholder="e.g. 21-1234"
-                                    value={form.id_number} onChange={e => set('id_number', e.target.value)} />
-                                {errors.id_number && <div className="field-error">{errors.id_number}</div>}
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Last Name</label>
-                                    <input type="text" className={`form-input ${errors.last_name?'error':''}`} placeholder="Last Name"
-                                        value={form.last_name} onChange={e => set('last_name', e.target.value)} />
-                                    {errors.last_name && <div className="field-error">{errors.last_name}</div>}
-                                </div>
-                                <div className="form-group">
-                                    <label>First Name</label>
-                                    <input type="text" className={`form-input ${errors.first_name?'error':''}`} placeholder="First Name"
-                                        value={form.first_name} onChange={e => set('first_name', e.target.value)} />
-                                    {errors.first_name && <div className="field-error">{errors.first_name}</div>}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label>Middle Name <span style={{color:'var(--text-muted)',fontWeight:400}}>(optional)</span></label>
-                                <input type="text" className="form-input" placeholder="Middle Name"
-                                    value={form.middle_name} onChange={e => set('middle_name', e.target.value)} />
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Course</label>
-                                    <select className={`form-input form-select ${errors.course?'error':''}`}
-                                        value={form.course} onChange={e => set('course', e.target.value)}>
-                                        <option value="">Select Course</option>
-                                        <option value="BSIT">BSIT</option>
-                                        <option value="BSCS">BSCS</option>
-                                        <option value="BSIS">BSIS</option>
-                                        <option value="ACT">ACT</option>
-                                    </select>
-                                    {errors.course && <div className="field-error">{errors.course}</div>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Year Level</label>
-                                    <select className={`form-input form-select ${errors.year_level?'error':''}`}
-                                        value={form.year_level} onChange={e => set('year_level', e.target.value)}>
-                                        <option value="">Select Year</option>
-                                        <option value="1">1st Year</option>
-                                        <option value="2">2nd Year</option>
-                                        <option value="3">3rd Year</option>
-                                        <option value="4">4th Year</option>
-                                    </select>
-                                    {errors.year_level && <div className="field-error">{errors.year_level}</div>}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label>Email</label>
-                                <input type="email" className={`form-input ${errors.email?'error':''}`} placeholder="email@example.com"
-                                    value={form.email} onChange={e => set('email', e.target.value)} />
-                                {errors.email && <div className="field-error">{errors.email}</div>}
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Password</label>
-                                    <PasswordInput className={errors.password?'error':''} placeholder="Min 8 characters"
-                                        value={form.password} onChange={e => set('password', e.target.value)} />
-                                    {errors.password && <div className="field-error">{errors.password}</div>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Confirm Password</label>
-                                    <PasswordInput className={errors.confirm_password?'error':''} placeholder="Re-enter password"
-                                        value={form.confirm_password} onChange={e => set('confirm_password', e.target.value)} />
-                                    {errors.confirm_password && <div className="field-error">{errors.confirm_password}</div>}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label>Address <span style={{color:'var(--text-muted)',fontWeight:400}}>(optional)</span></label>
-                                <input type="text" className="form-input" placeholder="Home address"
-                                    value={form.address} onChange={e => set('address', e.target.value)} />
-                            </div>
-                            <button type="submit" className="btn btn-primary" disabled={loading} style={{marginTop:8}}>
-                                {loading ? <><div className="spinner"></div> Registering...</> : 'Create Account'}
-                            </button>
-                        </form>
-                        <div className="form-footer">
-                            Already have an account?{' '}
-                            <a href="#" onClick={e => { e.preventDefault(); setPage('login'); }}>Sign in</a>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ── Admin Dashboard ─────────────────────────
-        function AdminDashboard() {
-            const toast = useToast();
-            const [sessions, setSessions] = useState([]);
-            const [stats, setStats] = useState({ active_sessions: 0, today_sessions: 0, total_students: 0 });
-            const [search, setSearch] = useState('');
-            const [loading, setLoading] = useState(true);
-
-            const fetchData = useCallback(async () => {
-                try {
-                    const [sessRes, statRes] = await Promise.all([
-                        fetch(`${API_BASE}?action=active_sessions`).then(r => r.json()),
-                        fetch(`${API_BASE}?action=stats`).then(r => r.json())
-                    ]);
-                    if (sessRes.success) setSessions(sessRes.sessions);
-                    if (statRes.success) setStats(statRes.stats);
-                } catch {
-                    toast('Failed to load dashboard data', 'error');
-                } finally {
-                    setLoading(false);
-                }
-            }, [toast]);
-
-            useEffect(() => {
-                fetchData();
-                const interval = setInterval(fetchData, 10000);
-                return () => clearInterval(interval);
-            }, [fetchData]);
-
-            const handleEnd = async (sessionId) => {
-                try {
-                    const res = await fetch(`${API_BASE}?action=end_session`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ session_id: sessionId })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        toast('Session ended successfully', 'success');
-                        fetchData();
-                    } else {
-                        toast(data.message || 'Failed to end session', 'error');
-                    }
-                } catch {
-                    toast('Network error', 'error');
-                }
-            };
-
-            const filtered = sessions.filter(s => {
-                const q = search.toLowerCase();
-                return (
-                    s.id_number.toLowerCase().includes(q) ||
-                    s.first_name.toLowerCase().includes(q) ||
-                    s.last_name.toLowerCase().includes(q) ||
-                    s.course.toLowerCase().includes(q) ||
-                    s.lab_room.toLowerCase().includes(q) ||
-                    s.purpose.toLowerCase().includes(q)
-                );
-            });
-
-            const formatTime = (ts) => {
-                if (!ts) return '—';
-                return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            };
-
-            return (
-                <div className="page-wrapper page-enter" style={{alignItems:'flex-start'}}>
-                    <div className="dashboard-wrapper">
-                        <div className="dashboard-header">
-                            <div>
-                                <h2>Admin Dashboard</h2>
-                                <p style={{color:'var(--text-secondary)',fontSize:'0.9rem'}}>Monitor active sit‑in sessions</p>
-                            </div>
-                            <LiveClock />
-                        </div>
-
-                        <div className="dashboard-stats">
-                            <div className="dash-stat-card glass">
-                                <div className="stat-icon">🖥️</div>
-                                <div className="stat-num"><AnimatedCounter target={stats.active_sessions} /></div>
-                                <div className="stat-label">Active Sessions</div>
-                            </div>
-                            <div className="dash-stat-card glass">
-                                <div className="stat-icon">📊</div>
-                                <div className="stat-num"><AnimatedCounter target={stats.today_sessions} /></div>
-                                <div className="stat-label">Today's Sessions</div>
-                            </div>
-                            <div className="dash-stat-card glass">
-                                <div className="stat-icon">👥</div>
-                                <div className="stat-num"><AnimatedCounter target={stats.total_students} /></div>
-                                <div className="stat-label">Total Students</div>
-                            </div>
-                        </div>
-
-                        <div className="table-card glass">
-                            <div className="table-header">
-                                <h3>Active Sit‑in Students</h3>
-                                <input
-                                    type="text" className="search-input"
-                                    placeholder="Search students, labs, purpose..."
-                                    value={search} onChange={e => setSearch(e.target.value)}
-                                />
-                            </div>
-                            {loading ? (
-                                <div className="empty-state"><div className="spinner" style={{margin:'0 auto',width:32,height:32}}></div></div>
-                            ) : filtered.length === 0 ? (
-                                <div className="empty-state">
-                                    <div className="empty-icon">📋</div>
-                                    <p>{search ? 'No matching sessions found' : 'No active sit‑in sessions'}</p>
-                                </div>
-                            ) : (
-                                <div style={{overflowX:'auto'}}>
-                                    <table className="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Student</th>
-                                                <th>ID Number</th>
-                                                <th>Course & Year</th>
-                                                <th>Lab Room</th>
-                                                <th>Purpose</th>
-                                                <th>Time In</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {filtered.map(s => (
-                                                <tr key={s.id}>
-                                                    <td style={{color:'var(--text-primary)',fontWeight:500}}>{s.first_name} {s.last_name}</td>
-                                                    <td>{s.id_number}</td>
-                                                    <td>{s.course} — {s.year_level}</td>
-                                                    <td>{s.lab_room}</td>
-                                                    <td>{s.purpose}</td>
-                                                    <td>{formatTime(s.time_in)}</td>
-                                                    <td><span className="status-badge status-active">Active</span></td>
-                                                    <td>
-                                                        <button className="btn btn-sm btn-danger" onClick={() => handleEnd(s.id)}>
-                                                            End Session
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ── App Root ─────────────────────────────────
-        function App() {
-            const [page, setPage] = useState('login');
-            const [user, setUser] = useState(null);
-
-            const handleLogin = (userData) => {
-                setUser(userData);
-                if (userData.role === 'admin') setPage('dashboard');
-                else setPage('login'); // Students don't have a dashboard yet
-            };
-
-            const handleLogout = () => {
-                setUser(null);
-                setPage('login');
-            };
-
-            return (
-                <ToastProvider>
-                    <div className="bg-orbs">
-                        <div className="orb orb-1"></div>
-                        <div className="orb orb-2"></div>
-                        <div className="orb orb-3"></div>
-                    </div>
-                    <Navbar page={page} setPage={setPage} user={user} onLogout={handleLogout} />
-                    {page === 'login' && <LoginPage setPage={setPage} onLogin={handleLogin} />}
-                    {page === 'register' && <RegisterPage setPage={setPage} />}
-                    {page === 'dashboard' && <AdminDashboard />}
-                </ToastProvider>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
