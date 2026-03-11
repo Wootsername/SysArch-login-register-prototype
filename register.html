@@ -4,378 +4,379 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - CCS Sit-in Monitoring System</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
+            margin: 0; min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2b46 100%);
+            color: #e0e6ed; overflow-x: hidden;
         }
 
-        /* Navbar */
+        /* ── Glowing Orbs ── */
+        .orb-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: orbFloat 18s ease-in-out infinite alternate; }
+        .orb-1 { width: 420px; height: 420px; background: #2196F3; top: -10%; left: -8%; animation-duration: 20s; }
+        .orb-2 { width: 350px; height: 350px; background: #7c3aed; bottom: -12%; right: -6%; animation-duration: 24s; animation-delay: -5s; }
+        .orb-3 { width: 280px; height: 280px; background: #06b6d4; top: 50%; left: 55%; animation-duration: 22s; animation-delay: -10s; }
+        @keyframes orbFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            33%  { transform: translate(60px, -40px) scale(1.1); }
+            66%  { transform: translate(-30px, 50px) scale(0.95); }
+            100% { transform: translate(20px, -20px) scale(1.05); }
+        }
+
+        /* ── Page Transitions ── */
+        .page-wrapper { position: relative; z-index: 1; animation: pageIn 0.6s cubic-bezier(.4,0,.2,1) both; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .page-exit { animation: pageOut 0.35s cubic-bezier(.4,0,.2,1) forwards; }
+        @keyframes pageOut { to { opacity: 0; transform: translateY(-18px) scale(0.98); } }
+
+        /* ── Glassmorphism Navbar ── */
         .navbar {
-            background-color: #1a3a6b;
+            background: rgba(26, 58, 107, 0.55);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-        .navbar-brand {
-            color: #fff !important;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        .nav-link {
-            color: #fff !important;
-            font-size: 0.95rem;
-        }
-        .nav-link:hover {
-            color: #ddd !important;
-        }
+        .navbar-brand { color: #fff !important; font-size: 1rem; font-weight: 600; }
+        .nav-link { color: rgba(255,255,255,0.85) !important; font-size: 0.95rem; transition: color .2s; }
+        .nav-link:hover, .nav-link.active { color: #fff !important; }
         .dropdown-menu {
-            background-color: #fff;
+            background: rgba(15, 30, 55, 0.9); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
         }
+        .dropdown-item { color: #cdd6e0; }
+        .dropdown-item:hover { background: rgba(33,150,243,0.2); color: #fff; }
 
-        /* Register Section */
+        /* ── Register Layout ── */
         .register-section {
             min-height: calc(100vh - 56px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
+            display: flex; align-items: center; justify-content: center; padding: 40px 20px;
         }
         .register-wrapper {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            max-width: 1100px;
-            width: 100%;
-            gap: 60px;
+            display: flex; align-items: flex-start; justify-content: center;
+            max-width: 1100px; width: 100%; gap: 60px;
         }
-
-        /* Logo Side */
         .logo-side {
-            flex: 0 0 340px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding-top: 60px;
+            flex: 0 0 340px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding-top: 80px;
         }
         .logo-side img {
-            max-width: 320px;
-            width: 100%;
-            height: auto;
+            max-width: 300px; width: 100%; height: auto;
+            filter: drop-shadow(0 0 30px rgba(33,150,243,0.3));
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(33,150,243,0.25)); }
+            50%      { filter: drop-shadow(0 0 40px rgba(33,150,243,0.5)); }
         }
 
-        /* Form Side */
+        /* ── Glassmorphism Card ── */
         .form-side {
-            flex: 1;
-            max-width: 560px;
-            width: 100%;
-            background: #fff;
-            padding: 36px 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            flex: 1; max-width: 560px; width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; padding: 36px 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: cardReveal 0.8s ease-out 0.3s both;
+        }
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         .form-side h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #1a3a6b;
+            font-size: 1.5rem; font-weight: 700; margin-bottom: 4px;
+            background: linear-gradient(135deg, #fff, #93c5fd);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .form-side .subtitle {
-            color: #777;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
+        .form-side .subtitle { color: rgba(255,255,255,0.45); font-size: 0.9rem; margin-bottom: 8px; }
+
+        /* ── Progress Bar ── */
+        .progress-wrapper { margin-bottom: 24px; }
+        .progress-wrapper .progress-label {
+            font-size: 0.78rem; color: rgba(255,255,255,0.45);
+            margin-bottom: 6px; display: flex; justify-content: space-between;
         }
+        .progress-wrapper .progress {
+            height: 6px; border-radius: 6px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .progress-wrapper .progress-bar {
+            background: linear-gradient(90deg, #2196F3, #06b6d4);
+            border-radius: 6px; transition: width 0.5s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* ── Form Fields ── */
+        .form-side .form-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 4px; font-weight: 500; }
         .form-side .form-control,
         .form-side .form-select {
-            border-radius: 6px;
-            padding: 11px 14px;
-            font-size: 0.93rem;
-            border: 1px solid #ced4da;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px; padding: 11px 14px; font-size: 0.93rem;
+            color: #fff; transition: all 0.3s;
         }
+        .form-side .form-control::placeholder { color: rgba(255,255,255,0.3); }
+        .form-side .form-select { color: rgba(255,255,255,0.7); }
+        .form-side .form-select option { background: #1a2a40; color: #fff; }
         .form-side .form-control:focus,
         .form-side .form-select:focus {
-            border-color: #1a3a6b;
-            box-shadow: 0 0 0 0.2rem rgba(26, 58, 107, 0.15);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(33,150,243,0.5);
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.15);
+            color: #fff;
         }
-        .form-side .form-label {
-            font-size: 0.85rem;
-            color: #555;
-            margin-bottom: 4px;
-            font-weight: 500;
+        .form-side .form-control.is-invalid,
+        .form-side .form-select.is-invalid { border-color: rgba(220,38,38,0.6) !important; background-image: none; }
+        .form-side .form-control.is-valid,
+        .form-side .form-select.is-valid { border-color: rgba(34,197,94,0.5) !important; background-image: none; }
+
+        /* Password toggle */
+        .input-group .btn-toggle-pw {
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-left: none; color: rgba(255,255,255,0.5); border-radius: 0 10px 10px 0;
+            transition: all 0.2s; padding: 0 14px;
         }
+        .input-group .btn-toggle-pw:hover { color: #fff; background: rgba(255,255,255,0.12); }
+        .input-group .form-control { border-radius: 10px 0 0 10px; }
 
         .btn-register {
-            background-color: #2196F3;
-            border: none;
-            color: #fff;
-            padding: 12px 48px;
-            border-radius: 6px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            border: none; color: #fff; padding: 13px 48px; border-radius: 10px;
+            font-size: 1.05rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; width: 100%;
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
         }
-        .btn-register:hover {
-            background-color: #1976D2;
-            color: #fff;
-        }
-        .btn-register:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(33,150,243,0.45); color: #fff; }
+        .btn-register:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .form-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-        .form-footer a {
-            color: #2196F3;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .form-footer a:hover {
-            text-decoration: underline;
-        }
+        .form-footer { text-align: center; margin-top: 22px; font-size: 0.93rem; color: rgba(255,255,255,0.5); }
+        .form-footer a { color: #60a5fa; text-decoration: none; font-weight: 600; }
+        .form-footer a:hover { text-decoration: underline; color: #93c5fd; }
 
-        .field-error {
-            color: #dc3545;
-            font-size: 0.78rem;
-            margin-top: 2px;
-            min-height: 18px;
-        }
+        .field-error { color: #f87171; font-size: 0.78rem; margin-top: 3px; min-height: 18px; }
 
-        .form-control.is-invalid,
-        .form-select.is-invalid {
-            border-color: #dc3545 !important;
-            background-image: none;
+        /* ── Toast ── */
+        .toast-container-custom { position: fixed; top: 70px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast-notif {
+            padding: 14px 22px; border-radius: 12px; color: #fff;
+            font-size: 0.92rem; font-weight: 500; min-width: 300px;
+            backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: toastIn 0.45s cubic-bezier(.21,1.02,.73,1) both;
+            display: flex; align-items: center; gap: 10px;
         }
-        .form-control.is-valid,
-        .form-select.is-valid {
-            border-color: #198754 !important;
-            background-image: none;
-        }
+        .toast-notif.success { background: rgba(22,163,74,0.85); }
+        .toast-notif.error   { background: rgba(220,38,38,0.85); }
+        .toast-notif.warning { background: rgba(234,179,8,0.85); color: #1a1a1a; }
+        .toast-notif .toast-icon { font-size: 1.2rem; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(0.9); } }
 
-        /* Toast Notification */
-        .toast-container-custom {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .register-wrapper {
-                flex-direction: column;
-                gap: 24px;
-                align-items: center;
-            }
-            .logo-side {
-                flex: 0 0 auto;
-                padding-top: 0;
-            }
-            .logo-side img {
-                max-width: 200px;
-            }
-            .form-side {
-                max-width: 100%;
-                padding: 28px 24px;
-            }
+            .register-wrapper { flex-direction: column; gap: 24px; align-items: center; }
+            .logo-side { flex: 0 0 auto; padding-top: 0; }
+            .logo-side img { max-width: 180px; }
+            .form-side { max-width: 100%; padding: 28px 24px; }
         }
     </style>
 </head>
 <body>
+    <!-- Glowing Orbs -->
+    <div class="orb-container"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">College of Computer Studies Sit-in Monitoring System</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Community
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Announcements</a></li>
-                            <li><a class="dropdown-item" href="#">Events</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.html">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="register.html">Register</a>
-                    </li>
-                </ul>
+    <div class="page-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Community</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Announcements</a></li>
+                                <li><a class="dropdown-item" href="#">Events</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="register.html">Register</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Toast Notification Container -->
-    <div class="toast-container-custom" id="toastContainer"></div>
+        <div class="toast-container-custom" id="toastContainer"></div>
 
-    <!-- Register Section -->
-    <div class="register-section">
-        <div class="register-wrapper">
-            <!-- Logo Side -->
-            <div class="logo-side">
-                <img src="assets/ccs-logo.png" alt="College of Computer Studies Logo">
-            </div>
+        <!-- Register Section -->
+        <div class="register-section">
+            <div class="register-wrapper">
+                <div class="logo-side">
+                    <img src="assets/ccs-logo.png" alt="College of Computer Studies Logo">
+                </div>
+                <div class="form-side">
+                    <h3><i class="bi bi-person-plus me-2"></i>Create Account</h3>
+                    <p class="subtitle">Register for the CCS Sit-in Monitoring System</p>
 
-            <!-- Form Side -->
-            <div class="form-side">
-                <h3>Create Account</h3>
-                <p class="subtitle">Register for the CCS Sit-in Monitoring System</p>
-
-                <form id="registerForm" novalidate>
-                    <div class="mb-3">
-                        <label class="form-label" for="idNumber">ID Number</label>
-                        <input type="text" class="form-control" id="idNumber" placeholder="e.g. 21-1234" required>
-                        <div class="field-error" id="err-idNumber"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="lastName">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
-                            <div class="field-error" id="err-lastName"></div>
+                    <!-- Progress Bar -->
+                    <div class="progress-wrapper">
+                        <div class="progress-label">
+                            <span>Form Completion</span>
+                            <span id="progressPercent">0%</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="firstName">First Name</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
-                            <div class="field-error" id="err-firstName"></div>
+                        <div class="progress">
+                            <div class="progress-bar" id="formProgressBar" role="progressbar" style="width: 0%"></div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label" for="middleName">Middle Name <span style="color:#aaa;font-weight:400;">(optional)</span></label>
-                        <input type="text" class="form-control" id="middleName" placeholder="Middle Name">
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="course">Course</label>
-                            <select class="form-select" id="course" required>
-                                <option value="">Select Course</option>
-                                <option value="BSIT">BSIT</option>
-                                <option value="BSCS">BSCS</option>
-                                <option value="BSIS">BSIS</option>
-                                <option value="ACT">ACT</option>
-                            </select>
-                            <div class="field-error" id="err-course"></div>
+                    <form id="registerForm" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="idNumber"><i class="bi bi-person-badge me-1"></i>ID Number</label>
+                            <input type="text" class="form-control" id="idNumber" placeholder="e.g. 21-1234" required>
+                            <div class="field-error" id="err-idNumber"></div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="yearLevel">Year Level</label>
-                            <select class="form-select" id="yearLevel" required>
-                                <option value="">Select Year</option>
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                                <option value="4">4th Year</option>
-                            </select>
-                            <div class="field-error" id="err-yearLevel"></div>
-                        </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label" for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="email@example.com" required>
-                        <div class="field-error" id="err-email"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="password">Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="password" placeholder="Min 8 characters" required>
-                                <button class="btn btn-outline-secondary toggle-pw" type="button" data-target="password">
-                                    <i class="bi bi-eye"></i>
-                                </button>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="lastName">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+                                <div class="field-error" id="err-lastName"></div>
                             </div>
-                            <div class="field-error" id="err-password"></div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label" for="confirmPassword">Confirm Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password" required>
-                                <button class="btn btn-outline-secondary toggle-pw" type="button" data-target="confirmPassword">
-                                    <i class="bi bi-eye"></i>
-                                </button>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="firstName">First Name</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+                                <div class="field-error" id="err-firstName"></div>
                             </div>
-                            <div class="field-error" id="err-confirmPassword"></div>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="middleName">Middle Name <span style="color:rgba(255,255,255,0.3);font-weight:400;">(optional)</span></label>
+                            <input type="text" class="form-control" id="middleName" placeholder="Middle Name">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="course">Course</label>
+                                <select class="form-select" id="course" required>
+                                    <option value="">Select Course</option>
+                                    <option value="BSIT">BSIT</option>
+                                    <option value="BSCS">BSCS</option>
+                                    <option value="BSIS">BSIS</option>
+                                    <option value="ACT">ACT</option>
+                                </select>
+                                <div class="field-error" id="err-course"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="yearLevel">Year Level</label>
+                                <select class="form-select" id="yearLevel" required>
+                                    <option value="">Select Year</option>
+                                    <option value="1">1st Year</option>
+                                    <option value="2">2nd Year</option>
+                                    <option value="3">3rd Year</option>
+                                    <option value="4">4th Year</option>
+                                </select>
+                                <div class="field-error" id="err-yearLevel"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="email"><i class="bi bi-envelope me-1"></i>Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="email@example.com" required>
+                            <div class="field-error" id="err-email"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="password"><i class="bi bi-lock me-1"></i>Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" placeholder="Min 8 characters" required>
+                                    <button class="btn btn-toggle-pw" type="button" data-target="password" aria-label="Toggle password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="field-error" id="err-password"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="confirmPassword"><i class="bi bi-lock-fill me-1"></i>Confirm Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password" required>
+                                    <button class="btn btn-toggle-pw" type="button" data-target="confirmPassword" aria-label="Toggle confirm password">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="field-error" id="err-confirmPassword"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="address">Address <span style="color:rgba(255,255,255,0.3);font-weight:400;">(optional)</span></label>
+                            <input type="text" class="form-control" id="address" placeholder="Home address">
+                        </div>
+
+                        <button type="submit" class="btn btn-register mt-2" id="registerBtn">
+                            <i class="bi bi-person-check me-1"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="form-footer">
+                        Already have an account? <a href="login.html" class="page-link-inline">Sign in</a>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="address">Address <span style="color:#aaa;font-weight:400;">(optional)</span></label>
-                        <input type="text" class="form-control" id="address" placeholder="Home address">
-                    </div>
-
-                    <button type="submit" class="btn btn-register mt-2" id="registerBtn">Create Account</button>
-                </form>
-
-                <div class="form-footer">
-                    Already have an account? <a href="login.html">Sign in</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         const API_BASE = 'backend/api/index.php';
 
-        // Toast notification
+        /* ── Toast ── */
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            const icons = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', warning: 'bi-exclamation-triangle-fill' };
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? '#198754' : type === 'error' ? '#dc3545' : '#ffc107';
-            const textColor = type === 'warning' ? '#000' : '#fff';
-            toast.className = 'alert shadow-sm';
-            toast.style.cssText = `background:${bgColor};color:${textColor};padding:12px 20px;border-radius:6px;margin-bottom:8px;animation:fadeIn 0.3s;min-width:280px;`;
-            toast.textContent = message;
+            toast.className = `toast-notif ${type}`;
+            toast.innerHTML = `<i class="bi ${icons[type] || icons.success} toast-icon"></i><span>${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            setTimeout(() => { toast.style.animation = 'toastOut 0.35s forwards'; setTimeout(() => toast.remove(), 350); }, 3500);
         }
 
-        // Toggle password visibility
-        document.querySelectorAll('.toggle-pw').forEach(btn => {
+        /* ── Toggle Password ── */
+        document.querySelectorAll('.btn-toggle-pw').forEach(btn => {
             btn.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const input = document.getElementById(targetId);
+                const input = document.getElementById(this.dataset.target);
                 const icon = this.querySelector('i');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.replace('bi-eye', 'bi-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.replace('bi-eye-slash', 'bi-eye');
-                }
+                if (input.type === 'password') { input.type = 'text'; icon.classList.replace('bi-eye', 'bi-eye-slash'); }
+                else { input.type = 'password'; icon.classList.replace('bi-eye-slash', 'bi-eye'); }
             });
         });
 
-        // ── Validation helpers ──
+        /* ── Progress Bar ── */
+        const trackedFields = ['idNumber','lastName','firstName','course','yearLevel','email','password','confirmPassword'];
+        function updateProgress() {
+            const filled = trackedFields.filter(id => {
+                const el = document.getElementById(id);
+                return el && el.value.trim() !== '';
+            }).length;
+            const pct = Math.round((filled / trackedFields.length) * 100);
+            document.getElementById('formProgressBar').style.width = pct + '%';
+            document.getElementById('progressPercent').textContent = pct + '%';
+        }
+        trackedFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updateProgress);
+                el.addEventListener('change', updateProgress);
+            }
+        });
+
+        /* ── Validation Helpers ── */
         function setError(fieldId, message) {
             const el = document.getElementById(fieldId);
             const errEl = document.getElementById('err-' + fieldId);
@@ -388,101 +389,73 @@
             if (el) { el.classList.remove('is-invalid'); el.classList.add('is-valid'); }
             if (errEl) errEl.textContent = '';
         }
-        function clearField(fieldId) {
-            const el = document.getElementById(fieldId);
-            const errEl = document.getElementById('err-' + fieldId);
-            if (el) { el.classList.remove('is-invalid'); el.classList.remove('is-valid'); }
-            if (errEl) errEl.textContent = '';
-        }
 
-        // ── Per-field validation rules ──
+        /* ── Field Validation ── */
         function validateField(fieldId) {
             const el = document.getElementById(fieldId);
             if (!el) return true;
             const val = el.value.trim();
-
             switch (fieldId) {
                 case 'idNumber':
                     if (!val) { setError(fieldId, 'ID Number is required'); return false; }
-                    if (!/^\d{2}-\d{4,}$/.test(val)) { setError(fieldId, 'Format must be numbers (e.g., 21-1234)'); return false; }
+                    if (!/^\d{2}-\d{4,}$/.test(val)) { setError(fieldId, 'Format: 21-1234'); return false; }
                     setValid(fieldId); return true;
-
                 case 'lastName':
                     if (!val) { setError(fieldId, 'Last Name is required'); return false; }
                     if (!/^[A-Za-z\s\-']+$/.test(val)) { setError(fieldId, 'Letters only'); return false; }
                     setValid(fieldId); return true;
-
                 case 'firstName':
                     if (!val) { setError(fieldId, 'First Name is required'); return false; }
                     if (!/^[A-Za-z\s\-']+$/.test(val)) { setError(fieldId, 'Letters only'); return false; }
                     setValid(fieldId); return true;
-
                 case 'course':
                     if (!val) { setError(fieldId, 'Please select a course'); return false; }
                     setValid(fieldId); return true;
-
                 case 'yearLevel':
                     if (!val) { setError(fieldId, 'Please select a year level'); return false; }
                     setValid(fieldId); return true;
-
                 case 'email':
                     if (!val) { setError(fieldId, 'Email is required'); return false; }
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { setError(fieldId, 'Enter a valid email (e.g. name@email.com)'); return false; }
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { setError(fieldId, 'Enter a valid email'); return false; }
                     setValid(fieldId); return true;
-
                 case 'password':
                     if (!val) { setError(fieldId, 'Password is required'); return false; }
                     if (val.length < 8) { setError(fieldId, 'Must be at least 8 characters'); return false; }
                     setValid(fieldId);
-                    // Re-check confirm if already filled
-                    const confirmVal = document.getElementById('confirmPassword').value;
-                    if (confirmVal) validateField('confirmPassword');
+                    const cv = document.getElementById('confirmPassword').value;
+                    if (cv) validateField('confirmPassword');
                     return true;
-
                 case 'confirmPassword':
                     if (!val) { setError(fieldId, 'Please confirm your password'); return false; }
                     if (val !== document.getElementById('password').value) { setError(fieldId, 'Passwords do not match'); return false; }
                     setValid(fieldId); return true;
-
                 default: return true;
             }
         }
 
-        // ── Real-time validation on blur & input ──
+        /* ── Real-time Validation ── */
         const requiredFields = ['idNumber','lastName','firstName','course','yearLevel','email','password','confirmPassword'];
         requiredFields.forEach(fieldId => {
             const el = document.getElementById(fieldId);
             if (!el) return;
-            // Validate on blur (leaving the field)
             el.addEventListener('blur', () => validateField(fieldId));
-            // Clear error while typing (re-validate)
-            el.addEventListener('input', () => {
-                if (el.classList.contains('is-invalid')) {
-                    validateField(fieldId);
-                }
-            });
+            el.addEventListener('input', () => { if (el.classList.contains('is-invalid')) validateField(fieldId); });
         });
-        // Also handle select change
         ['course','yearLevel'].forEach(fieldId => {
             const el = document.getElementById(fieldId);
             if (el) el.addEventListener('change', () => validateField(fieldId));
         });
 
-        // ── Register form submission ──
+        /* ── Register Submit ── */
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // Validate all fields
             let hasError = false;
-            requiredFields.forEach(fieldId => {
-                if (!validateField(fieldId)) hasError = true;
-            });
-
+            requiredFields.forEach(fieldId => { if (!validateField(fieldId)) hasError = true; });
             if (hasError) {
                 showToast('Please fill in all required fields correctly', 'error');
-                // Focus the first invalid field
-                const firstInvalid = document.querySelector('.is-invalid');
-                if (firstInvalid) firstInvalid.focus();
+                const fi = document.querySelector('.is-invalid');
+                if (fi) fi.focus();
                 return;
             }
 
@@ -501,7 +474,7 @@
 
             const registerBtn = document.getElementById('registerBtn');
             registerBtn.disabled = true;
-            registerBtn.textContent = 'Registering...';
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Registering...';
 
             try {
                 const res = await fetch(`${API_BASE}?action=register`, {
@@ -513,9 +486,7 @@
 
                 if (data.success) {
                     showToast(data.message || 'Registration successful!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 1500);
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
                 } else {
                     showToast(data.message || 'Registration failed', 'error');
                 }
@@ -523,8 +494,19 @@
                 showToast('Network error. Please try again.', 'error');
             } finally {
                 registerBtn.disabled = false;
-                registerBtn.textContent = 'Create Account';
+                registerBtn.innerHTML = '<i class="bi bi-person-check me-1"></i> Create Account';
             }
+        });
+
+        /* ── Page Transitions ── */
+        document.querySelectorAll('.navbar-nav a.nav-link, .page-link-inline').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (!href || href === '#' || href.startsWith('javascript')) return;
+                e.preventDefault();
+                document.querySelector('.page-wrapper').classList.add('page-exit');
+                setTimeout(() => { window.location.href = href; }, 350);
+            });
         });
     </script>
 </body>
