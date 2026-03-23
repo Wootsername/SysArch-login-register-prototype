@@ -34,4 +34,4 @@ CREATE TABLE IF NOT EXISTS sitin_sessions (
 -- Insert default admin account (password: admin123)
 INSERT IGNORE INTO users (id_number, last_name, first_name, course, year_level, email, password_hash, role)
 VALUES ('00-0000', 'Admin', 'System', 'BSIT', 4, 'admin@ccs.uc.edu.ph',
-    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+    '$2y$10$edebnPJKP8wVmMPQhJKFke0MUqCZfvZQXOtLfRgLD6I3zI3t/VulW', 'admin');

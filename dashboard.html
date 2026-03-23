@@ -3,148 +3,1078 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CCS Sit-in Monitoring System</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Student Dashboard - CCS Sit-in Monitoring System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --bg-0: #081325;
+            --bg-1: #0a1d34;
+            --bg-2: #0f2b46;
+            --panel: rgba(255, 255, 255, 0.06);
+            --panel-strong: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e6edf7;
+            --muted: rgba(230, 237, 247, 0.62);
+            --accent: #2196f3;
+            --accent-2: #57c6ff;
+            --danger: #dc3545;
+            --success: #16a34a;
+            --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
         }
 
-        /* Navbar */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(33, 150, 243, 0.15), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.16), transparent 30%),
+                linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 42%, var(--bg-2) 100%);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .orb-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.28;
+            animation: orbFloat 18s ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 400px; height: 400px; background: #2196F3; top: -8%; left: -7%; }
+        .orb-2 { width: 330px; height: 330px; background: #7c3aed; bottom: -10%; right: -8%; animation-duration: 24s; animation-delay: -5s; }
+        .orb-3 { width: 270px; height: 270px; background: #06b6d4; top: 52%; left: 58%; animation-duration: 22s; animation-delay: -10s; }
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60px, -35px) scale(1.08); }
+            66% { transform: translate(-30px, 45px) scale(0.96); }
+            100% { transform: translate(15px, -18px) scale(1.03); }
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            animation: pageIn 0.6s cubic-bezier(.4,0,.2,1) both;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .navbar {
-            background-color: #1a3a6b;
+            background: rgba(15, 34, 60, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         .navbar-brand {
             color: #fff !important;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.2px;
         }
         .nav-link {
-            color: #fff !important;
+            color: rgba(255,255,255,0.8) !important;
             font-size: 0.95rem;
+            transition: color .2s ease, opacity .2s ease;
         }
-        .nav-link:hover {
-            color: #ddd !important;
+        .nav-link:hover,
+        .nav-link.active { color: #fff !important; }
+
+        .dashboard-shell {
+            padding: 28px 20px 48px;
         }
 
-        .welcome-section {
-            min-height: calc(100vh - 56px);
-            display: flex;
+        .section-panel {
+            display: none;
+            animation: panelIn 0.35s ease both;
+        }
+        .section-panel.active { display: block; }
+        @keyframes panelIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 0.95fr;
+            gap: 22px;
+        }
+
+        .glass-card {
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card {
+            padding: 28px;
+            min-height: 360px;
+        }
+        .hero-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(33, 150, 243, 0.14);
+            border: 1px solid rgba(33, 150, 243, 0.25);
+            color: #d7ebff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
         }
-        .welcome-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            padding: 50px 60px;
-            text-align: center;
-            max-width: 550px;
-            width: 100%;
+        .hero-title {
+            font-size: clamp(2rem, 3vw, 3.15rem);
+            line-height: 1.05;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 0%, #b2d7ff 45%, #6fd3ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .welcome-card .success-icon {
-            font-size: 4rem;
-            margin-bottom: 16px;
+        .hero-subtitle {
+            color: var(--muted);
+            max-width: 62ch;
+            margin-bottom: 24px;
+            font-size: 1rem;
+            line-height: 1.7;
         }
-        .welcome-card h2 {
-            color: #198754;
-            font-weight: 700;
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        .welcome-card .user-name {
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 6px;
-        }
-        .welcome-card .user-info {
-            font-size: 0.9rem;
-            color: #777;
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-bottom: 24px;
         }
-        .btn-logout {
-            background-color: #dc3545;
+        .btn-soft,
+        .btn-primary-gradient,
+        .btn-outline-soft {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 11px 18px;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .btn-primary-gradient {
             border: none;
             color: #fff;
-            padding: 10px 32px;
-            border-radius: 6px;
-            font-weight: 600;
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            box-shadow: 0 8px 26px rgba(33, 150, 243, 0.28);
         }
-        .btn-logout:hover {
-            background-color: #c82333;
+        .btn-primary-gradient:hover { transform: translateY(-2px); color: #fff; }
+        .btn-outline-soft {
+            border: 1px solid rgba(255,255,255,0.16);
+            color: var(--text);
+            background: rgba(255,255,255,0.04);
+        }
+        .btn-outline-soft:hover { transform: translateY(-2px); color: #fff; background: rgba(255,255,255,0.08); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .stat-box {
+            padding: 18px 16px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.045);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+            color: #8fd0ff;
+        }
+        .stat-label {
+            color: rgba(255,255,255,0.58);
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .profile-summary-card {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-height: 360px;
+        }
+        .profile-photo {
+            width: 138px;
+            height: 138px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            background: rgba(255,255,255,0.06);
+        }
+        .profile-name {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .profile-meta {
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        .content-grid {
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .content-card {
+            padding: 22px;
+            min-height: 280px;
+        }
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i { color: #8fd0ff; }
+        .announcement-item,
+        .rules-list li {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.94rem;
+            line-height: 1.65;
+        }
+        .announcement-item + .announcement-item { margin-top: 16px; }
+        .announcement-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: #d7ebff;
+            background: rgba(33, 150, 243, 0.16);
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            margin-bottom: 10px;
+        }
+        .scroll-pane {
+            max-height: 220px;
+            overflow: auto;
+            padding-right: 8px;
+        }
+
+        .form-shell {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+        .avatar-card {
+            padding: 24px;
+            text-align: center;
+        }
+        .avatar-frame {
+            width: 170px;
+            height: 170px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            padding: 5px;
+            background: linear-gradient(135deg, rgba(33,150,243,0.72), rgba(87,198,255,0.2));
+        }
+        .avatar-frame img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.08);
+        }
+        .upload-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .small-note {
+            color: var(--muted);
+            font-size: 0.84rem;
+            line-height: 1.6;
+        }
+
+        .form-card {
+            padding: 24px;
+        }
+        .form-label {
+            color: rgba(255,255,255,0.68);
+            font-size: 0.86rem;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .form-control,
+        .form-select {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
             color: #fff;
+            padding: 11px 14px;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.34); }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(33,150,243,0.5);
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.14);
+            color: #fff;
+        }
+        .form-select option { background: #10263d; color: #fff; }
+
+        .preview-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .preview-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+        }
+        .field-hint {
+            color: var(--muted);
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        .history-card,
+        .reservation-card {
+            padding: 22px;
+        }
+        .table-dark-surface {
+            --bs-table-bg: transparent;
+            --bs-table-color: rgba(255,255,255,0.86);
+            --bs-table-border-color: rgba(255,255,255,0.08);
+            margin-bottom: 0;
+        }
+        .table-dark-surface thead th {
+            color: #cfe8ff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .toast-container-custom {
+            position: fixed;
+            top: 70px;
+            right: 18px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-notif {
+            padding: 13px 18px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.92rem;
+            font-weight: 500;
+            min-width: 280px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+            animation: toastIn 0.45s cubic-bezier(.21,1.02,.73,1) both;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-notif.success { background: rgba(22,163,74,0.86); }
+        .toast-notif.error { background: rgba(220,38,38,0.86); }
+        .toast-notif.warning { background: rgba(234,179,8,0.88); color: #1a1a1a; }
+        .toast-notif .toast-icon { font-size: 1.15rem; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(36px) scale(0.96); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(36px) scale(0.96); } }
+
+        .camera-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(3, 8, 16, 0.72);
+            backdrop-filter: blur(10px);
+        }
+        .camera-overlay.active { display: flex; }
+        .camera-card {
+            width: min(920px, 100%);
+            background: rgba(10, 20, 34, 0.95);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+        .camera-preview {
+            width: 100%;
+            max-height: 60vh;
+            border-radius: 16px;
+            background: #000;
+            object-fit: cover;
+        }
+
+        @media (max-width: 992px) {
+            .hero-grid,
+            .content-grid,
+            .form-shell {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
         @media (max-width: 576px) {
-            .welcome-card {
-                padding: 36px 24px;
-            }
+            .dashboard-shell { padding: 20px 14px 40px; }
+            .hero-card,
+            .profile-summary-card,
+            .content-card,
+            .form-card,
+            .avatar-card,
+            .history-card,
+            .reservation-card { padding: 18px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .hero-actions .btn,
+            .upload-actions .btn,
+            .hero-actions .dropdown .btn { width: 100%; }
+            .toast-notif { min-width: 0; width: calc(100vw - 36px); }
         }
     </style>
 </head>
 <body>
+    <div class="orb-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">College of Computer Studies Sit-in Monitoring System</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="logoutLink">Logout</a>
-                    </li>
-                </ul>
+    <div class="page-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-lg-center gap-lg-1">
+                        <li class="nav-item"><a class="nav-link active" href="#" data-section="home"><i class="bi bi-house me-1"></i>Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="edit-profile"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="reservation"><i class="bi bi-journal-bookmark me-1"></i>Reservation</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-        <div class="welcome-card">
-            <div class="success-icon">✅</div>
-            <h2>Login Successful!</h2>
-            <p class="user-name" id="userName">Welcome!</p>
-            <p class="user-info" id="userInfo"></p>
-            <button class="btn btn-logout" id="logoutBtn">Logout</button>
+        <div class="toast-container-custom" id="toastContainer"></div>
+
+        <main class="dashboard-shell container-fluid">
+            <section class="section-panel active" data-panel="home">
+                <div class="hero-grid">
+                    <div class="glass-card hero-card">
+                        <div class="hero-badge"><i class="bi bi-stars"></i> Student Dashboard</div>
+                        <h1 class="hero-title" id="homeTitle">Welcome back!</h1>
+                        <p class="hero-subtitle" id="homeSubtitle">Manage your profile, review announcements, and prepare your next lab reservation from a single student dashboard.</p>
+
+                        <div class="hero-actions">
+                            <button class="btn btn-primary-gradient" data-section-jump="edit-profile"><i class="bi bi-pencil-square me-1"></i>Edit Profile</button>
+                            <button class="btn btn-outline-soft" data-section-jump="reservation"><i class="bi bi-calendar2-check me-1"></i>Reserve Lab</button>
+                            <button class="btn btn-outline-soft" data-section-jump="history"><i class="bi bi-clock-history me-1"></i>View History</button>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-number" id="statSessions">0</div>
+                                <div class="stat-label">Active Sessions</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="statReservations">0</div>
+                                <div class="stat-label">Reservations</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="statProfile">100%</div>
+                                <div class="stat-label">Profile Ready</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="statPhoto">1</div>
+                                <div class="stat-label">Profile Photo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card profile-summary-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="assets/ccs-logo.png" alt="Student Profile Photo" class="profile-photo" id="summaryPhoto">
+                            <div>
+                                <div class="profile-name" id="summaryName">Student Name</div>
+                                <div class="profile-meta" id="summaryMeta">ID Number</div>
+                                <div class="profile-meta" id="summaryCourse">Course</div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-3" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="section-title mb-2"><i class="bi bi-info-circle"></i> Student Information</div>
+                            <div class="profile-meta" id="summaryEmail"></div>
+                            <div class="profile-meta" id="summaryAddress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-megaphone"></i> Announcement</div>
+                        <div class="scroll-pane">
+                            <div class="announcement-item">
+                                <div class="announcement-chip"><i class="bi bi-calendar-event"></i> CCS Admin | 2026-02-11</div>
+                                <div>Laboratory schedules for this week are available. Please check your reservation slot before entering the lab.</div>
+                            </div>
+                            <div class="announcement-item">
+                                <div class="announcement-chip"><i class="bi bi-bell"></i> CCS Admin | 2026-04-08</div>
+                                <div>Important: always bring your school ID and follow the lab rules and instructions before starting any activity.</div>
+                            </div>
+                            <div class="announcement-item">
+                                <div class="announcement-chip"><i class="bi bi-lightning-charge"></i> CCS Admin | Today</div>
+                                <div>You can now update your profile photo from the dashboard using image upload or camera capture on supported devices.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-journal-text"></i> Rules and Regulation</div>
+                        <div class="scroll-pane">
+                            <ul class="rules-list ps-3 mb-0">
+                                <li>Maintain silence, proper decorum, and discipline inside the laboratory.</li>
+                                <li>Mobile phones, drinks, and food are not allowed while inside the lab.</li>
+                                <li>Follow all instructions from the instructor or lab administrator.</li>
+                                <li>Use computer-related games and other distracting activities are prohibited.</li>
+                                <li>Always log your session properly before leaving the laboratory.</li>
+                                <li>Keep your profile information updated so the student record stays accurate.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="edit-profile">
+                <div class="glass-card form-shell">
+                    <div class="glass-card avatar-card">
+                        <div class="avatar-frame">
+                            <img src="assets/ccs-logo.png" alt="Profile Photo" id="profilePhotoPreview">
+                        </div>
+                        <h3 class="h5 fw-bold mb-1" id="avatarName">Student Profile</h3>
+                        <div class="small-note" id="avatarInfo">Upload or capture an image to update your profile picture.</div>
+
+                        <div class="upload-actions">
+                            <label class="btn btn-primary-gradient mb-0" for="photoUpload"><i class="bi bi-upload me-1"></i>Upload Image</label>
+                            <button class="btn btn-outline-soft" type="button" id="takePhotoBtn"><i class="bi bi-camera me-1"></i>Take Photo</button>
+                            <input type="file" id="photoUpload" accept="image/*" class="d-none">
+                        </div>
+
+                        <p class="small-note mt-3 mb-0">On phones and tablets, the take photo button opens the camera when your browser supports image capture.</p>
+                    </div>
+
+                    <div class="glass-card form-card">
+                        <div class="section-title"><i class="bi bi-pencil-square"></i> Edit Profile</div>
+                        <div class="preview-row">
+                            <img src="assets/ccs-logo.png" alt="Preview" class="preview-thumb" id="miniPreview">
+                            <div>
+                                <div class="fw-semibold" id="previewName">Student Name</div>
+                                <div class="field-hint">Your changes are saved in the browser for this prototype.</div>
+                            </div>
+                        </div>
+
+                        <form id="profileForm" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileIdNumber">ID Number</label>
+                                    <input type="text" id="profileIdNumber" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileEmail">Email</label>
+                                    <input type="email" id="profileEmail" class="form-control" placeholder="email@example.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileLastName">Last Name</label>
+                                    <input type="text" id="profileLastName" class="form-control" placeholder="Last Name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileFirstName">First Name</label>
+                                    <input type="text" id="profileFirstName" class="form-control" placeholder="First Name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileMiddleName">Middle Name</label>
+                                    <input type="text" id="profileMiddleName" class="form-control" placeholder="Middle Name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileCourse">Course</label>
+                                    <select id="profileCourse" class="form-select">
+                                        <option value="BSIT">BSIT</option>
+                                        <option value="BSCS">BSCS</option>
+                                        <option value="BSIS">BSIS</option>
+                                        <option value="ACT">ACT</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileYearLevel">Year Level</label>
+                                    <select id="profileYearLevel" class="form-select">
+                                        <option value="1">1st Year</option>
+                                        <option value="2">2nd Year</option>
+                                        <option value="3">3rd Year</option>
+                                        <option value="4">4th Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="profileAddress">Address</label>
+                                    <input type="text" id="profileAddress" class="form-control" placeholder="Home address">
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex flex-wrap gap-2 mt-1">
+                                        <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-save me-1"></i>Save Profile</button>
+                                        <button type="button" class="btn btn-outline-soft" id="resetProfileBtn"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="history">
+                <div class="glass-card history-card">
+                    <div class="section-title"><i class="bi bi-clock-history"></i> History Information</div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Purpose</th>
+                                    <th>Laboratory</th>
+                                    <th>Login</th>
+                                    <th>Logout</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-white-50">No data available yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="reservation">
+                <div class="glass-card reservation-card">
+                    <div class="section-title"><i class="bi bi-journal-bookmark"></i> Reservation</div>
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-7">
+                            <form id="reservationForm" class="row g-3" novalidate>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationIdNumber">ID Number</label>
+                                    <input type="text" id="reservationIdNumber" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationName">Student Name</label>
+                                    <input type="text" id="reservationName" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationPurpose">Purpose</label>
+                                    <input type="text" id="reservationPurpose" class="form-control" placeholder="e.g. C Programming">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationLab">Lab</label>
+                                    <input type="text" id="reservationLab" class="form-control" placeholder="e.g. S24">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationTime">Time In</label>
+                                    <input type="time" id="reservationTime" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationDate">Date</label>
+                                    <input type="date" id="reservationDate" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="reservationSessions">Remaining Sessions</label>
+                                    <input type="number" id="reservationSessions" class="form-control" value="30" readonly>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Reserve</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="glass-card p-4" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                                <div class="section-title mb-3"><i class="bi bi-lightbulb"></i> Reservation Notes</div>
+                                <ul class="rules-list ps-3 mb-0">
+                                    <li>Fill in the purpose and laboratory before reserving.</li>
+                                    <li>Reservation data is stored locally in this prototype.</li>
+                                    <li>Use the history section to review your saved entries later.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="camera-overlay" id="cameraOverlay" aria-hidden="true">
+        <div class="camera-card">
+            <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                <div>
+                    <h2 class="h5 fw-bold mb-1">Take Photo</h2>
+                    <div class="small-note mb-0">Allow camera access, then capture your profile picture.</div>
+                </div>
+                <button type="button" class="btn btn-outline-soft" id="closeCameraBtn"><i class="bi bi-x-lg me-1"></i>Close</button>
+            </div>
+            <video id="cameraVideo" class="camera-preview mb-3" autoplay playsinline></video>
+            <canvas id="cameraCanvas" class="d-none"></canvas>
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                <button type="button" class="btn btn-outline-soft" id="switchCameraBtn"><i class="bi bi-arrow-repeat me-1"></i>Switch Camera</button>
+                <button type="button" class="btn btn-primary-gradient" id="captureBtn"><i class="bi bi-camera-fill me-1"></i>Capture</button>
+            </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Check if user is logged in
-        const userData = localStorage.getItem('ccs_user');
+        const USER_KEY = 'ccs_user';
+        const PROFILE_KEY = 'ccs_student_profile';
+        const RESERVATION_KEY = 'ccs_student_reservations';
+
+        const fallbackPhoto = 'assets/ccs-logo.png';
+        const userData = localStorage.getItem(USER_KEY);
         if (!userData) {
-            // Not logged in, redirect to login
             window.location.href = 'login.html';
-        } else {
-            const user = JSON.parse(userData);
-            document.getElementById('userName').textContent = `Welcome, ${user.first_name} ${user.last_name}!`;
-            document.getElementById('userInfo').textContent = `ID: ${user.id_number} | ${user.course} - Year ${user.year_level}`;
         }
 
-        // Logout
+        const baseUser = userData ? JSON.parse(userData) : {};
+        const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {};
+        const profile = {
+            id_number: baseUser.id_number || '00-0000',
+            last_name: baseUser.last_name || 'Student',
+            first_name: baseUser.first_name || 'Student',
+            middle_name: baseUser.middle_name || '',
+            course: baseUser.course || 'BSIT',
+            year_level: String(baseUser.year_level || '1'),
+            email: baseUser.email || 'student@example.com',
+            address: baseUser.address || '',
+            photo: savedProfile.photo || fallbackPhoto
+        };
+        const defaultProfilePhoto = profile.photo;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: 'bi-check-circle-fill',
+                error: 'bi-x-circle-fill',
+                warning: 'bi-exclamation-triangle-fill'
+            };
+            const toast = document.createElement('div');
+            toast.className = `toast-notif ${type}`;
+            toast.innerHTML = `<i class="bi ${icons[type] || icons.success} toast-icon"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 0.35s forwards';
+                setTimeout(() => toast.remove(), 350);
+            }, 3200);
+        }
+
+        function fullName(data = profile) {
+            return [data.first_name, data.middle_name, data.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+        }
+
+        function updateProfilePhoto(source) {
+            const mainPhoto = document.getElementById('profilePhotoPreview');
+            const miniPhoto = document.getElementById('miniPreview');
+            const summaryPhoto = document.getElementById('summaryPhoto');
+            [mainPhoto, miniPhoto, summaryPhoto].forEach(img => {
+                if (img) img.src = source;
+            });
+        }
+
+        function fillProfileForm() {
+            document.getElementById('profileIdNumber').value = profile.id_number;
+            document.getElementById('profileEmail').value = profile.email;
+            document.getElementById('profileLastName').value = profile.last_name;
+            document.getElementById('profileFirstName').value = profile.first_name;
+            document.getElementById('profileMiddleName').value = profile.middle_name;
+            document.getElementById('profileCourse').value = profile.course;
+            document.getElementById('profileYearLevel').value = profile.year_level;
+            document.getElementById('profileAddress').value = profile.address;
+
+            document.getElementById('reservationIdNumber').value = profile.id_number;
+            document.getElementById('reservationName').value = fullName();
+            document.getElementById('reservationDate').value = new Date().toISOString().slice(0, 10);
+
+            document.getElementById('homeTitle').textContent = `Welcome back, ${profile.first_name}!`;
+            document.getElementById('homeSubtitle').textContent = `You are signed in as ${fullName()} from ${profile.course} Year ${profile.year_level}. Update your profile photo, edit your details, or reserve a laboratory slot from this dashboard.`;
+            document.getElementById('summaryName').textContent = fullName();
+            document.getElementById('summaryMeta').textContent = `ID Number: ${profile.id_number}`;
+            document.getElementById('summaryCourse').textContent = `${profile.course} - Year ${profile.year_level}`;
+            document.getElementById('summaryEmail').textContent = `Email: ${profile.email}`;
+            document.getElementById('summaryAddress').textContent = `Address: ${profile.address || 'Not provided'}`;
+            document.getElementById('avatarName').textContent = fullName();
+            document.getElementById('avatarInfo').textContent = `${profile.course} - Year ${profile.year_level}`;
+            document.getElementById('previewName').textContent = fullName();
+            updateProfilePhoto(profile.photo || fallbackPhoto);
+        }
+
+        function setActiveSection(sectionName) {
+            document.querySelectorAll('.section-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.dataset.panel === sectionName);
+            });
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.classList.toggle('active', link.dataset.section === sectionName);
+            });
+        }
+
+        function bindSectionLinks() {
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    setActiveSection(this.dataset.section);
+                });
+            });
+            document.querySelectorAll('[data-section-jump]').forEach(button => {
+                button.addEventListener('click', function () {
+                    setActiveSection(this.dataset.sectionJump);
+                });
+            });
+        }
+
         function logout() {
-            localStorage.removeItem('ccs_user');
+            localStorage.removeItem(USER_KEY);
             window.location.href = 'login.html';
         }
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-        document.getElementById('logoutLink').addEventListener('click', function (e) {
+
+        function readImageFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Could not read image'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+        document.getElementById('logoutLink')?.addEventListener('click', function (e) {
             e.preventDefault();
             logout();
         });
+
+        document.getElementById('profileForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            profile.email = document.getElementById('profileEmail').value.trim();
+            profile.last_name = document.getElementById('profileLastName').value.trim();
+            profile.first_name = document.getElementById('profileFirstName').value.trim();
+            profile.middle_name = document.getElementById('profileMiddleName').value.trim();
+            profile.course = document.getElementById('profileCourse').value;
+            profile.year_level = document.getElementById('profileYearLevel').value;
+            profile.address = document.getElementById('profileAddress').value.trim();
+
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            localStorage.setItem(USER_KEY, JSON.stringify({
+                ...baseUser,
+                ...profile
+            }));
+
+            fillProfileForm();
+            showToast('Profile updated successfully.', 'success');
+        });
+
+        document.getElementById('resetProfileBtn').addEventListener('click', function () {
+            profile.email = baseUser.email || profile.email;
+            profile.last_name = baseUser.last_name || profile.last_name;
+            profile.first_name = baseUser.first_name || profile.first_name;
+            profile.middle_name = baseUser.middle_name || '';
+            profile.course = baseUser.course || profile.course;
+            profile.year_level = String(baseUser.year_level || profile.year_level);
+            profile.address = baseUser.address || '';
+            profile.photo = defaultProfilePhoto;
+            fillProfileForm();
+            showToast('Profile reset to the saved account data.', 'warning');
+        });
+
+        document.getElementById('photoUpload').addEventListener('change', async function () {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file.', 'error');
+                return;
+            }
+            const dataUrl = await readImageFile(file);
+            profile.photo = dataUrl;
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            updateProfilePhoto(dataUrl);
+            document.getElementById('statPhoto').textContent = '1';
+            showToast('Profile photo updated.', 'success');
+            this.value = '';
+        });
+
+        const cameraOverlay = document.getElementById('cameraOverlay');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const cameraCanvas = document.getElementById('cameraCanvas');
+        const takePhotoBtn = document.getElementById('takePhotoBtn');
+        const closeCameraBtn = document.getElementById('closeCameraBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const switchCameraBtn = document.getElementById('switchCameraBtn');
+        let cameraStream = null;
+        let currentFacingMode = 'user';
+
+        async function startCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('photoUpload').setAttribute('capture', 'environment');
+                document.getElementById('photoUpload').click();
+                showToast('Camera capture is not supported here. Opening image picker instead.', 'warning');
+                return;
+            }
+            try {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode }
+                });
+                cameraVideo.srcObject = cameraStream;
+                cameraOverlay.classList.add('active');
+                cameraOverlay.setAttribute('aria-hidden', 'false');
+            } catch (error) {
+                showToast('Could not access the camera. You can upload an image instead.', 'error');
+                document.getElementById('photoUpload').setAttribute('capture', 'environment');
+                document.getElementById('photoUpload').click();
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            cameraVideo.srcObject = null;
+            cameraOverlay.classList.remove('active');
+            cameraOverlay.setAttribute('aria-hidden', 'true');
+        }
+
+        takePhotoBtn.addEventListener('click', startCamera);
+        closeCameraBtn.addEventListener('click', stopCamera);
+        switchCameraBtn.addEventListener('click', async function () {
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            await startCamera();
+            showToast(`Switched to ${currentFacingMode === 'user' ? 'front' : 'rear'} camera.`, 'warning');
+        });
+
+        captureBtn.addEventListener('click', async function () {
+            if (!cameraStream) return;
+            const [track] = cameraStream.getVideoTracks();
+            const settings = track.getSettings();
+            cameraCanvas.width = settings.width || cameraVideo.videoWidth;
+            cameraCanvas.height = settings.height || cameraVideo.videoHeight;
+            const ctx = cameraCanvas.getContext('2d');
+            ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+            const dataUrl = cameraCanvas.toDataURL('image/jpeg', 0.92);
+            profile.photo = dataUrl;
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            updateProfilePhoto(dataUrl);
+            document.getElementById('statPhoto').textContent = '1';
+            stopCamera();
+            showToast('Photo captured and saved.', 'success');
+        });
+
+        cameraOverlay.addEventListener('click', function (e) {
+            if (e.target === cameraOverlay) stopCamera();
+        });
+
+        document.getElementById('reservationForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const reservation = {
+                id_number: profile.id_number,
+                name: fullName(),
+                purpose: document.getElementById('reservationPurpose').value.trim(),
+                laboratory: document.getElementById('reservationLab').value.trim(),
+                login: document.getElementById('reservationTime').value,
+                date: document.getElementById('reservationDate').value,
+                logout: '',
+                action: 'Reserved'
+            };
+            if (!reservation.purpose || !reservation.laboratory || !reservation.login || !reservation.date) {
+                showToast('Please fill in the reservation details.', 'error');
+                return;
+            }
+            const reservations = JSON.parse(localStorage.getItem(RESERVATION_KEY) || '[]');
+            reservations.unshift(reservation);
+            localStorage.setItem(RESERVATION_KEY, JSON.stringify(reservations));
+            document.getElementById('statReservations').textContent = reservations.length;
+            showToast('Reservation saved locally.', 'success');
+            this.reset();
+            document.getElementById('reservationIdNumber').value = profile.id_number;
+            document.getElementById('reservationName').value = fullName();
+            document.getElementById('reservationDate').value = new Date().toISOString().slice(0, 10);
+        });
+
+        function loadReservations() {
+            const reservations = JSON.parse(localStorage.getItem(RESERVATION_KEY) || '[]');
+            document.getElementById('statReservations').textContent = reservations.length;
+            const tbody = document.getElementById('historyBody');
+            if (!reservations.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-white-50">No data available yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = reservations.map((item, index) => `
+                <tr>
+                    <td>${item.id_number || ''}</td>
+                    <td>${item.name || ''}</td>
+                    <td>${item.purpose || ''}</td>
+                    <td>${item.laboratory || ''}</td>
+                    <td>${item.login || ''}</td>
+                    <td>${item.logout || '-'}</td>
+                    <td>${item.date || ''}</td>
+                    <td><span class="badge text-bg-primary">${item.action || 'Reserved'}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        bindSectionLinks();
+        fillProfileForm();
+        loadReservations();
+        setActiveSection('home');
+        document.getElementById('statSessions').textContent = '0';
+        document.getElementById('statProfile').textContent = profile.photo ? '100%' : '80%';
+        document.getElementById('statPhoto').textContent = profile.photo ? '1' : '0';
     </script>
 </body>
 </html>

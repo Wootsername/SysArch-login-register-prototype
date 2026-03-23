@@ -15,22 +15,37 @@ A modern Sit-in Monitoring System built with **React** (CDN) + **PHP/MySQL** bac
 ### Setup
 
 #### 1. Database
-1. Start MySQL (XAMPP, WAMP, or standalone)
-2. Run `backend/database/schema.sql` to create the database and tables
-3. Update `backend/config/database.php` with your MySQL credentials if needed
+1. Open XAMPP Control Panel and start `Apache` and `MySQL`
+2. Open phpMyAdmin at `http://localhost/phpmyadmin`
+3. Import `backend/database/schema.sql` to create the `ccs_sitin_monitoring` database and tables
+4. If your MySQL credentials are different from XAMPP defaults, update `backend/config/database.php`
+	- Host: `localhost`
+	- Database: `ccs_sitin_monitoring`
+	- Username: `root`
+	- Password: empty by default in XAMPP
 
 #### 2. PHP Server
-Place the project in your web server's root (e.g., `htdocs/` for XAMPP), or run:
+Place the project in your web server's root, such as `C:\xampp\htdocs\SysArch-login-register-prototype`, then open it through Apache.
+
+If you prefer the built-in PHP server, run:
 ```bash
 php -S localhost:8080
 ```
 
 #### 3. Open
-Navigate to `http://localhost:8080/index.html`
+For XAMPP, navigate to:
+```text
+http://localhost/SysArch-login-register-prototype/index.html
+```
+
+If using the built-in PHP server, navigate to:
+```text
+http://localhost:8080/index.html
+```
 
 ### Default Admin
 - **ID Number:** `00-0000`
-- **Password:** `password`
+- **Password:** `admin123`
 
 ### Project Structure
 ```
