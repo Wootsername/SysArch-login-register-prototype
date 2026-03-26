@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CCS Sit-in Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --bg-0: #081325;
+            --bg-1: #0a1d34;
+            --bg-2: #0f2b46;
+            --panel: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e6edf7;
+            --muted: rgba(230, 237, 247, 0.62);
+            --accent: #2196f3;
+            --accent-2: #57c6ff;
+            --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(33, 150, 243, 0.15), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.16), transparent 30%),
+                linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 42%, var(--bg-2) 100%);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .orb-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.28;
+            animation: orbFloat 18s ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 400px; height: 400px; background: #2196F3; top: -8%; left: -7%; }
+        .orb-2 { width: 330px; height: 330px; background: #7c3aed; bottom: -10%; right: -8%; animation-duration: 24s; animation-delay: -5s; }
+        .orb-3 { width: 270px; height: 270px; background: #06b6d4; top: 52%; left: 58%; animation-duration: 22s; animation-delay: -10s; }
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60px, -35px) scale(1.08); }
+            66% { transform: translate(-30px, 45px) scale(0.96); }
+            100% { transform: translate(15px, -18px) scale(1.03); }
+        }
+
+        .page-wrapper { position: relative; z-index: 1; }
+        .navbar {
+            background: rgba(15, 34, 60, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .navbar-brand { color: #fff !important; font-size: 1rem; font-weight: 600; }
+        .nav-link { color: rgba(255,255,255,0.8) !important; }
+        .nav-link:hover, .nav-link.active { color: #fff !important; }
+
+        .dashboard-shell { padding: 26px 20px 42px; }
+        .section-panel { display: none; animation: panelIn 0.3s ease both; }
+        .section-panel.active { display: block; }
+        @keyframes panelIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card {
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card { padding: 24px; }
+        .hero-title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; }
+        .hero-subtitle { color: var(--muted); margin-bottom: 22px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+        .stat-box {
+            padding: 18px 16px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .stat-number { font-size: 1.8rem; font-weight: 800; color: #8fd0ff; line-height: 1.1; }
+        .stat-label { color: rgba(255,255,255,0.58); font-size: 0.83rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        .content-grid { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .content-card { padding: 22px; }
+        .section-title { font-size: 1.03rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .section-title i { color: #8fd0ff; }
+
+        .btn-primary-gradient {
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            box-shadow: 0 8px 26px rgba(33, 150, 243, 0.28);
+        }
+        .btn-primary-gradient:hover { color: #fff; transform: translateY(-1px); }
+        .btn-outline-soft {
+            border: 1px solid rgba(255,255,255,0.16);
+            color: var(--text);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+        }
+        .btn-outline-soft:hover { color: #fff; background: rgba(255,255,255,0.09); }
+
+        .form-label { color: rgba(255,255,255,0.68); font-size: 0.86rem; margin-bottom: 6px; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            color: #fff;
+            padding: 10px 12px;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.34); }
+        .form-control:focus, .form-select:focus {
+            border-color: rgba(33,150,243,0.5);
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.14);
+            color: #fff;
+        }
+        .form-select option { background: #10263d; color: #fff; }
+
+        .table-dark-surface {
+            --bs-table-bg: transparent;
+            --bs-table-color: rgba(255,255,255,0.86);
+            --bs-table-border-color: rgba(255,255,255,0.08);
+            margin-bottom: 0;
+        }
+        .table-dark-surface thead th {
+            color: #cfe8ff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            white-space: nowrap;
+        }
+
+        .toast-container-custom {
+            position: fixed;
+            top: 70px;
+            right: 18px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-notif {
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.92rem;
+            min-width: 280px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: toastIn 0.35s ease both;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toast-notif.success { background: rgba(22,163,74,0.85); }
+        .toast-notif.error { background: rgba(220,38,38,0.85); }
+        .toast-notif.warning { background: rgba(234,179,8,0.85); color: #1a1a1a; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(30px); } }
+
+        .empty-note { color: var(--muted); font-size: 0.9rem; }
+
+        @media (max-width: 991px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="page-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-lg-center gap-lg-1">
+                        <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="search"><i class="bi bi-search me-1"></i>Search</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="sitin-form"><i class="bi bi-ui-checks-grid me-1"></i>Sit-in Form</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="students"><i class="bi bi-people me-1"></i>Student List</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="reservations"><i class="bi bi-inbox me-1"></i>Reservations</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="records"><i class="bi bi-journal-text me-1"></i>Current Sit-in</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>Session History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="toast-container-custom" id="toastContainer"></div>
+
+        <main class="dashboard-shell container-fluid">
+            <section class="section-panel active" data-panel="dashboard">
+                <div class="glass-card hero-card">
+                    <h1 class="hero-title mb-2">Admin Dashboard</h1>
+                    <p class="hero-subtitle">Monitor student registration and current sit-in sessions with language usage categories.</p>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-number" id="registeredCount">0</div>
+                            <div class="stat-label">Students Registered</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="currentCount">0</div>
+                            <div class="stat-label">Currently Sit-in</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="totalSitinCount">0</div>
+                            <div class="stat-label">Total Sit-in</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="pendingReservationCount">0</div>
+                            <div class="stat-label">Pending Reservations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-pie-chart"></i>Language Usage</div>
+                        <canvas id="languagePieChart" height="230"></canvas>
+                    </div>
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-lightning-charge"></i>Quick Actions</div>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <button class="btn btn-primary-gradient" data-section-jump="search"><i class="bi bi-search me-1"></i>Search Student</button>
+                            <button class="btn btn-outline-soft" data-section-jump="sitin-form"><i class="bi bi-ui-checks-grid me-1"></i>Open Sit-in Form</button>
+                        </div>
+                        <div class="empty-note">Use Search to find registered students, then open the sit-in form and submit a session.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="search">
+                <div class="glass-card content-card">
+                    <div class="section-title"><i class="bi bi-search"></i>Search Registered Students</div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-8">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search ID number, name, email, or course...">
+                        </div>
+                        <div class="col-md-4 d-grid">
+                            <button id="searchBtn" class="btn btn-primary-gradient"><i class="bi bi-search me-1"></i>Search</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Year</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="searchBody">
+                                <tr><td colspan="6" class="text-center py-4 text-white-50">Search for registered students.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="sitin-form">
+                <div class="glass-card content-card">
+                    <div class="section-title"><i class="bi bi-ui-checks-grid"></i>Sit-in Form</div>
+                    <form id="sitinForm" class="row g-3" novalidate>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formIdNumber">ID Number</label>
+                            <input type="text" id="formIdNumber" class="form-control" placeholder="Select/search a student" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formStudentName">Student Name</label>
+                            <input type="text" id="formStudentName" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formRemaining">Remaining Session</label>
+                            <input type="number" id="formRemaining" class="form-control" value="30" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formLab">Sit Lab</label>
+                            <select id="formLab" class="form-select" required>
+                                <option value="">Select a lab</option>
+                                <option value="S24">S24</option>
+                                <option value="S25">S25</option>
+                                <option value="S26">S26</option>
+                                <option value="S27">S27</option>
+                                <option value="S28">S28</option>
+                                <option value="S29">S29</option>
+                                <option value="S30">S30</option>
+                                <option value="S31">S31</option>
+                                <option value="S32">S32</option>
+                                <option value="S33">S33</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formPurpose">Purpose / Language</label>
+                            <select id="formPurpose" class="form-select" required>
+                                <option value="">Select language/use</option>
+                                <option value="C Programming">C Programming</option>
+                                <option value="Java">Java</option>
+                                <option value="Python">Python</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Database">Database</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="formPurposeCustom">Custom Purpose (optional)</label>
+                            <input type="text" id="formPurposeCustom" class="form-control" placeholder="e.g. Data Structures Lab">
+                        </div>
+                        <div class="col-12 d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Save Sit-in</button>
+                            <button type="button" id="clearFormBtn" class="btn btn-outline-soft"><i class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="students">
+                <div class="glass-card content-card">
+                    <div class="section-title"><i class="bi bi-people"></i>Students Information</div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Year</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsBody">
+                                <tr><td colspan="7" class="text-center py-4 text-white-50">Loading students...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="records">
+                <div class="glass-card content-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <div class="section-title mb-0"><i class="bi bi-journal-text"></i>Current Sit-in Records</div>
+                        <button id="refreshRecordsBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Sit ID</th>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Purpose</th>
+                                    <th>Lab</th>
+                                    <th>Duration</th>
+                                    <th>Remaining</th>
+                                    <th>Time In</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsBody">
+                                <tr><td colspan="8" class="text-center py-4 text-white-50">No current sit-in records.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="reservations">
+                <div class="glass-card content-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <div class="section-title mb-0"><i class="bi bi-inbox"></i>Reservation Inbox</div>
+                        <button id="refreshReservationsBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Lab</th>
+                                    <th>Purpose</th>
+                                    <th>Preferred Date</th>
+                                    <th>Preferred Time</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsBody">
+                                <tr><td colspan="8" class="text-center py-4 text-white-50">No reservation requests yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="history">
+                <div class="glass-card content-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <div class="section-title mb-0"><i class="bi bi-clock-history"></i>Session History</div>
+                        <button id="refreshHistoryBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Purpose</th>
+                                    <th>Lab</th>
+                                    <th>Time In</th>
+                                    <th>Duration</th>
+                                    <th>Time Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBodyAdmin">
+                                <tr><td colspan="8" class="text-center py-4 text-white-50">No session history available yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '/xampp/SysArch-login-register-prototype/backend/api/index.php';
+        const USER_KEY = 'ccs_user';
+        let languageChart = null;
+        let studentCache = [];
+        let reservationCache = [];
+
+        const userRaw = localStorage.getItem(USER_KEY);
+        if (!userRaw) {
+            window.location.href = 'login.html';
+        }
+        const user = userRaw ? JSON.parse(userRaw) : null;
+        if (user && user.role !== 'admin') {
+            window.location.href = 'dashboard.html';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', warning: 'bi-exclamation-triangle-fill' };
+            const toast = document.createElement('div');
+            toast.className = `toast-notif ${type}`;
+            toast.innerHTML = `<i class="bi ${icons[type] || icons.success}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function setActiveSection(sectionName) {
+            document.querySelectorAll('.section-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.dataset.panel === sectionName);
+            });
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.classList.toggle('active', link.dataset.section === sectionName);
+            });
+        }
+
+        async function apiGet(action, query = '') {
+            const url = `${API_BASE}?action=${encodeURIComponent(action)}${query ? `&${query}` : ''}`;
+            const res = await fetch(url);
+            return await res.json();
+        }
+
+        async function apiPost(action, payload) {
+            const res = await fetch(`${API_BASE}?action=${encodeURIComponent(action)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await res.json();
+        }
+
+        function renderLanguageChart(data) {
+            const labels = Object.keys(data || {});
+            const values = Object.values(data || {});
+            const ctx = document.getElementById('languagePieChart');
+            if (!ctx) return;
+            if (languageChart) languageChart.destroy();
+            languageChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#2196f3', '#57c6ff', '#7c3aed', '#f97316', '#f43f5e', '#fbbf24'],
+                        borderColor: '#0f2b46',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { labels: { color: '#e6edf7' } }
+                    }
+                }
+            });
+        }
+
+        function renderSearchStudents(students) {
+            const tbody = document.getElementById('searchBody');
+            if (!students.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-white-50">No student found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = students.map(student => {
+                const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+                return `
+                    <tr>
+                        <td>${student.id_number}</td>
+                        <td>${fullName}</td>
+                        <td>${student.course}</td>
+                        <td>${student.year_level}</td>
+                        <td>${student.email || '-'}</td>
+                        <td><button class="btn btn-primary-gradient btn-sm" data-use-student="${student.id}"><i class="bi bi-plus-circle me-1"></i>Use</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderStudentsList(students) {
+            const tbody = document.getElementById('studentsBody');
+            if (!students.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-white-50">No registered students found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = students.map(student => {
+                const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+                return `
+                    <tr>
+                        <td>${student.id_number}</td>
+                        <td>${fullName}</td>
+                        <td>${student.course}</td>
+                        <td>${student.year_level}</td>
+                        <td>${student.email || '-'}</td>
+                        <td>${student.address || '-'}</td>
+                        <td><button class="btn btn-outline-soft btn-sm" data-use-student="${student.id}"><i class="bi bi-ui-checks-grid me-1"></i>Sit-in</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderCurrentRecords(records) {
+            const tbody = document.getElementById('recordsBody');
+            if (!records.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-white-50">No current sit-in records.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = records.map(record => `
+                <tr>
+                    <td>${record.id}</td>
+                    <td>${record.id_number}</td>
+                    <td>${record.first_name} ${record.last_name}</td>
+                    <td>${record.purpose}</td>
+                    <td>${record.lab_room}</td>
+                    <td>${record.elapsed_time || '-'}</td>
+                    <td>${record.remaining_sessions}</td>
+                    <td>${new Date(record.time_in).toLocaleString()}</td>
+                    <td><button class="btn btn-danger btn-sm" data-end-session="${record.id}"><i class="bi bi-stop-circle me-1"></i>End</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderReservations(reservations) {
+            const tbody = document.getElementById('reservationsBody');
+            if (!reservations.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-white-50">No reservation requests yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = reservations.map(reservation => {
+                const fullName = [reservation.first_name, reservation.last_name].filter(Boolean).join(' ').trim();
+                const statusBadge = reservation.status === 'approved'
+                    ? '<span class="badge text-bg-success">Approved</span>'
+                    : reservation.status === 'rejected'
+                        ? '<span class="badge text-bg-danger">Rejected</span>'
+                        : '<span class="badge text-bg-warning">Pending</span>';
+
+                const actionButtons = reservation.status === 'pending'
+                    ? `
+                        <button class="btn btn-success btn-sm me-1" data-approve-reservation="${reservation.id}"><i class="bi bi-check-lg me-1"></i>Approve</button>
+                        <button class="btn btn-outline-soft btn-sm" data-reject-reservation="${reservation.id}"><i class="bi bi-x-lg me-1"></i>Reject</button>
+                    `
+                    : '-';
+
+                return `
+                    <tr>
+                        <td>${reservation.id_number}</td>
+                        <td>${fullName}</td>
+                        <td>${reservation.lab_room}</td>
+                        <td>${reservation.purpose}</td>
+                        <td>${reservation.preferred_date || '-'}</td>
+                        <td>${reservation.preferred_time || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actionButtons}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderHistory(history) {
+            const tbody = document.getElementById('historyBodyAdmin');
+            if (!tbody) return;
+
+            if (!history.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-white-50">No session history available yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = history.map(item => {
+                const fullName = [item.first_name, item.last_name].filter(Boolean).join(' ').trim();
+                const statusBadge = item.status === 'active'
+                    ? '<span class="badge text-bg-success">Active</span>'
+                    : '<span class="badge text-bg-secondary">Completed</span>';
+
+                return `
+                    <tr>
+                        <td>${item.id_number}</td>
+                        <td>${fullName}</td>
+                        <td>${item.purpose}</td>
+                        <td>${item.lab_room}</td>
+                        <td>${item.time_in ? new Date(item.time_in).toLocaleString() : '-'}</td>
+                        <td>${item.duration_time || '-'}</td>
+                        <td>${item.time_out ? new Date(item.time_out).toLocaleString() : '-'}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function useStudentInForm(studentId) {
+            const student = studentCache.find(item => Number(item.id) === Number(studentId));
+            if (!student) return;
+            const fullName = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+            document.getElementById('formIdNumber').value = student.id_number;
+            document.getElementById('formStudentName').value = fullName;
+            document.getElementById('formRemaining').value = student.remaining_sessions ?? 30;
+            setActiveSection('sitin-form');
+            showToast('Student loaded into Sit-in Form.', 'success');
+        }
+
+        async function loadDashboard() {
+            try {
+                const [dashRes, recordRes, reservationRes, historyRes] = await Promise.all([
+                    apiGet('admin_dashboard'),
+                    apiGet('current_sitin_records'),
+                    apiGet('admin_reservations'),
+                    apiGet('admin_session_history')
+                ]);
+
+                if (dashRes.success) {
+                    document.getElementById('registeredCount').textContent = dashRes.stats.registered_students || 0;
+                    document.getElementById('currentCount').textContent = dashRes.stats.currently_sitin || 0;
+                    document.getElementById('totalSitinCount').textContent = dashRes.stats.total_sitin || 0;
+                    document.getElementById('pendingReservationCount').textContent = dashRes.stats.pending_reservations || 0;
+                    renderLanguageChart(dashRes.language_usage || {});
+                }
+
+                if (recordRes.success) {
+                    renderCurrentRecords(recordRes.records || []);
+                }
+                if (reservationRes && reservationRes.success) {
+                    reservationCache = reservationRes.reservations || [];
+                    renderReservations(reservationCache);
+                }
+
+                if (historyRes && historyRes.success) {
+                    renderHistory(historyRes.history || []);
+                }
+            } catch (error) {
+                showToast('Failed to load dashboard data.', 'error');
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                const data = await apiGet('students');
+                if (!data.success) {
+                    showToast(data.message || 'Unable to load students.', 'error');
+                    return;
+                }
+                studentCache = data.students || [];
+                renderStudentsList(studentCache);
+            } catch (error) {
+                showToast('Network error while loading students.', 'error');
+            }
+        }
+
+        async function loadReservations() {
+            try {
+                const data = await apiGet('admin_reservations');
+                if (!data.success) {
+                    showToast(data.message || 'Unable to load reservations.', 'error');
+                    return;
+                }
+                reservationCache = data.reservations || [];
+                renderReservations(reservationCache);
+                document.getElementById('pendingReservationCount').textContent = reservationCache.filter(item => item.status === 'pending').length;
+            } catch (error) {
+                showToast('Network error while loading reservations.', 'error');
+            }
+        }
+
+        async function searchStudents() {
+            const q = document.getElementById('searchInput').value.trim();
+            try {
+                const data = await apiGet('search_students', `query=${encodeURIComponent(q)}`);
+                if (!data.success) {
+                    showToast(data.message || 'Search failed.', 'error');
+                    return;
+                }
+                renderSearchStudents(data.students || []);
+            } catch (error) {
+                showToast('Network error while searching.', 'error');
+            }
+        }
+
+        function clearSitinForm() {
+            document.getElementById('sitinForm').reset();
+            document.getElementById('formStudentName').value = '';
+            document.getElementById('formRemaining').value = 30;
+        }
+
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                setActiveSection(this.dataset.section);
+            });
+        });
+
+        document.querySelectorAll('[data-section-jump]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                setActiveSection(this.dataset.sectionJump);
+            });
+        });
+
+        document.getElementById('logoutLink').addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.removeItem(USER_KEY);
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', searchStudents);
+        document.getElementById('searchInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchStudents();
+            }
+        });
+
+        document.body.addEventListener('click', async function (e) {
+            const useBtn = e.target.closest('[data-use-student]');
+            if (useBtn) {
+                useStudentInForm(useBtn.dataset.useStudent);
+                return;
+            }
+
+            const approveBtn = e.target.closest('[data-approve-reservation]');
+            if (approveBtn) {
+                const data = await apiPost('approve_reservation', { reservation_id: Number(approveBtn.dataset.approveReservation) });
+                if (data.success) {
+                    showToast('Reservation approved.', 'success');
+                    await loadDashboard();
+                    await loadReservations();
+                } else {
+                    showToast(data.message || 'Could not approve reservation.', 'error');
+                }
+                return;
+            }
+
+            const rejectBtn = e.target.closest('[data-reject-reservation]');
+            if (rejectBtn) {
+                const data = await apiPost('reject_reservation', { reservation_id: Number(rejectBtn.dataset.rejectReservation) });
+                if (data.success) {
+                    showToast('Reservation rejected.', 'warning');
+                    await loadDashboard();
+                    await loadReservations();
+                } else {
+                    showToast(data.message || 'Could not reject reservation.', 'error');
+                }
+                return;
+            }
+
+            const endBtn = e.target.closest('[data-end-session]');
+            if (endBtn) {
+                const sessionId = Number(endBtn.dataset.endSession);
+                const data = await apiPost('end_session', { session_id: sessionId });
+                if (data.success) {
+                    showToast('Session ended successfully.', 'success');
+                    await loadDashboard();
+                } else {
+                    showToast(data.message || 'Could not end session.', 'error');
+                }
+            }
+        });
+
+        document.getElementById('sitinForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const idNumber = document.getElementById('formIdNumber').value.trim();
+            const labRoom = document.getElementById('formLab').value.trim();
+            const selectedPurpose = document.getElementById('formPurpose').value;
+            const customPurpose = document.getElementById('formPurposeCustom').value.trim();
+            const purpose = customPurpose || selectedPurpose;
+
+            if (!idNumber || !labRoom || !purpose) {
+                showToast('Please complete all required fields.', 'error');
+                return;
+            }
+
+            const data = await apiPost('create_sitin', {
+                id_number: idNumber,
+                lab_room: labRoom,
+                purpose: purpose
+            });
+
+            if (data.success) {
+                showToast('Sit-in form submitted successfully.', 'success');
+                clearSitinForm();
+                await loadDashboard();
+            } else {
+                showToast(data.message || 'Failed to save sit-in form.', 'error');
+            }
+        });
+
+        document.getElementById('clearFormBtn').addEventListener('click', clearSitinForm);
+        document.getElementById('refreshRecordsBtn').addEventListener('click', loadDashboard);
+        document.getElementById('refreshReservationsBtn').addEventListener('click', loadReservations);
+        document.getElementById('refreshHistoryBtn').addEventListener('click', loadDashboard);
+
+        setActiveSection('dashboard');
+        loadStudents();
+        loadDashboard();
+        loadReservations();
+    </script>
+</body>
+</html>
