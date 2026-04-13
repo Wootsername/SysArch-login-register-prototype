@@ -56,12 +56,175 @@ switch ($action) {
     case 'stats':
         getStats($pdo);
         break;
+    case 'announcements':
+        getAnnouncements($pdo);
+        break;
+    case 'create_announcement':
+        createAnnouncement($pdo);
+        break;
+    case 'feedbacks':
+        getFeedbacks($pdo);
+        break;
+    case 'submit_feedback':
+        submitFeedback($pdo);
+        break;
+    case 'review_feedback':
+        reviewFeedback($pdo);
+        break;
     case 'end_session':
         endSession($pdo);
         break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
+}
+
+function fetchAnnouncements(PDO $pdo, string $audience = 'student', int $limit = 10): array
+{
+    $audience = in_array($audience, ['student', 'admin', 'all'], true) ? $audience : 'student';
+    $limit = max(1, min($limit, 50));
+
+    $stmt = $pdo->prepare("SELECT id, title, body, audience, posted_by, created_at, updated_at
+        FROM announcements
+        WHERE audience = 'all' OR audience = :audience
+        ORDER BY created_at DESC
+        LIMIT $limit");
+    $stmt->execute([':audience' => $audience]);
+
+    return $stmt->fetchAll();
+}
+
+function getAnnouncements(PDO $pdo): void
+{
+    $audience = trim(strtolower($_GET['audience'] ?? 'student'));
+    if (!in_array($audience, ['student', 'admin', 'all'], true)) {
+        $audience = 'student';
+    }
+
+    echo json_encode([
+        'success' => true,
+        'announcements' => fetchAnnouncements($pdo, $audience, 20),
+    ]);
+}
+
+function createAnnouncement(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $title = trim((string)($data['title'] ?? ''));
+    $body = trim((string)($data['body'] ?? ''));
+    $audience = trim(strtolower((string)($data['audience'] ?? 'all')));
+    $postedBy = trim((string)($data['posted_by'] ?? 'CCS Admin')) ?: 'CCS Admin';
+
+    if ($title === '' || $body === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Title and message are required']);
+        return;
+    }
+
+    if (!in_array($audience, ['student', 'admin', 'all'], true)) {
+        $audience = 'all';
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO announcements (title, body, audience, posted_by) VALUES (:title, :body, :audience, :posted_by)");
+    $stmt->execute([
+        ':title' => $title,
+        ':body' => $body,
+        ':audience' => $audience,
+        ':posted_by' => $postedBy,
+    ]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Announcement posted successfully',
+    ]);
+}
+
+function getFeedbacks(PDO $pdo): void
+{
+    $stmt = $pdo->query("SELECT f.id, f.user_id, f.subject, f.message, f.status, f.created_at, f.updated_at,
+            u.id_number, u.first_name, u.last_name, u.course, u.year_level, u.email
+        FROM feedback_entries f
+        INNER JOIN users u ON u.id = f.user_id
+        ORDER BY f.created_at DESC
+        LIMIT 100");
+
+    echo json_encode([
+        'success' => true,
+        'feedbacks' => $stmt->fetchAll(),
+    ]);
+}
+
+function submitFeedback(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $idNumber = trim((string)($data['id_number'] ?? ''));
+    $subject = trim((string)($data['subject'] ?? ''));
+    $message = trim((string)($data['message'] ?? ''));
+
+    if ($idNumber === '' || $subject === '' || $message === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'ID Number, subject, and message are required']);
+        return;
+    }
+
+    $userStmt = $pdo->prepare("SELECT id FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
+    $userStmt->execute([':id_number' => $idNumber]);
+    $userId = (int)($userStmt->fetchColumn() ?: 0);
+
+    if ($userId <= 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Student not found']);
+        return;
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO feedback_entries (user_id, subject, message, status) VALUES (:user_id, :subject, :message, 'new')");
+    $stmt->execute([
+        ':user_id' => $userId,
+        ':subject' => $subject,
+        ':message' => $message,
+    ]);
+
+    echo json_encode(['success' => true, 'message' => 'Feedback submitted successfully']);
+}
+
+function reviewFeedback(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $feedbackId = (int)($data['feedback_id'] ?? 0);
+    if ($feedbackId <= 0) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid feedback ID']);
+        return;
+    }
+
+    $stmt = $pdo->prepare("UPDATE feedback_entries SET status = 'reviewed' WHERE id = :id");
+    $stmt->execute([':id' => $feedbackId]);
+
+    if ($stmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Feedback not found or already reviewed']);
+        return;
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Feedback marked as reviewed']);
 }
 
 function handleLogin(PDO $pdo): void
@@ -488,6 +651,10 @@ function getStudentDashboard(PDO $pdo): void
     $reservationStmt = $pdo->prepare("SELECT id, lab_room, purpose, preferred_date, preferred_time, status, created_at FROM reservations WHERE user_id = :user_id ORDER BY created_at DESC LIMIT 25");
     $reservationStmt->execute([':user_id' => (int)$user['id']]);
 
+    $announcements = fetchAnnouncements($pdo, 'student', 10);
+    $feedbackStmt = $pdo->prepare("SELECT id, subject, message, status, created_at FROM feedback_entries WHERE user_id = :user_id ORDER BY created_at DESC LIMIT 10");
+    $feedbackStmt->execute([':user_id' => (int)$user['id']]);
+
     unset($user['role']);
 
     echo json_encode([
@@ -496,6 +663,8 @@ function getStudentDashboard(PDO $pdo): void
         'active_sessions' => $activeStmt->fetchAll(),
         'history' => $historyStmt->fetchAll(),
         'reservations' => $reservationStmt->fetchAll(),
+        'announcements' => $announcements,
+        'feedback' => $feedbackStmt->fetchAll(),
     ]);
 }
 

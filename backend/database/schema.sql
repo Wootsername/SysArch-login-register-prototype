@@ -46,6 +46,29 @@ CREATE TABLE IF NOT EXISTS reservations (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Announcements table
+CREATE TABLE IF NOT EXISTS announcements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    body TEXT NOT NULL,
+    audience ENUM('student', 'admin', 'all') NOT NULL DEFAULT 'student',
+    posted_by VARCHAR(100) NOT NULL DEFAULT 'CCS Admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Feedback table
+CREATE TABLE IF NOT EXISTS feedback_entries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subject VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('new', 'reviewed') NOT NULL DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Insert default admin account (password: admin123)
 INSERT IGNORE INTO users (id_number, last_name, first_name, course, year_level, email, password_hash, remaining_sessions, role)
 VALUES ('00-0000', 'Admin', 'System', 'BSIT', 4, 'admin@ccs.uc.edu.ph',

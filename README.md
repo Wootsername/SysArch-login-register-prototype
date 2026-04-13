@@ -9,6 +9,7 @@ A modern Sit-in Monitoring System built with **React** (CDN) + **PHP/MySQL** bac
 - **Register** with progress bar, all required student fields, password toggle
 - **Admin Dashboard** with real-time active sit-in student table, search, and session management
 - **Student Dashboard** with backend history, active sessions, reservation requests, and remaining-session tracking
+- **Announcements** managed by admin and shown on the student dashboard
 - **Admin Reservations** inbox with approve/reject actions that start sit-in sessions
 - Glassmorphism dark theme with purple (#5B1FA3) & gold (#D4A017) branding
 - Animated glowing orb background, toast notifications, animated counters
@@ -27,7 +28,7 @@ A modern Sit-in Monitoring System built with **React** (CDN) + **PHP/MySQL** bac
 	- Password: empty by default in XAMPP
 
 #### 2. PHP Server
-Place the project in your web server's root, such as `C:\xampp\htdocs\xampp\SysArch-login-register-prototype`, then open it through Apache.
+Place the project in your web server's root, such as `C:\xampp\htdocs\SysArch-login-register-prototype`, then open it through Apache.
 
 If you prefer the built-in PHP server, run:
 ```bash
@@ -36,8 +37,8 @@ php -S localhost:8080
 
 #### 3. Open
 For XAMPP, navigate to:
-```text
-http://localhost/xampp/SysArch-login-register-prototype/index.html
+```text 
+http://localhost/SysArch-login-register-prototype/index.html
 ```
 
 If using the built-in PHP server, navigate to:

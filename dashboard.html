@@ -261,6 +261,30 @@
             line-height: 1.65;
         }
         .announcement-item + .announcement-item { margin-top: 16px; }
+        .announcement-empty {
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+        .feedback-item,
+        .feedback-empty {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.94rem;
+            line-height: 1.65;
+        }
+        .feedback-item + .feedback-item { margin-top: 16px; }
+        .feedback-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: #d7ebff;
+            background: rgba(87, 198, 255, 0.14);
+            border: 1px solid rgba(87, 198, 255, 0.2);
+            margin-bottom: 10px;
+        }
         .announcement-chip {
             display: inline-flex;
             align-items: center;
@@ -492,6 +516,7 @@
                         <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>History</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="reservation"><i class="bi bi-journal-bookmark me-1"></i>Reservation</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="reservation-status"><i class="bi bi-inbox me-1"></i>Reservation Status</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="feedback"><i class="bi bi-chat-left-text me-1"></i>Feedback</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
                     </ul>
                 </div>
@@ -554,19 +579,8 @@
                 <div class="content-grid">
                     <div class="glass-card content-card">
                         <div class="section-title"><i class="bi bi-megaphone"></i> Announcement</div>
-                        <div class="scroll-pane">
-                            <div class="announcement-item">
-                                <div class="announcement-chip"><i class="bi bi-calendar-event"></i> CCS Admin | 2026-02-11</div>
-                                <div>Laboratory schedules for this week are available. Please check your reservation slot before entering the lab.</div>
-                            </div>
-                            <div class="announcement-item">
-                                <div class="announcement-chip"><i class="bi bi-bell"></i> CCS Admin | 2026-04-08</div>
-                                <div>Important: always bring your school ID and follow the lab rules and instructions before starting any activity.</div>
-                            </div>
-                            <div class="announcement-item">
-                                <div class="announcement-chip"><i class="bi bi-lightning-charge"></i> CCS Admin | Today</div>
-                                <div>You can now update your profile photo from the dashboard using image upload or camera capture on supported devices.</div>
-                            </div>
+                        <div class="scroll-pane" id="announcementList">
+                            <div class="announcement-empty">Loading announcements...</div>
                         </div>
                     </div>
 
@@ -786,6 +800,37 @@
                     </div>
                 </div>
             </section>
+
+            <section class="section-panel" data-panel="feedback">
+                <div class="glass-card content-card">
+                    <div class="section-title"><i class="bi bi-chat-left-text"></i> Feedback</div>
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <form id="feedbackForm" class="row g-3" novalidate>
+                                <div class="col-12">
+                                    <label class="form-label" for="feedbackSubject">Subject</label>
+                                    <input type="text" id="feedbackSubject" class="form-control" placeholder="e.g. Lab experience" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="feedbackMessage">Message</label>
+                                    <textarea id="feedbackMessage" class="form-control" rows="6" placeholder="Write your feedback here" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-send me-1"></i>Submit Feedback</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="glass-card p-4" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                                <div class="section-title mb-3"><i class="bi bi-clock-history"></i>My Feedback</div>
+                                <div class="scroll-pane" id="feedbackList">
+                                    <div class="feedback-empty">Loading feedback...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -809,7 +854,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const API_BASE = '/xampp/SysArch-login-register-prototype/backend/api/index.php';
+        const API_BASE = 'backend/api/index.php';
         const USER_KEY = 'ccs_user';
         const PROFILE_KEY = 'ccs_student_profile';
 
@@ -965,6 +1010,60 @@
                         <td>${statusBadge}</td>
                         <td>${item.created_at ? new Date(item.created_at).toLocaleString() : '-'}</td>
                     </tr>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderAnnouncements(announcements) {
+            const container = document.getElementById('announcementList');
+            if (!container) return;
+
+            if (!announcements.length) {
+                container.innerHTML = '<div class="announcement-empty">No announcements are available right now.</div>';
+                return;
+            }
+
+            container.innerHTML = announcements.map(item => {
+                const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Today';
+                const icon = item.audience === 'all' ? 'bi-people' : item.audience === 'admin' ? 'bi-shield-lock' : 'bi-bell';
+                return `
+                    <div class="announcement-item">
+                        <div class="announcement-chip"><i class="bi ${icon}"></i> ${escapeHtml(item.posted_by || 'CCS Admin')} | ${escapeHtml(createdAt)}</div>
+                        <div class="fw-semibold mb-1">${escapeHtml(item.title || 'Announcement')}</div>
+                        <div>${escapeHtml(item.body || '')}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFeedbacks(feedbacks) {
+            const container = document.getElementById('feedbackList');
+            if (!container) return;
+
+            if (!feedbacks.length) {
+                container.innerHTML = '<div class="feedback-empty">No feedback submitted yet.</div>';
+                return;
+            }
+
+            container.innerHTML = feedbacks.map(item => {
+                const createdAt = item.created_at ? new Date(item.created_at).toLocaleString() : 'Today';
+                const statusLabel = item.status === 'reviewed' ? 'Reviewed' : 'New';
+                const statusClass = item.status === 'reviewed' ? 'text-bg-success' : 'text-bg-warning';
+                return `
+                    <div class="feedback-item">
+                        <div class="feedback-chip"><i class="bi bi-chat-dots"></i> ${escapeHtml(item.subject || 'Feedback')} | ${escapeHtml(createdAt)}</div>
+                        <div class="mb-2">${escapeHtml(item.message || '')}</div>
+                        <span class="badge ${statusClass}">${statusLabel}</span>
+                    </div>
                 `;
             }).join('');
         }
@@ -1139,6 +1238,8 @@
                 const activeSessions = data.active_sessions || [];
                 const history = data.history || [];
                 const reservations = data.reservations || [];
+                const announcements = data.announcements || [];
+                const feedbacks = data.feedback || [];
 
                 document.getElementById('statSessions').textContent = activeSessions.length;
                 document.getElementById('statReservations').textContent = reservations.length;
@@ -1175,12 +1276,40 @@
                 }
 
                 renderReservationStatus(reservations);
+                renderAnnouncements(announcements);
+                renderFeedbacks(feedbacks);
 
                 fillProfileForm();
             } catch (error) {
                 showToast('Network error while loading student dashboard.', 'error');
             }
         }
+
+        document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const subject = document.getElementById('feedbackSubject').value.trim();
+            const message = document.getElementById('feedbackMessage').value.trim();
+
+            if (!subject || !message) {
+                showToast('Subject and message are required.', 'error');
+                return;
+            }
+
+            const data = await apiPost('submit_feedback', {
+                id_number: profile.id_number,
+                subject,
+                message
+            });
+
+            if (data.success) {
+                showToast('Feedback submitted successfully.', 'success');
+                this.reset();
+                await loadStudentDashboard();
+            } else {
+                showToast(data.message || 'Failed to submit feedback.', 'error');
+            }
+        });
 
         document.getElementById('reservationForm').addEventListener('submit', async function (e) {
             e.preventDefault();
