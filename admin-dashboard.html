@@ -82,7 +82,7 @@
         .hero-title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; }
         .hero-subtitle { color: var(--muted); margin-bottom: 22px; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
         .stat-box {
             padding: 18px 16px;
             border-radius: 14px;
@@ -96,6 +96,8 @@
         .content-card { padding: 22px; }
         .section-title { font-size: 1.03rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .section-title i { color: #8fd0ff; }
+        .leaderboard-layout { margin-top: 20px; display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 20px; align-items: start; }
+        .leaderboard-column { display: flex; flex-direction: column; gap: 20px; }
 
         .btn-primary-gradient {
             border: none;
@@ -244,6 +246,7 @@
         @media (max-width: 991px) {
             .stats-grid { grid-template-columns: 1fr; }
             .content-grid { grid-template-columns: 1fr; }
+            .leaderboard-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -270,6 +273,9 @@
                         <li class="nav-item"><a class="nav-link" href="#" data-section="reservations"><i class="bi bi-inbox me-1"></i>Reservations</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="records"><i class="bi bi-journal-text me-1"></i>Current Sit-in</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>Session History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="analytics"><i class="bi bi-graph-up me-1"></i>Analytics</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="reports"><i class="bi bi-file-earmark-text me-1"></i>Reports</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="rewards"><i class="bi bi-trophy me-1"></i>Leaderboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
                     </ul>
                 </div>
@@ -282,7 +288,7 @@
             <section class="section-panel active" data-panel="dashboard">
                 <div class="glass-card hero-card">
                     <h1 class="hero-title mb-2">Admin Dashboard</h1>
-                    <p class="hero-subtitle">Monitor student registration and current sit-in sessions with language usage categories.</p>
+                    <p class="hero-subtitle">Monitor student registration, current sit-in sessions, and reward points earned from completed work.</p>
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div class="stat-number" id="registeredCount">0</div>
@@ -299,6 +305,10 @@
                         <div class="stat-box">
                             <div class="stat-number" id="pendingReservationCount">0</div>
                             <div class="stat-label">Pending Reservations</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="totalRewardPoints">0</div>
+                            <div class="stat-label">Reward Points</div>
                         </div>
                     </div>
                 </div>
@@ -426,6 +436,29 @@
                             <label class="form-label" for="formLab">Sit Lab</label>
                             <select id="formLab" class="form-select" required>
                                 <option value="">Select a lab</option>
+                                <option value="S1">S1</option>
+                                <option value="S2">S2</option>
+                                <option value="S3">S3</option>
+                                <option value="S4">S4</option>
+                                <option value="S5">S5</option>
+                                <option value="S6">S6</option>
+                                <option value="S7">S7</option>
+                                <option value="S8">S8</option>
+                                <option value="S9">S9</option>
+                                <option value="S10">S10</option>
+                                <option value="S11">S11</option>
+                                <option value="S12">S12</option>
+                                <option value="S13">S13</option>
+                                <option value="S14">S14</option>
+                                <option value="S15">S15</option>
+                                <option value="S16">S16</option>
+                                <option value="S17">S17</option>
+                                <option value="S18">S18</option>
+                                <option value="S19">S19</option>
+                                <option value="S20">S20</option>
+                                <option value="S21">S21</option>
+                                <option value="S22">S22</option>
+                                <option value="S23">S23</option>
                                 <option value="S24">S24</option>
                                 <option value="S25">S25</option>
                                 <option value="S26">S26</option>
@@ -436,6 +469,23 @@
                                 <option value="S31">S31</option>
                                 <option value="S32">S32</option>
                                 <option value="S33">S33</option>
+                                <option value="S34">S34</option>
+                                <option value="S35">S35</option>
+                                <option value="S36">S36</option>
+                                <option value="S37">S37</option>
+                                <option value="S38">S38</option>
+                                <option value="S39">S39</option>
+                                <option value="S40">S40</option>
+                                <option value="S41">S41</option>
+                                <option value="S42">S42</option>
+                                <option value="S43">S43</option>
+                                <option value="S44">S44</option>
+                                <option value="S45">S45</option>
+                                <option value="S46">S46</option>
+                                <option value="S47">S47</option>
+                                <option value="S48">S48</option>
+                                <option value="S49">S49</option>
+                                <option value="S50">S50</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -449,9 +499,10 @@
                                 <option value="Database">Database</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <div class="small-note mt-2">The selected language/use will be stored in the sit-in record.</div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label" for="formPurposeCustom">Custom Purpose (optional)</label>
+                            <label class="form-label" for="formPurposeCustom">Custom Note (optional)</label>
                             <input type="text" id="formPurposeCustom" class="form-control" placeholder="e.g. Data Structures Lab">
                         </div>
                         <div class="col-12 d-flex flex-wrap gap-2">
@@ -570,6 +621,161 @@
                     </div>
                 </div>
             </section>
+
+            <section class="section-panel" data-panel="analytics">
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-pie-chart"></i>Reservation Status Analytics</div>
+                        <canvas id="reservationStatusChart" height="240"></canvas>
+                    </div>
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-bar-chart"></i>Leaderboard Analytics</div>
+                        <canvas id="leaderboardChart" height="240"></canvas>
+                    </div>
+                </div>
+
+                <div class="content-grid mt-4">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-activity"></i>Dashboard Highlights</div>
+                        <div class="stats-grid">
+                            <div class="stat-box"><div class="stat-number" id="analyticsStudents">0</div><div class="stat-label">Students</div></div>
+                            <div class="stat-box"><div class="stat-number" id="analyticsActive">0</div><div class="stat-label">Active Sessions</div></div>
+                            <div class="stat-box"><div class="stat-number" id="analyticsPending">0</div><div class="stat-label">Pending Reservations</div></div>
+                            <div class="stat-box"><div class="stat-number" id="analyticsRewards">0</div><div class="stat-label">Reward Points</div></div>
+                        </div>
+                    </div>
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-lightbulb"></i>Analytics Notes</div>
+                        <ul class="rules-list ps-3 mb-0">
+                            <li>Reservation status is grouped from the live reservation queue.</li>
+                            <li>Leaderboard ranking reflects the 50/30/20 weighting already used by the system.</li>
+                            <li>Use the reports tab to export the same data for submission or review.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="reports">
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-file-earmark-arrow-down"></i>Generate Reports</div>
+                        <div class="empty-note mb-3">Export the current dashboard data as CSV files.</div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary-gradient" id="downloadStudentsReportBtn"><i class="bi bi-people me-1"></i>Download Student Report</button>
+                            <button class="btn btn-outline-soft" id="downloadReservationsReportBtn"><i class="bi bi-inbox me-1"></i>Download Reservation Report</button>
+                            <button class="btn btn-outline-soft" id="downloadHistoryReportBtn"><i class="bi bi-clock-history me-1"></i>Download Session History Report</button>
+                            <button class="btn btn-outline-soft" id="downloadLeaderboardReportBtn"><i class="bi bi-trophy me-1"></i>Download Leaderboard Report</button>
+                        </div>
+                    </div>
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-journal-check"></i>Report Notes</div>
+                        <ul class="rules-list ps-3 mb-0">
+                            <li>Reports use the data already loaded in the admin dashboard.</li>
+                            <li>CSV exports can be opened directly in Excel or Google Sheets.</li>
+                            <li>Leaderboard exports include the weighted score breakdown.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="rewards">
+                <div class="leaderboard-layout">
+                    <div class="leaderboard-column">
+                        <div class="glass-card content-card">
+                            <div class="section-title"><i class="bi bi-trophy"></i>Leaderboard</div>
+                            <div class="empty-note mb-3">Ranking uses 50% earned points, 30% total sit-in hours, and 20% task completion.</div>
+                            <div class="table-responsive">
+                                <table class="table table-dark-surface align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Student</th>
+                                            <th>Points</th>
+                                            <th>Hours</th>
+                                            <th>Tasks</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leaderboardBody">
+                                        <tr><td colspan="6" class="text-center py-4 text-white-50">Loading leaderboard...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="glass-card content-card">
+                            <div class="section-title"><i class="bi bi-gift"></i>Award Reward Points</div>
+                            <form id="rewardForm" class="row g-3" novalidate>
+                                <div class="col-12">
+                                    <label class="form-label" for="rewardIdNumber">ID Number</label>
+                                    <input type="text" id="rewardIdNumber" class="form-control" placeholder="Enter student ID number" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="rewardPoints">Points</label>
+                                    <input type="number" id="rewardPoints" class="form-control" min="1" value="1" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="rewardDescription">Description</label>
+                                    <textarea id="rewardDescription" class="form-control" rows="4" placeholder="Reason for awarding points" required></textarea>
+                                </div>
+                                <div class="col-12 d-flex flex-wrap gap-2">
+                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Award Points</button>
+                                    <button type="button" class="btn btn-outline-soft" id="clearRewardFormBtn"><i class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-column">
+                        <div class="glass-card content-card">
+                            <div class="section-title"><i class="bi bi-lightbulb"></i>Scoring Breakdown</div>
+                            <div class="small-note mb-3">This matches the percentages from the sketch.</div>
+                            <div class="d-grid gap-3">
+                                <div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Earned Points</span><span>50%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 50%; background: linear-gradient(135deg, #2196f3, #57c6ff);"></div></div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Total Sit-in Hours</span><span>30%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 30%; background: linear-gradient(135deg, #7c3aed, #a78bfa);"></div></div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Task Completed</span><span>20%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 20%; background: linear-gradient(135deg, #16a34a, #4ade80);"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card content-card">
+                            <div class="section-title"><i class="bi bi-bar-chart-fill"></i>Leaderboard Bar Graph</div>
+                            <div class="empty-note mb-3">Different colors show points, hours, and tasks contributions for the top five students.</div>
+                            <div style="height: 320px;">
+                                <canvas id="leaderboardSectionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card content-card mt-4">
+                    <div class="section-title"><i class="bi bi-clock-history"></i>Reward History</div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-surface align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rewardHistoryBody">
+                                <tr><td colspan="5" class="text-center py-4 text-white-50">Loading reward history...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -578,10 +784,16 @@
         const API_BASE = 'backend/api/index.php';
         const USER_KEY = 'ccs_user';
         let languageChart = null;
+        let reservationStatusChart = null;
+        let leaderboardChart = null;
+        let leaderboardSectionChart = null;
         let studentCache = [];
         let reservationCache = [];
         let announcementCache = [];
         let feedbackCache = [];
+        let adminHistoryCache = [];
+        let rewardHistoryCache = [];
+        let adminLeaderboardCache = [];
 
         const userRaw = localStorage.getItem(USER_KEY);
         if (!userRaw) {
@@ -669,7 +881,10 @@
                         <td>${student.course}</td>
                         <td>${student.year_level}</td>
                         <td>${student.email || '-'}</td>
-                        <td><button class="btn btn-primary-gradient btn-sm" data-use-student="${student.id}"><i class="bi bi-plus-circle me-1"></i>Use</button></td>
+                        <td class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-primary-gradient btn-sm" data-use-student="${student.id}"><i class="bi bi-plus-circle me-1"></i> Sit-in</button>
+                            <button class="btn btn-outline-soft btn-sm" data-reset-sessions="${student.id}" data-id-number="${student.id_number}"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -691,7 +906,10 @@
                         <td>${student.year_level}</td>
                         <td>${student.email || '-'}</td>
                         <td>${student.address || '-'}</td>
-                        <td><button class="btn btn-outline-soft btn-sm" data-use-student="${student.id}"><i class="bi bi-ui-checks-grid me-1"></i>Sit-in</button></td>
+                        <td class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-soft btn-sm" data-use-student="${student.id}"><i class="bi bi-ui-checks-grid me-1"></i>Sit-in</button>
+                            <button class="btn btn-outline-soft btn-sm" data-reset-sessions="${student.id}" data-id-number="${student.id_number}"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -750,6 +968,337 @@
                         <td>${reservation.preferred_time || '-'}</td>
                         <td>${statusBadge}</td>
                         <td>${actionButtons}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatHours(seconds) {
+            return (Number(seconds || 0) / 3600).toFixed(1);
+        }
+
+        function renderLeaderboard(leaderboard) {
+            const tbody = document.getElementById('leaderboardBody');
+            if (!tbody) return;
+
+            if (!leaderboard.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-white-50">No leaderboard data available yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = leaderboard.map((student, index) => {
+                const fullName = [student.first_name, student.last_name].filter(Boolean).join(' ').trim();
+                return `
+                    <tr>
+                        <td>#${index + 1}</td>
+                        <td>${fullName}<div class="small text-white-50">${student.id_number}</div></td>
+                        <td>${student.reward_points ?? 0}</td>
+                        <td>${student.total_hours ?? 0}</td>
+                        <td>${student.completed_sessions ?? 0}</td>
+                        <td>
+                            <div class="fw-semibold">${student.leaderboard_score ?? 0}</div>
+                            <div class="small text-white-50">50/30/20 weighted</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderReservationStatusAnalytics(reservations) {
+            const canvas = document.getElementById('reservationStatusChart');
+            if (!canvas) return;
+
+            const statusCounts = { pending: 0, approved: 0, rejected: 0 };
+            reservations.forEach(item => {
+                const status = item.status || 'pending';
+                if (statusCounts[status] !== undefined) {
+                    statusCounts[status] += 1;
+                }
+            });
+
+            if (reservationStatusChart) reservationStatusChart.destroy();
+            reservationStatusChart = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Approved', 'Rejected'],
+                    datasets: [{
+                        data: [statusCounts.pending, statusCounts.approved, statusCounts.rejected],
+                        backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'],
+                        borderColor: '#0f2b46',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { labels: { color: '#e6edf7' } }
+                    }
+                }
+            });
+        }
+
+        function renderLeaderboardAnalytics(leaderboard) {
+            const canvas = document.getElementById('leaderboardChart');
+            if (!canvas) return;
+
+            const topEntries = (leaderboard || []).slice(0, 5);
+            if (leaderboardChart) leaderboardChart.destroy();
+            leaderboardChart = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: topEntries.map(item => [item.first_name, item.last_name].filter(Boolean).join(' ').trim() || item.id_number),
+                    datasets: [{
+                        label: 'Weighted Score',
+                        data: topEntries.map(item => Number(item.leaderboard_score || 0)),
+                        backgroundColor: '#57c6ff',
+                        borderColor: '#2196f3',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { labels: { color: '#e6edf7' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#e6edf7' }, grid: { color: 'rgba(255,255,255,0.08)' } },
+                        y: { ticks: { color: '#e6edf7' }, grid: { color: 'rgba(255,255,255,0.08)' } }
+                    }
+                }
+            });
+        }
+
+        function renderLeaderboardSectionChart(leaderboard) {
+            const canvas = document.getElementById('leaderboardSectionChart');
+            if (!canvas) return;
+
+            const topEntries = (leaderboard || []).slice(0, 5);
+            const labels = topEntries.map(item => [item.first_name, item.last_name].filter(Boolean).join(' ').trim() || item.id_number);
+
+            const pointsRaw = topEntries.map(item => Number(item.reward_points ?? 0));
+            const hoursRaw = topEntries.map(item => Number(item.total_hours ?? 0));
+            const tasksRaw = topEntries.map(item => Number(item.completed_sessions ?? 0));
+
+            const pointsScore = topEntries.map(item => Number(item.earned_points_score ?? 0));
+            const hoursScore = topEntries.map(item => Number(item.sit_in_hours_score ?? 0));
+            const tasksScore = topEntries.map(item => Number(item.task_completed_score ?? 0));
+            const totals = topEntries.map((_, index) => (pointsScore[index] + hoursScore[index] + tasksScore[index]));
+
+            const totalMax = Math.max(100, ...totals, 1);
+
+            const totalLabelsPlugin = {
+                id: 'leaderboardTotalLabels',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    const baseMeta = chart.getDatasetMeta(0);
+                    const yScale = chart.scales.y;
+
+                    ctx.save();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '600 13px Segoe UI, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+
+                    baseMeta.data.forEach((bar, index) => {
+                        const total = Number(totals[index] || 0);
+                        const y = yScale.getPixelForValue(total);
+                        ctx.fillText(`${Math.round(total)}%`, bar.x, y - 10);
+                    });
+
+                    ctx.restore();
+                }
+            };
+
+            if (leaderboardSectionChart) leaderboardSectionChart.destroy();
+            leaderboardSectionChart = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Points (50%)',
+                            data: pointsScore,
+                            backgroundColor: 'rgba(87, 198, 255, 0.92)',
+                            borderColor: '#2196f3',
+                            borderWidth: 1,
+                            borderRadius: 8,
+                            stack: 'score',
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.72,
+                        },
+                        {
+                            label: 'Duration / Hours (30%)',
+                            data: hoursScore,
+                            backgroundColor: 'rgba(167, 139, 250, 0.9)',
+                            borderColor: '#7c3aed',
+                            borderWidth: 1,
+                            borderRadius: 8,
+                            stack: 'score',
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.72,
+                        },
+                        {
+                            label: 'Tasks (20%)',
+                            data: tasksScore,
+                            backgroundColor: 'rgba(74, 222, 128, 0.9)',
+                            borderColor: '#16a34a',
+                            borderWidth: 1,
+                            borderRadius: 8,
+                            stack: 'score',
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.72,
+                        }
+                    ]
+                },
+                plugins: [totalLabelsPlugin],
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { color: '#e6edf7' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(8,19,37,0.96)',
+                            titleColor: '#e6edf7',
+                            bodyColor: '#e6edf7',
+                            callbacks: {
+                                label: (context) => {
+                                    const value = Number(context.raw || 0);
+                                    return `${context.dataset.label}: ${value.toFixed(1)}%`;
+                                },
+                                footer: (tooltipItems) => {
+                                    const index = tooltipItems?.[0]?.dataIndex ?? 0;
+                                    return `Points: ${pointsRaw[index]} | Hours: ${hoursRaw[index]} | Tasks: ${tasksRaw[index]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                color: '#e6edf7',
+                                font: { size: 11 },
+                                maxRotation: 0,
+                                minRotation: 0,
+                                autoSkip: false
+                            },
+                            grid: { display: false },
+                            border: { display: false }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            suggestedMax: totalMax,
+                            ticks: {
+                                color: '#e6edf7',
+                                callback: (value) => `${value}%`
+                            },
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            border: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAnalytics(stats, reservations, leaderboard) {
+            document.getElementById('analyticsStudents').textContent = stats.registered_students || 0;
+            document.getElementById('analyticsActive').textContent = stats.currently_sitin || 0;
+            document.getElementById('analyticsPending').textContent = stats.pending_reservations || 0;
+            document.getElementById('analyticsRewards').textContent = stats.total_reward_points || 0;
+            renderReservationStatusAnalytics(reservations || []);
+            renderLeaderboardAnalytics(leaderboard || []);
+            renderLeaderboardSectionChart(leaderboard || []);
+        }
+
+        function toCsvValue(value) {
+            return `"${String(value ?? '').replace(/"/g, '""')}"`;
+        }
+
+        function downloadCsv(filename, headers, rows) {
+            const csv = [headers.map(toCsvValue).join(','), ...rows.map(row => row.map(toCsvValue).join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function buildStudentReportRows() {
+            return studentCache.map(student => [
+                student.id_number,
+                [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(' ').trim(),
+                student.course,
+                student.year_level,
+                student.email || '',
+                student.address || '',
+                student.remaining_sessions ?? 0,
+                student.reward_points ?? 0
+            ]);
+        }
+
+        function buildReservationReportRows() {
+            return reservationCache.map(item => [
+                item.id_number,
+                [item.first_name, item.last_name].filter(Boolean).join(' ').trim(),
+                item.lab_room,
+                item.purpose,
+                item.preferred_date || '',
+                item.preferred_time || '',
+                item.status,
+                item.created_at || ''
+            ]);
+        }
+
+        function buildHistoryReportRows() {
+            return adminHistoryCache.map(item => [
+                item.id_number,
+                [item.first_name, item.last_name].filter(Boolean).join(' ').trim(),
+                item.purpose,
+                item.lab_room,
+                item.time_in || '',
+                item.time_out || '',
+                item.duration_time || '',
+                item.status
+            ]);
+        }
+
+        function buildLeaderboardReportRows() {
+            return adminLeaderboardCache.map((item, index) => [
+                index + 1,
+                item.id_number,
+                [item.first_name, item.last_name].filter(Boolean).join(' ').trim(),
+                item.reward_points ?? 0,
+                item.total_hours ?? 0,
+                item.completed_sessions ?? 0,
+                item.leaderboard_score ?? 0,
+                item.earned_points_score ?? 0,
+                item.sit_in_hours_score ?? 0,
+                item.task_completed_score ?? 0
+            ]);
+        }
+
+        function renderRewardHistory(rewards) {
+            const tbody = document.getElementById('rewardHistoryBody');
+            if (!tbody) return;
+
+            if (!rewards.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-white-50">No reward history available yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rewards.map(item => {
+                const fullName = [item.first_name, item.last_name].filter(Boolean).join(' ').trim();
+                return `
+                    <tr>
+                        <td>${item.created_at ? new Date(item.created_at).toLocaleString() : '-'}</td>
+                        <td>${fullName}<div class="small text-white-50">${item.id_number || ''}</div></td>
+                        <td>${escapeHtml(item.source_type || '-')}</td>
+                        <td>${escapeHtml(item.description || '-')}</td>
+                        <td>${item.points ?? 0}</td>
                     </tr>
                 `;
             }).join('');
@@ -868,13 +1417,17 @@
                     apiGet('admin_reservations'),
                     apiGet('admin_session_history')
                 ]);
+                const rewardRes = await apiGet('reward_history', 'limit=20');
 
                 if (dashRes.success) {
                     document.getElementById('registeredCount').textContent = dashRes.stats.registered_students || 0;
                     document.getElementById('currentCount').textContent = dashRes.stats.currently_sitin || 0;
                     document.getElementById('totalSitinCount').textContent = dashRes.stats.total_sitin || 0;
                     document.getElementById('pendingReservationCount').textContent = dashRes.stats.pending_reservations || 0;
+                    document.getElementById('totalRewardPoints').textContent = dashRes.stats.total_reward_points || 0;
                     renderLanguageChart(dashRes.language_usage || {});
+                    renderLeaderboard(dashRes.leaderboard || []);
+                    adminLeaderboardCache = dashRes.leaderboard || [];
                 }
 
                 if (recordRes.success) {
@@ -886,12 +1439,89 @@
                 }
 
                 if (historyRes && historyRes.success) {
-                    renderHistory(historyRes.history || []);
+                    adminHistoryCache = historyRes.history || [];
+                    renderHistory(adminHistoryCache);
                 }
+                if (rewardRes && rewardRes.success) {
+                    rewardHistoryCache = rewardRes.rewards || [];
+                    renderRewardHistory(rewardHistoryCache);
+                }
+
+                renderAnalytics(dashRes.stats || {}, reservationCache, adminLeaderboardCache);
             } catch (error) {
                 showToast('Failed to load dashboard data.', 'error');
             }
         }
+
+        async function resetStudentSessions(studentId, idNumber) {
+            const confirmReset = window.confirm(`Reset remaining sessions for ${idNumber} back to 30?`);
+            if (!confirmReset) return;
+
+            const data = await apiPost('reset_sessions', {
+                id_number: idNumber,
+                remaining_sessions: 30
+            });
+
+            if (data.success) {
+                showToast('Student sessions reset successfully.', 'success');
+                await Promise.all([loadStudents(), loadDashboard()]);
+            } else {
+                showToast(data.message || 'Failed to reset sessions.', 'error');
+            }
+        }
+
+        document.getElementById('rewardForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const idNumber = document.getElementById('rewardIdNumber').value.trim();
+            const points = Number(document.getElementById('rewardPoints').value);
+            const description = document.getElementById('rewardDescription').value.trim();
+
+            if (!idNumber || !points || points <= 0 || !description) {
+                showToast('Please complete the reward form.', 'error');
+                return;
+            }
+
+            const data = await apiPost('award_reward_points', {
+                id_number: idNumber,
+                points,
+                description
+            });
+
+            if (data.success) {
+                showToast('Reward points awarded successfully.', 'success');
+                this.reset();
+                document.getElementById('rewardPoints').value = 1;
+                await loadDashboard();
+            } else {
+                showToast(data.message || 'Failed to award reward points.', 'error');
+            }
+        });
+
+        document.getElementById('clearRewardFormBtn').addEventListener('click', function () {
+            document.getElementById('rewardForm').reset();
+            document.getElementById('rewardPoints').value = 1;
+        });
+
+        document.getElementById('downloadStudentsReportBtn')?.addEventListener('click', function () {
+            downloadCsv('student-report.csv', ['ID Number', 'Name', 'Course', 'Year', 'Email', 'Address', 'Remaining Sessions', 'Reward Points'], buildStudentReportRows());
+        });
+
+        document.getElementById('downloadReservationsReportBtn')?.addEventListener('click', function () {
+            downloadCsv('reservation-report.csv', ['ID Number', 'Name', 'Lab', 'Purpose', 'Preferred Date', 'Preferred Time', 'Status', 'Created At'], buildReservationReportRows());
+        });
+
+        document.getElementById('downloadHistoryReportBtn')?.addEventListener('click', function () {
+            downloadCsv('session-history-report.csv', ['ID Number', 'Name', 'Purpose', 'Lab', 'Time In', 'Time Out', 'Duration', 'Status'], buildHistoryReportRows());
+        });
+
+        document.getElementById('downloadLeaderboardReportBtn')?.addEventListener('click', function () {
+            downloadCsv('leaderboard-report.csv', ['Rank', 'ID Number', 'Name', 'Reward Points', 'Total Hours', 'Completed Sessions', 'Weighted Score', 'Earned Points Score', 'Sit-in Hours Score', 'Task Completed Score'], buildLeaderboardReportRows());
+        });
+
+        document.getElementById('downloadLeaderboardReportBtn')?.addEventListener('click', function () {
+            downloadCsv('leaderboard-report.csv', ['Rank', 'ID Number', 'Name', 'Reward Points', 'Total Hours', 'Completed Sessions', 'Weighted Score', 'Earned Points Score', 'Sit-in Hours Score', 'Task Completed Score'], buildLeaderboardReportRows());
+        });
 
         async function loadAnnouncements() {
             try {
@@ -1004,6 +1634,12 @@
                 return;
             }
 
+            const resetBtn = e.target.closest('[data-reset-sessions]');
+            if (resetBtn) {
+                await resetStudentSessions(resetBtn.dataset.resetSessions, resetBtn.dataset.idNumber);
+                return;
+            }
+
             const approveBtn = e.target.closest('[data-approve-reservation]');
             if (approveBtn) {
                 const data = await apiPost('approve_reservation', { reservation_id: Number(approveBtn.dataset.approveReservation) });
@@ -1089,7 +1725,7 @@
             const labRoom = document.getElementById('formLab').value.trim();
             const selectedPurpose = document.getElementById('formPurpose').value;
             const customPurpose = document.getElementById('formPurposeCustom').value.trim();
-            const purpose = customPurpose || selectedPurpose;
+            const purpose = customPurpose ? `${selectedPurpose} - ${customPurpose}` : selectedPurpose;
 
             if (!idNumber || !labRoom || !purpose) {
                 showToast('Please complete all required fields.', 'error');

@@ -505,7 +505,7 @@
     <div class="page-wrapper">
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
+                <a class="navbar-brand" href="dashboard.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -514,6 +514,8 @@
                         <li class="nav-item"><a class="nav-link active" href="#" data-section="home"><i class="bi bi-house me-1"></i>Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="edit-profile"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="rewards"><i class="bi bi-trophy me-1"></i>Rewards</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="notifications"><i class="bi bi-bell me-1"></i>Notifications</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="reservation"><i class="bi bi-journal-bookmark me-1"></i>Reservation</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="reservation-status"><i class="bi bi-inbox me-1"></i>Reservation Status</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" data-section="feedback"><i class="bi bi-chat-left-text me-1"></i>Feedback</a></li>
@@ -553,8 +555,8 @@
                                 <div class="stat-label">Remaining Sessions</div>
                             </div>
                             <div class="stat-box">
-                                <div class="stat-number" id="statPhoto">1</div>
-                                <div class="stat-label">Profile Photo</div>
+                                <div class="stat-number" id="statPhoto">0</div>
+                                <div class="stat-label">Reward Points</div>
                             </div>
                         </div>
                     </div>
@@ -710,6 +712,53 @@
                 </div>
             </section>
 
+            <section class="section-panel" data-panel="rewards">
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-trophy"></i>Reward Summary</div>
+                        <div class="stats-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                            <div class="stat-box">
+                                <div class="stat-number" id="rewardTotalPoints">0</div>
+                                <div class="stat-label">Total Points</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="rewardRank">-</div>
+                                <div class="stat-label">Current Rank</div>
+                            </div>
+                        </div>
+                        <div class="empty-note mt-3">Points are awarded when your sit-in session is completed.</div>
+                    </div>
+
+                    <div class="glass-card content-card">
+                        <div class="section-title"><i class="bi bi-clock-history"></i>Recent Reward Activity</div>
+                        <div class="table-responsive">
+                            <table class="table table-dark-surface align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rewardHistoryBody">
+                                    <tr><td colspan="3" class="text-center py-4 text-white-50">Loading reward history...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-panel" data-panel="notifications">
+                <div class="glass-card content-card">
+                    <div class="section-title"><i class="bi bi-bell"></i>Notification Center</div>
+                    <div class="empty-note mb-3">Recent alerts are collected from announcements, reservations, feedback, and reward updates.</div>
+                    <div class="scroll-pane" id="notificationList" style="max-height: 420px;">
+                        <div class="announcement-empty">Loading notifications...</div>
+                    </div>
+                </div>
+            </section>
+
             <section class="section-panel" data-panel="reservation">
                 <div class="glass-card reservation-card">
                     <div class="section-title"><i class="bi bi-journal-bookmark"></i> Reservation</div>
@@ -725,13 +774,44 @@
                                     <input type="text" id="reservationName" class="form-control" readonly>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="reservationPurpose">Purpose</label>
-                                    <input type="text" id="reservationPurpose" class="form-control" placeholder="e.g. C Programming">
+                                    <label class="form-label" for="reservationPurpose">Purpose / Language</label>
+                                    <select id="reservationPurpose" class="form-select" required>
+                                        <option value="">Select language/use</option>
+                                        <option value="C Programming">C Programming</option>
+                                        <option value="Java">Java</option>
+                                        <option value="Python">Python</option>
+                                        <option value="Web Development">Web Development</option>
+                                        <option value="Database">Database</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="reservationLab">Lab</label>
                                     <select id="reservationLab" class="form-select" required>
                                         <option value="">Select a lab</option>
+                                        <option value="S1">S1</option>
+                                        <option value="S2">S2</option>
+                                        <option value="S3">S3</option>
+                                        <option value="S4">S4</option>
+                                        <option value="S5">S5</option>
+                                        <option value="S6">S6</option>
+                                        <option value="S7">S7</option>
+                                        <option value="S8">S8</option>
+                                        <option value="S9">S9</option>
+                                        <option value="S10">S10</option>
+                                        <option value="S11">S11</option>
+                                        <option value="S12">S12</option>
+                                        <option value="S13">S13</option>
+                                        <option value="S14">S14</option>
+                                        <option value="S15">S15</option>
+                                        <option value="S16">S16</option>
+                                        <option value="S17">S17</option>
+                                        <option value="S18">S18</option>
+                                        <option value="S19">S19</option>
+                                        <option value="S20">S20</option>
+                                        <option value="S21">S21</option>
+                                        <option value="S22">S22</option>
+                                        <option value="S23">S23</option>
                                         <option value="S24">S24</option>
                                         <option value="S25">S25</option>
                                         <option value="S26">S26</option>
@@ -742,6 +822,23 @@
                                         <option value="S31">S31</option>
                                         <option value="S32">S32</option>
                                         <option value="S33">S33</option>
+                                        <option value="S34">S34</option>
+                                        <option value="S35">S35</option>
+                                        <option value="S36">S36</option>
+                                        <option value="S37">S37</option>
+                                        <option value="S38">S38</option>
+                                        <option value="S39">S39</option>
+                                        <option value="S40">S40</option>
+                                        <option value="S41">S41</option>
+                                        <option value="S42">S42</option>
+                                        <option value="S43">S43</option>
+                                        <option value="S44">S44</option>
+                                        <option value="S45">S45</option>
+                                        <option value="S46">S46</option>
+                                        <option value="S47">S47</option>
+                                        <option value="S48">S48</option>
+                                        <option value="S49">S49</option>
+                                        <option value="S50">S50</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -765,9 +862,9 @@
                             <div class="glass-card p-4" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
                                 <div class="section-title mb-3"><i class="bi bi-lightbulb"></i> Reservation Notes</div>
                                 <ul class="rules-list ps-3 mb-0">
-                                    <li>Fill in the purpose and laboratory before reserving.</li>
+                                    <li>Select the programming language or use you will work on before reserving.</li>
+                                    <li>Choose the laboratory, date, and time so the reservation record is complete.</li>
                                     <li>Reservation data is stored locally in this prototype.</li>
-                                    <li>Use the history section to review your saved entries later.</li>
                                 </ul>
                             </div>
                         </div>
@@ -858,7 +955,42 @@
         const USER_KEY = 'ccs_user';
         const PROFILE_KEY = 'ccs_student_profile';
 
-        const fallbackPhoto = 'assets/ccs-logo.png';
+        function buildProfileStorageKey(idNumber) {
+            return `${PROFILE_KEY}_${String(idNumber || 'guest').trim()}`;
+        }
+
+        function buildFallbackAvatar(seed, name) {
+            const source = String(seed || name || 'student');
+            let hash = 0;
+            for (let index = 0; index < source.length; index += 1) {
+                hash = ((hash << 5) - hash) + source.charCodeAt(index);
+                hash |= 0;
+            }
+
+            const hue = Math.abs(hash) % 360;
+            const hue2 = (hue + 28) % 360;
+            const labelSource = String(name || source).trim().split(/\s+/).filter(Boolean);
+            const firstInitial = (labelSource[0] || source).charAt(0).toUpperCase() || 'S';
+            const secondInitial = (labelSource[1] || source).charAt(0).toUpperCase() || '';
+            const label = `${firstInitial}${secondInitial}`.trim() || 'S';
+
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Student avatar">
+                    <defs>
+                        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="hsl(${hue}, 75%, 58%)" />
+                            <stop offset="100%" stop-color="hsl(${hue2}, 72%, 42%)" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="256" height="256" rx="128" fill="url(#g)" />
+                    <circle cx="88" cy="96" r="28" fill="rgba(255,255,255,0.16)" />
+                    <circle cx="168" cy="88" r="18" fill="rgba(255,255,255,0.12)" />
+                    <text x="128" y="150" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="92" font-weight="700" letter-spacing="2">${label}</text>
+                </svg>
+            `;
+
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg.trim())}`;
+        }
         const userData = localStorage.getItem(USER_KEY);
         if (!userData) {
             window.location.href = 'login.html';
@@ -868,7 +1000,9 @@
         if (baseUser && baseUser.role === 'admin') {
             window.location.href = 'admin-dashboard.html';
         }
-        const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {};
+        const profileStorageKey = buildProfileStorageKey(baseUser.id_number);
+        const legacyProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {};
+        const savedProfile = JSON.parse(localStorage.getItem(profileStorageKey) || 'null') || (legacyProfile.id_number === baseUser.id_number ? legacyProfile : {});
         const profile = {
             id_number: baseUser.id_number || '00-0000',
             last_name: baseUser.last_name || 'Student',
@@ -879,7 +1013,8 @@
             email: baseUser.email || 'student@example.com',
             address: baseUser.address || '',
             remaining_sessions: Number(baseUser.remaining_sessions ?? 30),
-            photo: savedProfile.photo || fallbackPhoto
+            reward_points: Number(baseUser.reward_points ?? savedProfile.reward_points ?? 0),
+            photo: savedProfile.photo || buildFallbackAvatar(baseUser.id_number, `${baseUser.first_name || ''} ${baseUser.last_name || ''}`)
         };
         const defaultProfilePhoto = profile.photo;
 
@@ -953,12 +1088,13 @@
             document.getElementById('avatarInfo').textContent = `${profile.course} - Year ${profile.year_level}`;
             document.getElementById('previewName').textContent = fullName();
             document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
+            document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
             const remainingLabel = document.querySelector('[data-remaining-label]');
             if (remainingLabel) {
                 remainingLabel.textContent = 'Remaining Sessions';
             }
             document.getElementById('reservationSessions').value = profile.remaining_sessions;
-            updateProfilePhoto(profile.photo || fallbackPhoto);
+            updateProfilePhoto(profile.photo);
         }
 
         function setActiveSection(sectionName) {
@@ -1068,6 +1204,59 @@
             }).join('');
         }
 
+        function renderRewardHistory(rewards) {
+            const tbody = document.getElementById('rewardHistoryBody');
+            if (!tbody) return;
+
+            if (!rewards.length) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-white-50">No reward history available yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rewards.map(item => `
+                <tr>
+                    <td>${item.created_at ? new Date(item.created_at).toLocaleString() : '-'}</td>
+                    <td>${escapeHtml(item.description || 'Reward')}</td>
+                    <td>${item.points ?? 0}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderNotifications(notifications) {
+            const container = document.getElementById('notificationList');
+            if (!container) return;
+
+            if (!notifications.length) {
+                container.innerHTML = '<div class="announcement-empty">No notifications yet.</div>';
+                return;
+            }
+
+            const icons = {
+                announcement: 'bi-megaphone',
+                reservation: 'bi-inbox',
+                feedback: 'bi-chat-left-text',
+                reward: 'bi-trophy'
+            };
+
+            const labels = {
+                info: 'text-bg-info',
+                pending: 'text-bg-warning',
+                approved: 'text-bg-success',
+                rejected: 'text-bg-danger',
+                new: 'text-bg-secondary',
+                reviewed: 'text-bg-success',
+                success: 'text-bg-success'
+            };
+
+            container.innerHTML = notifications.map(item => `
+                <div class="feedback-item">
+                    <div class="feedback-chip"><i class="bi ${icons[item.type] || 'bi-bell'}"></i> ${escapeHtml(item.title || 'Notification')} | ${escapeHtml(item.created_at ? new Date(item.created_at).toLocaleString() : 'Now')}</div>
+                    <div class="mb-2">${escapeHtml(item.body || '')}</div>
+                    <span class="badge ${labels[item.status] || 'text-bg-info'}">${escapeHtml(String(item.status || 'info').toUpperCase())}</span>
+                </div>
+            `).join('');
+        }
+
         function logout() {
             localStorage.removeItem(USER_KEY);
             window.location.href = 'login.html';
@@ -1099,7 +1288,7 @@
             profile.year_level = document.getElementById('profileYearLevel').value;
             profile.address = document.getElementById('profileAddress').value.trim();
 
-            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            localStorage.setItem(profileStorageKey, JSON.stringify(profile));
             localStorage.setItem(USER_KEY, JSON.stringify({
                 ...baseUser,
                 ...profile
@@ -1131,9 +1320,8 @@
             }
             const dataUrl = await readImageFile(file);
             profile.photo = dataUrl;
-            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            localStorage.setItem(profileStorageKey, JSON.stringify(profile));
             updateProfilePhoto(dataUrl);
-            document.getElementById('statPhoto').textContent = '1';
             showToast('Profile photo updated.', 'success');
             this.value = '';
         });
@@ -1200,9 +1388,8 @@
             ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
             const dataUrl = cameraCanvas.toDataURL('image/jpeg', 0.92);
             profile.photo = dataUrl;
-            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            localStorage.setItem(profileStorageKey, JSON.stringify(profile));
             updateProfilePhoto(dataUrl);
-            document.getElementById('statPhoto').textContent = '1';
             stopCamera();
             showToast('Photo captured and saved.', 'success');
         });
@@ -1221,6 +1408,7 @@
 
                 if (data.user) {
                     profile.remaining_sessions = Number(data.user.remaining_sessions ?? profile.remaining_sessions ?? 0);
+                    profile.reward_points = Number(data.user.reward_points ?? profile.reward_points ?? 0);
                     profile.email = data.user.email || profile.email;
                     profile.last_name = data.user.last_name || profile.last_name;
                     profile.first_name = data.user.first_name || profile.first_name;
@@ -1240,10 +1428,14 @@
                 const reservations = data.reservations || [];
                 const announcements = data.announcements || [];
                 const feedbacks = data.feedback || [];
+                const rewards = data.rewards || [];
+                const leaderboard = data.leaderboard || [];
+                const notifications = data.notifications || [];
 
                 document.getElementById('statSessions').textContent = activeSessions.length;
                 document.getElementById('statReservations').textContent = reservations.length;
                 document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
+                document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
                 document.getElementById('reservationSessions').value = profile.remaining_sessions;
 
                 const reserveBtn = document.querySelector('#reservationForm button[type="submit"]');
@@ -1278,6 +1470,13 @@
                 renderReservationStatus(reservations);
                 renderAnnouncements(announcements);
                 renderFeedbacks(feedbacks);
+                renderRewardHistory(rewards);
+                renderNotifications(notifications);
+
+                document.getElementById('rewardTotalPoints').textContent = `${profile.reward_points}`;
+                const currentStudent = leaderboard.find(item => item.id_number === profile.id_number);
+                const rewardRank = currentStudent ? `#${leaderboard.findIndex(item => item.id_number === profile.id_number) + 1}` : '-';
+                document.getElementById('rewardRank').textContent = rewardRank;
 
                 fillProfileForm();
             } catch (error) {
@@ -1349,7 +1548,7 @@
         setActiveSection('home');
         document.getElementById('statSessions').textContent = '0';
         document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
-        document.getElementById('statPhoto').textContent = profile.photo ? '1' : '0';
+        document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
     </script>
 </body>
 </html>

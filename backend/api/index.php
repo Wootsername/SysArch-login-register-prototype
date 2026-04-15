@@ -74,6 +74,15 @@ switch ($action) {
     case 'end_session':
         endSession($pdo);
         break;
+    case 'reward_history':
+        getRewardHistory($pdo);
+        break;
+    case 'award_reward_points':
+        awardRewardPointsManually($pdo);
+        break;
+    case 'reset_sessions':
+        resetStudentSessions($pdo);
+        break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
@@ -143,6 +152,253 @@ function createAnnouncement(PDO $pdo): void
         'success' => true,
         'message' => 'Announcement posted successfully',
     ]);
+}
+
+function calculateRewardPoints(int $durationSeconds): int
+{
+    return max(1, (int)ceil($durationSeconds / 1800));
+}
+
+function awardRewardPoints(PDO $pdo, int $userId, int $sourceId, int $points, string $description, string $sourceType = 'sitin'): void
+{
+    if ($points <= 0) {
+        return;
+    }
+
+    $pdo->prepare("UPDATE users SET reward_points = reward_points + :points WHERE id = :user_id")
+        ->execute([
+            ':points' => $points,
+            ':user_id' => $userId,
+        ]);
+
+    $pdo->prepare("INSERT INTO reward_events (user_id, source_type, source_id, points, description)
+        VALUES (:user_id, :source_type, :source_id, :points, :description)")
+        ->execute([
+            ':user_id' => $userId,
+            ':source_type' => $sourceType,
+            ':source_id' => $sourceId,
+            ':points' => $points,
+            ':description' => $description,
+        ]);
+}
+
+function getRewardHistory(PDO $pdo): void
+{
+    $idNumber = trim($_GET['id_number'] ?? '');
+    $limit = max(1, min((int)($_GET['limit'] ?? 25), 100));
+
+    $sql = "SELECT r.id, r.user_id, r.source_type, r.source_id, r.points, r.description, r.created_at,
+            u.id_number, u.first_name, u.last_name, u.course, u.year_level
+        FROM reward_events r
+        INNER JOIN users u ON u.id = r.user_id";
+    $params = [];
+
+    if ($idNumber !== '') {
+        $sql .= " WHERE u.id_number = :id_number";
+        $params[':id_number'] = $idNumber;
+    }
+
+    $sql .= " ORDER BY r.created_at DESC LIMIT $limit";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
+    echo json_encode([
+        'success' => true,
+        'rewards' => $stmt->fetchAll(),
+    ]);
+}
+
+function awardRewardPointsManually(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $idNumber = trim((string)($data['id_number'] ?? ''));
+    $points = (int)($data['points'] ?? 0);
+    $description = trim((string)($data['description'] ?? ''));
+
+    if ($idNumber === '' || $points <= 0 || $description === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'ID Number, points, and description are required']);
+        return;
+    }
+
+    $userStmt = $pdo->prepare("SELECT id FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
+    $userStmt->execute([':id_number' => $idNumber]);
+    $userId = (int)($userStmt->fetchColumn() ?: 0);
+
+    if ($userId <= 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Student not found']);
+        return;
+    }
+
+    awardRewardPoints($pdo, $userId, 0, $points, $description, 'manual');
+
+    $pointsStmt = $pdo->prepare("SELECT reward_points FROM users WHERE id = :id LIMIT 1");
+    $pointsStmt->execute([':id' => $userId]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Reward points awarded successfully',
+        'reward_points' => (int)($pointsStmt->fetchColumn() ?: 0),
+    ]);
+}
+
+function resetStudentSessions(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $idNumber = trim((string)($data['id_number'] ?? ''));
+    $remainingSessions = (int)($data['remaining_sessions'] ?? 30);
+
+    if ($idNumber === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'ID Number is required']);
+        return;
+    }
+
+    if ($remainingSessions < 0) {
+        $remainingSessions = 0;
+    }
+
+    $stmt = $pdo->prepare("UPDATE users SET remaining_sessions = :remaining_sessions WHERE id_number = :id_number AND role = 'student'");
+    $stmt->execute([
+        ':remaining_sessions' => $remainingSessions,
+        ':id_number' => $idNumber,
+    ]);
+
+    if ($stmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Student not found']);
+        return;
+    }
+
+    $sessionsStmt = $pdo->prepare("SELECT remaining_sessions FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
+    $sessionsStmt->execute([':id_number' => $idNumber]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Sessions reset successfully',
+        'remaining_sessions' => (int)($sessionsStmt->fetchColumn() ?: $remainingSessions),
+    ]);
+}
+
+function getRewardLeaderboard(PDO $pdo, int $limit = 10): array
+{
+    $limit = max(1, min($limit, 50));
+    $stmt = $pdo->query("SELECT
+            u.id,
+            u.id_number,
+            u.first_name,
+            u.last_name,
+            u.course,
+            u.year_level,
+            u.remaining_sessions,
+            u.reward_points,
+            COUNT(CASE WHEN s.status = 'completed' THEN 1 END) AS completed_sessions,
+            COALESCE(SUM(CASE WHEN s.status = 'completed' THEN TIMESTAMPDIFF(SECOND, s.time_in, COALESCE(s.time_out, NOW())) ELSE 0 END), 0) AS total_seconds
+        FROM users u
+        LEFT JOIN sitin_sessions s ON s.user_id = u.id
+        WHERE u.role = 'student'
+        GROUP BY u.id, u.id_number, u.first_name, u.last_name, u.course, u.year_level, u.remaining_sessions, u.reward_points
+    ");
+
+    $rows = $stmt->fetchAll();
+    if (!$rows) {
+        return [];
+    }
+
+    $pointValues = array_map(fn ($row) => (int)$row['reward_points'], $rows);
+    $secondValues = array_map(fn ($row) => (int)$row['total_seconds'], $rows);
+    $completedValues = array_map(fn ($row) => (int)$row['completed_sessions'], $rows);
+    $maxPoints = max(1, max($pointValues));
+    $maxSeconds = max(1, max($secondValues));
+    $maxCompleted = max(1, max($completedValues));
+
+    foreach ($rows as &$row) {
+        $pointScore = ((int)$row['reward_points'] / $maxPoints) * 50;
+        $hourScore = ((int)$row['total_seconds'] / $maxSeconds) * 30;
+        $taskScore = ((int)$row['completed_sessions'] / $maxCompleted) * 20;
+        $row['earned_points_score'] = round($pointScore, 1);
+        $row['sit_in_hours_score'] = round($hourScore, 1);
+        $row['task_completed_score'] = round($taskScore, 1);
+        $row['leaderboard_score'] = round($pointScore + $hourScore + $taskScore, 1);
+        $row['total_hours'] = round(((int)$row['total_seconds']) / 3600, 1);
+    }
+    unset($row);
+
+    usort($rows, function ($left, $right) {
+        return ($right['leaderboard_score'] <=> $left['leaderboard_score'])
+            ?: ((int)$right['reward_points'] <=> (int)$left['reward_points'])
+            ?: ((int)$right['completed_sessions'] <=> (int)$left['completed_sessions'])
+            ?: ((int)$right['total_seconds'] <=> (int)$left['total_seconds'])
+            ?: strcmp((string)$left['last_name'], (string)$right['last_name'])
+            ?: strcmp((string)$left['first_name'], (string)$right['first_name']);
+    });
+
+    return array_slice($rows, 0, $limit);
+}
+
+function buildStudentNotifications(array $announcements, array $reservations, array $feedbacks, array $rewards): array
+{
+    $notifications = [];
+
+    foreach ($announcements as $announcement) {
+        $notifications[] = [
+            'type' => 'announcement',
+            'title' => $announcement['title'] ?? 'Announcement',
+            'body' => $announcement['body'] ?? '',
+            'created_at' => $announcement['created_at'] ?? null,
+            'status' => 'info',
+        ];
+    }
+
+    foreach ($reservations as $reservation) {
+        $status = $reservation['status'] ?? 'pending';
+        $notifications[] = [
+            'type' => 'reservation',
+            'title' => 'Reservation ' . ucfirst($status),
+            'body' => sprintf('%s in %s for %s', strtoupper((string)($reservation['lab_room'] ?? '-')), (string)($reservation['preferred_date'] ?? '-'), (string)($reservation['purpose'] ?? 'your request')),
+            'created_at' => $reservation['created_at'] ?? null,
+            'status' => $status,
+        ];
+    }
+
+    foreach ($feedbacks as $feedback) {
+        $notifications[] = [
+            'type' => 'feedback',
+            'title' => 'Feedback ' . ucfirst((string)($feedback['status'] ?? 'new')),
+            'body' => (string)($feedback['subject'] ?? 'Feedback') . ': ' . (string)($feedback['message'] ?? ''),
+            'created_at' => $feedback['created_at'] ?? null,
+            'status' => $feedback['status'] ?? 'new',
+        ];
+    }
+
+    foreach ($rewards as $reward) {
+        $notifications[] = [
+            'type' => 'reward',
+            'title' => 'Reward +' . ((int)($reward['points'] ?? 0)) . ' points',
+            'body' => (string)($reward['description'] ?? 'Reward activity'),
+            'created_at' => $reward['created_at'] ?? null,
+            'status' => 'success',
+        ];
+    }
+
+    usort($notifications, function ($left, $right) {
+        return strcmp((string)($right['created_at'] ?? ''), (string)($left['created_at'] ?? ''));
+    });
+
+    return array_slice($notifications, 0, 30);
 }
 
 function getFeedbacks(PDO $pdo): void
@@ -245,7 +501,7 @@ function handleLogin(PDO $pdo): void
         return;
     }
 
-    $stmt = $pdo->prepare("SELECT id, id_number, first_name, last_name, course, year_level, email, password_hash, remaining_sessions, role FROM users WHERE id_number = :id_number");
+    $stmt = $pdo->prepare("SELECT id, id_number, first_name, last_name, course, year_level, email, password_hash, remaining_sessions, reward_points, role FROM users WHERE id_number = :id_number");
     $stmt->execute([':id_number' => $idNumber]);
     $user = $stmt->fetch();
 
@@ -321,8 +577,8 @@ function handleRegister(PDO $pdo): void
 
     $passwordHash = password_hash($data['password'], PASSWORD_BCRYPT);
 
-    $stmt = $pdo->prepare("INSERT INTO users (id_number, last_name, first_name, middle_name, course, year_level, email, password_hash, address, remaining_sessions)
-        VALUES (:id_number, :last_name, :first_name, :middle_name, :course, :year_level, :email, :password_hash, :address, 30)");
+    $stmt = $pdo->prepare("INSERT INTO users (id_number, last_name, first_name, middle_name, course, year_level, email, password_hash, address, remaining_sessions, reward_points)
+        VALUES (:id_number, :last_name, :first_name, :middle_name, :course, :year_level, :email, :password_hash, :address, 30, 0)");
 
 
     $stmt->execute([
@@ -393,12 +649,43 @@ function endSession(PDO $pdo): void
         return;
     }
 
-    $stmt = $pdo->prepare("UPDATE sitin_sessions SET status = 'completed', time_out = NOW() WHERE id = :id AND status = 'active'");
-    $stmt->execute([':id' => $sessionId]);
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("SELECT id, user_id, time_in FROM sitin_sessions WHERE id = :id AND status = 'active' LIMIT 1 FOR UPDATE");
+        $stmt->execute([':id' => $sessionId]);
+        $session = $stmt->fetch();
 
-    if ($stmt->rowCount() === 0) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Session not found or already ended']);
+        if (!$session) {
+            $pdo->rollBack();
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Session not found or already ended']);
+            return;
+        }
+
+        $updateStmt = $pdo->prepare("UPDATE sitin_sessions SET status = 'completed', time_out = NOW() WHERE id = :id AND status = 'active'");
+        $updateStmt->execute([':id' => $sessionId]);
+
+        if ($updateStmt->rowCount() === 0) {
+            $pdo->rollBack();
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Session not found or already ended']);
+            return;
+        }
+
+        $durationStmt = $pdo->prepare("SELECT TIMESTAMPDIFF(SECOND, time_in, NOW()) FROM sitin_sessions WHERE id = :id LIMIT 1");
+        $durationStmt->execute([':id' => $sessionId]);
+        $durationSeconds = (int)($durationStmt->fetchColumn() ?: 0);
+        $points = calculateRewardPoints($durationSeconds);
+        $description = 'Completed sit-in session #' . $sessionId;
+        awardRewardPoints($pdo, (int)$session['user_id'], $sessionId, $points, $description, 'sitin');
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Unable to end session: ' . $e->getMessage()]);
         return;
     }
 
@@ -410,6 +697,7 @@ function getAdminDashboard(PDO $pdo): void
     $totalStudents = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
     $currentlySitin = (int)$pdo->query("SELECT COUNT(*) FROM sitin_sessions WHERE status = 'active'")->fetchColumn();
     $totalSitin = (int)$pdo->query("SELECT COUNT(*) FROM sitin_sessions")->fetchColumn();
+    $totalRewardPoints = (int)$pdo->query("SELECT COALESCE(SUM(reward_points), 0) FROM users WHERE role = 'student'")->fetchColumn();
 
     $languageLabels = [
         'C Programming',
@@ -449,9 +737,11 @@ function getAdminDashboard(PDO $pdo): void
         'stats' => [
             'registered_students' => $totalStudents,
             'currently_sitin' => $currentlySitin,
-            'total_sitin' => $totalSitin
+            'total_sitin' => $totalSitin,
+            'total_reward_points' => $totalRewardPoints,
         ],
-        'language_usage' => $languageCounts
+        'language_usage' => $languageCounts,
+        'leaderboard' => getRewardLeaderboard($pdo, 10),
     ]);
 }
 
@@ -632,7 +922,7 @@ function getStudentDashboard(PDO $pdo): void
         return;
     }
 
-    $userStmt = $pdo->prepare("SELECT id, id_number, last_name, first_name, middle_name, course, year_level, email, address, remaining_sessions, role FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
+    $userStmt = $pdo->prepare("SELECT id, id_number, last_name, first_name, middle_name, course, year_level, email, address, remaining_sessions, reward_points, role FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
     $userStmt->execute([':id_number' => $idNumber]);
     $user = $userStmt->fetch();
 
@@ -654,6 +944,13 @@ function getStudentDashboard(PDO $pdo): void
     $announcements = fetchAnnouncements($pdo, 'student', 10);
     $feedbackStmt = $pdo->prepare("SELECT id, subject, message, status, created_at FROM feedback_entries WHERE user_id = :user_id ORDER BY created_at DESC LIMIT 10");
     $feedbackStmt->execute([':user_id' => (int)$user['id']]);
+    $rewardStmt = $pdo->prepare("SELECT id, source_type, source_id, points, description, created_at FROM reward_events WHERE user_id = :user_id ORDER BY created_at DESC LIMIT 10");
+    $rewardStmt->execute([':user_id' => (int)$user['id']]);
+    $reservations = $reservationStmt->fetchAll();
+    $feedbacks = $feedbackStmt->fetchAll();
+    $rewards = $rewardStmt->fetchAll();
+    $leaderboard = getRewardLeaderboard($pdo, 50);
+    $notifications = buildStudentNotifications($announcements, $reservations, $feedbacks, $rewards);
 
     unset($user['role']);
 
@@ -662,9 +959,12 @@ function getStudentDashboard(PDO $pdo): void
         'user' => $user,
         'active_sessions' => $activeStmt->fetchAll(),
         'history' => $historyStmt->fetchAll(),
-        'reservations' => $reservationStmt->fetchAll(),
+        'reservations' => $reservations,
         'announcements' => $announcements,
-        'feedback' => $feedbackStmt->fetchAll(),
+        'feedback' => $feedbacks,
+        'rewards' => $rewards,
+        'leaderboard' => $leaderboard,
+        'notifications' => $notifications,
     ]);
 }
 

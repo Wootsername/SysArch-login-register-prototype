@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     address TEXT DEFAULT '',
     remaining_sessions INT NOT NULL DEFAULT 30,
+    reward_points INT NOT NULL DEFAULT 0,
     role ENUM('student', 'admin') DEFAULT 'student',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -46,6 +47,18 @@ CREATE TABLE IF NOT EXISTS reservations (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Reward events table
+CREATE TABLE IF NOT EXISTS reward_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    source_type VARCHAR(20) NOT NULL DEFAULT 'sitin',
+    source_id INT DEFAULT NULL,
+    points INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Announcements table
 CREATE TABLE IF NOT EXISTS announcements (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -70,6 +83,6 @@ CREATE TABLE IF NOT EXISTS feedback_entries (
 );
 
 -- Insert default admin account (password: admin123)
-INSERT IGNORE INTO users (id_number, last_name, first_name, course, year_level, email, password_hash, remaining_sessions, role)
+INSERT IGNORE INTO users (id_number, last_name, first_name, course, year_level, email, password_hash, remaining_sessions, reward_points, role)
 VALUES ('00-0000', 'Admin', 'System', 'BSIT', 4, 'admin@ccs.uc.edu.ph',
-    '$2y$10$edebnPJKP8wVmMPQhJKFke0MUqCZfvZQXOtLfRgLD6I3zI3t/VulW', 30, 'admin');
+    '$2y$10$edebnPJKP8wVmMPQhJKFke0MUqCZfvZQXOtLfRgLD6I3zI3t/VulW', 30, 0, 'admin');

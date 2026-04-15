@@ -25,6 +25,12 @@ try {
         $pdo->exec("ALTER TABLE users ADD COLUMN remaining_sessions INT NOT NULL DEFAULT 30 AFTER password_hash");
     }
 
+    $columnCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = :schema AND table_name = 'users' AND column_name = 'reward_points'");
+    $columnCheck->execute([':schema' => $dbname]);
+    if ((int)$columnCheck->fetchColumn() === 0) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN reward_points INT NOT NULL DEFAULT 0 AFTER remaining_sessions");
+    }
+
     $tableCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = 'reservations'");
     $tableCheck->execute([':schema' => $dbname]);
     if ((int)$tableCheck->fetchColumn() === 0) {
@@ -40,6 +46,27 @@ try {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )");
+    }
+
+    $tableCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = 'reward_events'");
+    $tableCheck->execute([':schema' => $dbname]);
+    if ((int)$tableCheck->fetchColumn() === 0) {
+        $pdo->exec("CREATE TABLE reward_events (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            source_type VARCHAR(20) NOT NULL DEFAULT 'sitin',
+            source_id INT DEFAULT NULL,
+            points INT NOT NULL,
+            description VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )");
+    }
+
+    $columnCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = :schema AND table_name = 'reward_events' AND column_name = 'source_type'");
+    $columnCheck->execute([':schema' => $dbname]);
+    if ((int)$columnCheck->fetchColumn() > 0) {
+        $pdo->exec("ALTER TABLE reward_events MODIFY source_type VARCHAR(20) NOT NULL DEFAULT 'sitin'");
     }
 
     $tableCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = 'announcements'");
