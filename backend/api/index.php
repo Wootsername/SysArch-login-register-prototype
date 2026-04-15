@@ -93,6 +93,14 @@ function fetchAnnouncements(PDO $pdo, string $audience = 'student', int $limit =
     $audience = in_array($audience, ['student', 'admin', 'all'], true) ? $audience : 'student';
     $limit = max(1, min($limit, 50));
 
+    if ($audience === 'all') {
+        $stmt = $pdo->query("SELECT id, title, body, audience, posted_by, created_at, updated_at
+            FROM announcements
+            ORDER BY created_at DESC
+            LIMIT $limit");
+        return $stmt->fetchAll();
+    }
+
     $stmt = $pdo->prepare("SELECT id, title, body, audience, posted_by, created_at, updated_at
         FROM announcements
         WHERE audience = 'all' OR audience = :audience
