@@ -83,6 +83,9 @@ switch ($action) {
     case 'reset_sessions':
         resetStudentSessions($pdo);
         break;
+    case 'lab_occupancy':
+        getLabOccupancy($pdo);
+        break;
     default:
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
@@ -1175,4 +1178,18 @@ function formatDurationLabel(int $seconds): string
     $hours = intdiv($minutes, 60);
     $remainingMinutes = $minutes % 60;
     return $hours . ' hr' . ($hours > 1 ? 's' : '') . ($remainingMinutes > 0 ? ' ' . $remainingMinutes . ' min' : '');
+}
+
+function getLabOccupancy(PDO $pdo): void
+{
+    $stmt = $pdo->query("SELECT DISTINCT lab_room FROM sitin_sessions WHERE status = 'active' ORDER BY lab_room");
+    $occupied = [];
+    foreach ($stmt->fetchAll() as $row) {
+        $occupied[] = $row['lab_room'];
+    }
+
+    echo json_encode([
+        'success' => true,
+        'occupied' => $occupied,
+    ]);
 }

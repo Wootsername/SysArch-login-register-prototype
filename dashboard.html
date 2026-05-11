@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+<script>(function () { var t = localStorage.getItem('ccs_theme') || 'dark'; document.documentElement.setAttribute('data-theme', t); })()</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
 
         :root {
             --bg-0: #081325;
@@ -44,6 +50,7 @@
             pointer-events: none;
             overflow: hidden;
         }
+
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -51,45 +58,129 @@
             opacity: 0.28;
             animation: orbFloat 18s ease-in-out infinite alternate;
         }
-        .orb-1 { width: 400px; height: 400px; background: #2196F3; top: -8%; left: -7%; }
-        .orb-2 { width: 330px; height: 330px; background: #7c3aed; bottom: -10%; right: -8%; animation-duration: 24s; animation-delay: -5s; }
-        .orb-3 { width: 270px; height: 270px; background: #06b6d4; top: 52%; left: 58%; animation-duration: 22s; animation-delay: -10s; }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #2196F3;
+            top: -8%;
+            left: -7%;
+        }
+
+        .orb-2 {
+            width: 330px;
+            height: 330px;
+            background: #7c3aed;
+            bottom: -10%;
+            right: -8%;
+            animation-duration: 24s;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 270px;
+            height: 270px;
+            background: #06b6d4;
+            top: 52%;
+            left: 58%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+        }
+
         @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(60px, -35px) scale(1.08); }
-            66% { transform: translate(-30px, 45px) scale(0.96); }
-            100% { transform: translate(15px, -18px) scale(1.03); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(60px, -35px) scale(1.08);
+            }
+
+            66% {
+                transform: translate(-30px, 45px) scale(0.96);
+            }
+
+            100% {
+                transform: translate(15px, -18px) scale(1.03);
+            }
         }
 
         .page-wrapper {
             position: relative;
             z-index: 1;
-            animation: pageIn 0.6s cubic-bezier(.4,0,.2,1) both;
+            animation: pageIn 0.6s cubic-bezier(.4, 0, .2, 1) both;
         }
+
         @keyframes pageIn {
-            from { opacity: 0; transform: translateY(22px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .navbar {
             background: rgba(15, 34, 60, 0.72);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .navbar-brand {
             color: #fff !important;
             font-size: 1rem;
             font-weight: 600;
             letter-spacing: 0.2px;
         }
+
         .nav-link {
-            color: rgba(255,255,255,0.8) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
             font-size: 0.95rem;
             transition: color .2s ease, opacity .2s ease;
         }
+
         .nav-link:hover,
-        .nav-link.active { color: #fff !important; }
+        .nav-link.active {
+            color: #fff !important;
+        }
+
+        .dropdown-menu-dark {
+            background: rgba(10, 22, 42, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            margin-top: 8px !important;
+        }
+
+        .dropdown-menu-dark .dropdown-item {
+            color: rgba(255, 255, 255, 0.82);
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 0.92rem;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-menu-dark .dropdown-item:hover,
+        .dropdown-menu-dark .dropdown-item:focus {
+            background: rgba(33, 150, 243, 0.18);
+            color: #fff;
+        }
+
+        .dropdown-menu-dark .dropdown-item i {
+            color: #8fd0ff;
+        }
+
+        .dropdown-menu-dark .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.08);
+            margin: 4px 0;
+        }
 
         .dashboard-shell {
             padding: 28px 20px 48px;
@@ -99,10 +190,21 @@
             display: none;
             animation: panelIn 0.35s ease both;
         }
-        .section-panel.active { display: block; }
+
+        .section-panel.active {
+            display: block;
+        }
+
         @keyframes panelIn {
-            from { opacity: 0; transform: translateY(14px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero-grid {
@@ -124,6 +226,7 @@
             padding: 28px;
             min-height: 360px;
         }
+
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -137,6 +240,7 @@
             font-weight: 600;
             margin-bottom: 18px;
         }
+
         .hero-title {
             font-size: clamp(2rem, 3vw, 3.15rem);
             line-height: 1.05;
@@ -148,6 +252,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .hero-subtitle {
             color: var(--muted);
             max-width: 62ch;
@@ -155,12 +260,14 @@
             font-size: 1rem;
             line-height: 1.7;
         }
+
         .hero-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 24px;
         }
+
         .btn-soft,
         .btn-primary-gradient,
         .btn-outline-soft {
@@ -169,31 +276,44 @@
             padding: 11px 18px;
             transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
         }
+
         .btn-primary-gradient {
             border: none;
             color: #fff;
             background: linear-gradient(135deg, #2196f3, #1976d2);
             box-shadow: 0 8px 26px rgba(33, 150, 243, 0.28);
         }
-        .btn-primary-gradient:hover { transform: translateY(-2px); color: #fff; }
-        .btn-outline-soft {
-            border: 1px solid rgba(255,255,255,0.16);
-            color: var(--text);
-            background: rgba(255,255,255,0.04);
+
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            color: #fff;
         }
-        .btn-outline-soft:hover { transform: translateY(-2px); color: #fff; background: rgba(255,255,255,0.08); }
+
+        .btn-outline-soft {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-outline-soft:hover {
+            transform: translateY(-2px);
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
         }
+
         .stat-box {
             padding: 18px 16px;
             border-radius: 16px;
-            background: rgba(255,255,255,0.045);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .stat-number {
             font-size: 1.6rem;
             font-weight: 800;
@@ -201,8 +321,9 @@
             margin-bottom: 6px;
             color: #8fd0ff;
         }
+
         .stat-label {
-            color: rgba(255,255,255,0.58);
+            color: rgba(255, 255, 255, 0.58);
             font-size: 0.82rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -215,20 +336,23 @@
             gap: 18px;
             min-height: 360px;
         }
+
         .profile-photo {
             width: 138px;
             height: 138px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid rgba(255,255,255,0.2);
+            border: 3px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
         }
+
         .profile-name {
             font-size: 1.35rem;
             font-weight: 700;
             margin-bottom: 4px;
         }
+
         .profile-meta {
             color: var(--muted);
             font-size: 0.94rem;
@@ -241,10 +365,12 @@
             grid-template-columns: 1fr 1fr;
             gap: 22px;
         }
+
         .content-card {
             padding: 22px;
             min-height: 280px;
         }
+
         .section-title {
             font-size: 1.05rem;
             font-weight: 700;
@@ -253,26 +379,39 @@
             align-items: center;
             gap: 10px;
         }
-        .section-title i { color: #8fd0ff; }
+
+        .section-title i {
+            color: #8fd0ff;
+        }
+
         .announcement-item,
         .rules-list li {
-            color: rgba(255,255,255,0.82);
+            color: rgba(255, 255, 255, 0.82);
             font-size: 0.94rem;
             line-height: 1.65;
         }
-        .announcement-item + .announcement-item { margin-top: 16px; }
+
+        .announcement-item+.announcement-item {
+            margin-top: 16px;
+        }
+
         .announcement-empty {
             color: var(--muted);
             font-size: 0.92rem;
             line-height: 1.7;
         }
+
         .feedback-item,
         .feedback-empty {
-            color: rgba(255,255,255,0.82);
+            color: rgba(255, 255, 255, 0.82);
             font-size: 0.94rem;
             line-height: 1.65;
         }
-        .feedback-item + .feedback-item { margin-top: 16px; }
+
+        .feedback-item+.feedback-item {
+            margin-top: 16px;
+        }
+
         .feedback-chip {
             display: inline-flex;
             align-items: center;
@@ -285,6 +424,7 @@
             border: 1px solid rgba(87, 198, 255, 0.2);
             margin-bottom: 10px;
         }
+
         .announcement-chip {
             display: inline-flex;
             align-items: center;
@@ -297,6 +437,7 @@
             border: 1px solid rgba(33, 150, 243, 0.2);
             margin-bottom: 10px;
         }
+
         .scroll-pane {
             max-height: 220px;
             overflow: auto;
@@ -309,26 +450,30 @@
             gap: 22px;
             align-items: start;
         }
+
         .avatar-card {
             padding: 24px;
             text-align: center;
         }
+
         .avatar-frame {
             width: 170px;
             height: 170px;
             margin: 0 auto 16px;
             border-radius: 50%;
             padding: 5px;
-            background: linear-gradient(135deg, rgba(33,150,243,0.72), rgba(87,198,255,0.2));
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.72), rgba(87, 198, 255, 0.2));
         }
+
         .avatar-frame img {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            background: rgba(255,255,255,0.08);
-            border: 2px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.08);
         }
+
         .upload-actions {
             display: flex;
             flex-wrap: wrap;
@@ -336,6 +481,7 @@
             gap: 10px;
             margin-top: 14px;
         }
+
         .small-note {
             color: var(--muted);
             font-size: 0.84rem;
@@ -345,29 +491,39 @@
         .form-card {
             padding: 24px;
         }
+
         .form-label {
-            color: rgba(255,255,255,0.68);
+            color: rgba(255, 255, 255, 0.68);
             font-size: 0.86rem;
             margin-bottom: 6px;
             font-weight: 500;
         }
+
         .form-control,
         .form-select {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             color: #fff;
             padding: 11px 14px;
         }
-        .form-control::placeholder { color: rgba(255,255,255,0.34); }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.34);
+        }
+
         .form-control:focus,
         .form-select:focus {
-            border-color: rgba(33,150,243,0.5);
-            background: rgba(255,255,255,0.1);
-            box-shadow: 0 0 0 3px rgba(33,150,243,0.14);
+            border-color: rgba(33, 150, 243, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.14);
             color: #fff;
         }
-        .form-select option { background: #10263d; color: #fff; }
+
+        .form-select option {
+            background: #10263d;
+            color: #fff;
+        }
 
         .preview-row {
             display: flex;
@@ -375,14 +531,16 @@
             align-items: center;
             margin-bottom: 18px;
         }
+
         .preview-thumb {
             width: 64px;
             height: 64px;
             border-radius: 14px;
             object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.06);
         }
+
         .field-hint {
             color: var(--muted);
             font-size: 0.82rem;
@@ -393,18 +551,20 @@
         .reservation-card {
             padding: 22px;
         }
+
         .table-dark-surface {
             --bs-table-bg: transparent;
-            --bs-table-color: rgba(255,255,255,0.86);
-            --bs-table-border-color: rgba(255,255,255,0.08);
+            --bs-table-color: rgba(255, 255, 255, 0.86);
+            --bs-table-border-color: rgba(255, 255, 255, 0.08);
             margin-bottom: 0;
         }
+
         .table-dark-surface thead th {
             color: #cfe8ff;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .toast-container-custom {
@@ -416,6 +576,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .toast-notif {
             padding: 13px 18px;
             border-radius: 12px;
@@ -424,22 +585,49 @@
             font-weight: 500;
             min-width: 280px;
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.28);
-            animation: toastIn 0.45s cubic-bezier(.21,1.02,.73,1) both;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+            animation: toastIn 0.45s cubic-bezier(.21, 1.02, .73, 1) both;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .toast-notif.success { background: rgba(22,163,74,0.86); }
-        .toast-notif.error { background: rgba(220,38,38,0.86); }
-        .toast-notif.warning { background: rgba(234,179,8,0.88); color: #1a1a1a; }
-        .toast-notif .toast-icon { font-size: 1.15rem; }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(36px) scale(0.96); }
-            to { opacity: 1; transform: translateX(0) scale(1); }
+
+        .toast-notif.success {
+            background: rgba(22, 163, 74, 0.86);
         }
-        @keyframes toastOut { to { opacity: 0; transform: translateX(36px) scale(0.96); } }
+
+        .toast-notif.error {
+            background: rgba(220, 38, 38, 0.86);
+        }
+
+        .toast-notif.warning {
+            background: rgba(234, 179, 8, 0.88);
+            color: #1a1a1a;
+        }
+
+        .toast-notif .toast-icon {
+            font-size: 1.15rem;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(36px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(36px) scale(0.96);
+            }
+        }
 
         .camera-overlay {
             position: fixed;
@@ -452,15 +640,20 @@
             background: rgba(3, 8, 16, 0.72);
             backdrop-filter: blur(10px);
         }
-        .camera-overlay.active { display: flex; }
+
+        .camera-overlay.active {
+            display: flex;
+        }
+
         .camera-card {
             width: min(920px, 100%);
             background: rgba(10, 20, 34, 0.95);
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 20px;
             box-shadow: var(--shadow);
             padding: 20px;
         }
+
         .camera-preview {
             width: 100%;
             max-height: 60vh;
@@ -470,31 +663,424 @@
         }
 
         @media (max-width: 992px) {
+
             .hero-grid,
             .content-grid,
             .form-shell {
                 grid-template-columns: 1fr;
             }
-            .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         @media (max-width: 576px) {
-            .dashboard-shell { padding: 20px 14px 40px; }
+            .dashboard-shell {
+                padding: 20px 14px 40px;
+            }
+
             .hero-card,
             .profile-summary-card,
             .content-card,
             .form-card,
             .avatar-card,
             .history-card,
-            .reservation-card { padding: 18px; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .reservation-card {
+                padding: 18px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
             .hero-actions .btn,
             .upload-actions .btn,
-            .hero-actions .dropdown .btn { width: 100%; }
-            .toast-notif { min-width: 0; width: calc(100vw - 36px); }
+            .hero-actions .dropdown .btn {
+                width: 100%;
+            }
+
+            .toast-notif {
+                min-width: 0;
+                width: calc(100vw - 36px);
+            }
+        }
+
+        /* ── Light Theme ── */
+        [data-theme="light"] {
+            --bg-0: #f0f4f8;
+            --bg-1: #e2e8f0;
+            --bg-2: #cbd5e1;
+            --panel: rgba(255, 255, 255, 0.82);
+            --panel-strong: rgba(255, 255, 255, 0.92);
+            --border: rgba(0, 0, 0, 0.1);
+            --text: #1e293b;
+            --muted: rgba(30, 41, 59, 0.62);
+            --accent: #2563eb;
+            --accent-2: #3b82f6;
+            --shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] body {
+            background:
+                radial-gradient(circle at top left, rgba(33, 150, 243, 0.08), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.06), transparent 30%),
+                linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 42%, var(--bg-2) 100%);
+            color: var(--text);
+        }
+
+        [data-theme="light"] .orb {
+            opacity: 0.08;
+        }
+
+        [data-theme="light"] .navbar {
+            background: rgba(255, 255, 255, 0.82);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .navbar-brand {
+            color: #1e293b !important;
+        }
+
+        [data-theme="light"] .nav-link {
+            color: rgba(30, 41, 59, 0.72) !important;
+        }
+
+        [data-theme="light"] .nav-link:hover,
+        [data-theme="light"] .nav-link.active {
+            color: #1e293b !important;
+        }
+
+        [data-theme="light"] .dropdown-menu-dark {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="light"] .dropdown-menu-dark .dropdown-item {
+            color: #334155;
+        }
+
+        [data-theme="light"] .dropdown-menu-dark .dropdown-item:hover,
+        [data-theme="light"] .dropdown-menu-dark .dropdown-item:focus {
+            background: rgba(33, 150, 243, 0.1);
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .dropdown-menu-dark .dropdown-item i {
+            color: #2563eb;
+        }
+
+        [data-theme="light"] .dropdown-menu-dark .dropdown-divider {
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .glass-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="light"] .hero-title {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 45%, #2563eb 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        [data-theme="light"] .hero-badge {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            color: #1e40af;
+        }
+
+        [data-theme="light"] .stat-box {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="light"] .stat-number {
+            color: #2563eb;
+        }
+
+        [data-theme="light"] .stat-label {
+            color: rgba(30, 41, 59, 0.58);
+        }
+
+        [data-theme="light"] .section-title i {
+            color: #2563eb;
+        }
+
+        [data-theme="light"] .form-control,
+        [data-theme="light"] .form-select {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .form-control::placeholder {
+            color: rgba(30, 41, 59, 0.38);
+        }
+
+        [data-theme="light"] .form-control:focus,
+        [data-theme="light"] .form-select:focus {
+            border-color: rgba(37, 99, 235, 0.5);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .form-select option {
+            background: #fff;
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .btn-outline-soft {
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            color: #334155;
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        [data-theme="light"] .btn-outline-soft:hover {
+            color: #1e293b;
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="light"] .table-dark-surface {
+            --bs-table-color: #334155;
+            --bs-table-border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .table-dark-surface thead th {
+            color: #1e40af;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="light"] .toast-notif {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .profile-photo {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .profile-meta,
+        [data-theme="light"] .hero-subtitle,
+        [data-theme="light"] .small-note,
+        [data-theme="light"] .field-hint,
+        [data-theme="light"] .form-label,
+        [data-theme="light"] .empty-note {
+            color: rgba(30, 41, 59, 0.62);
+        }
+
+        [data-theme="light"] .announcement-chip,
+        [data-theme="light"] .feedback-chip {
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            color: #1e40af;
+        }
+
+        [data-theme="light"] .announcement-item,
+        [data-theme="light"] .rules-list li,
+        [data-theme="light"] .feedback-item {
+            color: #334155;
+        }
+
+        [data-theme="light"] .camera-overlay {
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        [data-theme="light"] .camera-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .avatar-frame {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.6), rgba(59, 130, 246, 0.2));
+        }
+
+        [data-theme="light"] .text-white-50 {
+            color: rgba(30, 41, 59, 0.5) !important;
+        }
+
+        [data-theme="light"] .badge.text-bg-secondary {
+            background-color: #94a3b8 !important;
+        }
+
+        /* ── Theme Toggle ── */
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fbbf24;
+            border-radius: 10px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.08);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #6366f1;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── PC Grid ── */
+        .pc-grid-wrapper {
+            margin-top: 8px;
+        }
+
+        .pc-grid-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .pc-grid-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.available {
+            background: rgba(34, 197, 94, 0.6);
+            border: 1px solid rgba(34, 197, 94, 0.8);
+        }
+
+        .legend-dot.occupied {
+            background: rgba(239, 68, 68, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.8);
+        }
+
+        .legend-dot.selected {
+            background: rgba(59, 130, 246, 0.8);
+            border: 1px solid rgba(59, 130, 246, 1);
+        }
+
+        .pc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+            gap: 8px;
+        }
+
+        .pc-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 10px 4px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.82rem;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .pc-box i {
+            font-size: 1.2rem;
+            color: rgba(34, 197, 94, 0.7);
+        }
+
+        .pc-box:hover:not(.occupied) {
+            background: rgba(34, 197, 94, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .pc-box.occupied {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.35);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .pc-box.occupied i {
+            color: rgba(239, 68, 68, 0.8);
+        }
+
+        .pc-box.selected {
+            background: rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.25);
+        }
+
+        .pc-box.selected i {
+            color: rgba(59, 130, 246, 1);
+        }
+
+        .pc-selected-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: #93c5fd;
+        }
+
+        [data-theme="light"] .pc-box {
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            background: rgba(0, 0, 0, 0.02);
+            color: #334155;
+        }
+
+        [data-theme="light"] .pc-box:hover:not(.occupied) {
+            background: rgba(34, 197, 94, 0.08);
+            border-color: rgba(34, 197, 94, 0.35);
+        }
+
+        [data-theme="light"] .pc-box.occupied {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        [data-theme="light"] .pc-box.selected {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.12);
+        }
+
+        [data-theme="light"] .pc-selected-label {
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            color: #1e40af;
+        }
+
+        [data-theme="light"] .pc-grid-legend {
+            color: #475569;
         }
     </style>
 </head>
+
 <body>
     <div class="orb-container">
         <div class="orb orb-1"></div>
@@ -505,21 +1091,51 @@
     <div class="page-wrapper">
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="dashboard.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
+                <a class="navbar-brand" href="dashboard.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in
+                    Monitoring</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav align-items-lg-center gap-lg-1">
-                        <li class="nav-item"><a class="nav-link active" href="#" data-section="home"><i class="bi bi-house me-1"></i>Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="edit-profile"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>History</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="rewards"><i class="bi bi-trophy me-1"></i>Rewards</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="notifications"><i class="bi bi-bell me-1"></i>Notifications</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="reservation"><i class="bi bi-journal-bookmark me-1"></i>Reservation</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="reservation-status"><i class="bi bi-inbox me-1"></i>Reservation Status</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="feedback"><i class="bi bi-chat-left-text me-1"></i>Feedback</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="#" data-section="home"><i
+                                    class="bi bi-house me-1"></i>Home</a></li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-person-circle me-1"></i>My Account</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="edit-profile"><i
+                                            class="bi bi-pencil-square me-2"></i>Edit Profile</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="history"><i
+                                            class="bi bi-clock-history me-2"></i>History</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" data-section="rewards"><i
+                                            class="bi bi-trophy me-2"></i>Rewards</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-journal-bookmark me-1"></i>Lab</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="reservation"><i
+                                            class="bi bi-journal-bookmark me-2"></i>Reservation</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="reservation-status"><i
+                                            class="bi bi-inbox me-2"></i>Reservation Status</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="notifications"><i
+                                    class="bi bi-bell me-1"></i>Notifications</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-section="feedback"><i
+                                    class="bi bi-chat-left-text me-1"></i>Feedback</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i
+                                    class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                        <li class="nav-item ms-lg-2"><button class="theme-toggle" id="themeToggle"
+                                title="Toggle theme"><i class="bi bi-sun-fill"></i></button></li>
                     </ul>
                 </div>
             </div>
@@ -533,12 +1149,16 @@
                     <div class="glass-card hero-card">
                         <div class="hero-badge"><i class="bi bi-stars"></i> Student Dashboard</div>
                         <h1 class="hero-title" id="homeTitle">Welcome back!</h1>
-                        <p class="hero-subtitle" id="homeSubtitle">Manage your profile, review announcements, and prepare your next lab reservation from a single student dashboard.</p>
+                        <p class="hero-subtitle" id="homeSubtitle">Manage your profile, review announcements, and
+                            prepare your next lab reservation from a single student dashboard.</p>
 
                         <div class="hero-actions">
-                            <button class="btn btn-primary-gradient" data-section-jump="edit-profile"><i class="bi bi-pencil-square me-1"></i>Edit Profile</button>
-                            <button class="btn btn-outline-soft" data-section-jump="reservation"><i class="bi bi-calendar2-check me-1"></i>Reserve Lab</button>
-                            <button class="btn btn-outline-soft" data-section-jump="history"><i class="bi bi-clock-history me-1"></i>View History</button>
+                            <button class="btn btn-primary-gradient" data-section-jump="edit-profile"><i
+                                    class="bi bi-pencil-square me-1"></i>Edit Profile</button>
+                            <button class="btn btn-outline-soft" data-section-jump="reservation"><i
+                                    class="bi bi-calendar2-check me-1"></i>Reserve Lab</button>
+                            <button class="btn btn-outline-soft" data-section-jump="history"><i
+                                    class="bi bi-clock-history me-1"></i>View History</button>
                         </div>
 
                         <div class="stats-grid">
@@ -563,14 +1183,16 @@
 
                     <div class="glass-card profile-summary-card">
                         <div class="d-flex align-items-center gap-3">
-                            <img src="assets/ccs-logo.png" alt="Student Profile Photo" class="profile-photo" id="summaryPhoto">
+                            <img src="assets/ccs-logo.png" alt="Student Profile Photo" class="profile-photo"
+                                id="summaryPhoto">
                             <div>
                                 <div class="profile-name" id="summaryName">Student Name</div>
                                 <div class="profile-meta" id="summaryMeta">ID Number</div>
                                 <div class="profile-meta" id="summaryCourse">Course</div>
                             </div>
                         </div>
-                        <div class="glass-card p-3" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                        <div class="glass-card p-3"
+                            style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
                             <div class="section-title mb-2"><i class="bi bi-info-circle"></i> Student Information</div>
                             <div class="profile-meta" id="summaryEmail"></div>
                             <div class="profile-meta" id="summaryAddress"></div>
@@ -609,15 +1231,19 @@
                             <img src="assets/ccs-logo.png" alt="Profile Photo" id="profilePhotoPreview">
                         </div>
                         <h3 class="h5 fw-bold mb-1" id="avatarName">Student Profile</h3>
-                        <div class="small-note" id="avatarInfo">Upload or capture an image to update your profile picture.</div>
+                        <div class="small-note" id="avatarInfo">Upload or capture an image to update your profile
+                            picture.</div>
 
                         <div class="upload-actions">
-                            <label class="btn btn-primary-gradient mb-0" for="photoUpload"><i class="bi bi-upload me-1"></i>Upload Image</label>
-                            <button class="btn btn-outline-soft" type="button" id="takePhotoBtn"><i class="bi bi-camera me-1"></i>Take Photo</button>
+                            <label class="btn btn-primary-gradient mb-0" for="photoUpload"><i
+                                    class="bi bi-upload me-1"></i>Upload Image</label>
+                            <button class="btn btn-outline-soft" type="button" id="takePhotoBtn"><i
+                                    class="bi bi-camera me-1"></i>Take Photo</button>
                             <input type="file" id="photoUpload" accept="image/*" class="d-none">
                         </div>
 
-                        <p class="small-note mt-3 mb-0">On phones and tablets, the take photo button opens the camera when your browser supports image capture.</p>
+                        <p class="small-note mt-3 mb-0">On phones and tablets, the take photo button opens the camera
+                            when your browser supports image capture.</p>
                     </div>
 
                     <div class="glass-card form-card">
@@ -638,19 +1264,23 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileEmail">Email</label>
-                                    <input type="email" id="profileEmail" class="form-control" placeholder="email@example.com">
+                                    <input type="email" id="profileEmail" class="form-control"
+                                        placeholder="email@example.com">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileLastName">Last Name</label>
-                                    <input type="text" id="profileLastName" class="form-control" placeholder="Last Name">
+                                    <input type="text" id="profileLastName" class="form-control"
+                                        placeholder="Last Name">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileFirstName">First Name</label>
-                                    <input type="text" id="profileFirstName" class="form-control" placeholder="First Name">
+                                    <input type="text" id="profileFirstName" class="form-control"
+                                        placeholder="First Name">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileMiddleName">Middle Name</label>
-                                    <input type="text" id="profileMiddleName" class="form-control" placeholder="Middle Name">
+                                    <input type="text" id="profileMiddleName" class="form-control"
+                                        placeholder="Middle Name">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileCourse">Course</label>
@@ -672,12 +1302,15 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="profileAddress">Address</label>
-                                    <input type="text" id="profileAddress" class="form-control" placeholder="Home address">
+                                    <input type="text" id="profileAddress" class="form-control"
+                                        placeholder="Home address">
                                 </div>
                                 <div class="col-12">
                                     <div class="d-flex flex-wrap gap-2 mt-1">
-                                        <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-save me-1"></i>Save Profile</button>
-                                        <button type="button" class="btn btn-outline-soft" id="resetProfileBtn"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+                                        <button type="submit" class="btn btn-primary-gradient"><i
+                                                class="bi bi-save me-1"></i>Save Profile</button>
+                                        <button type="button" class="btn btn-outline-soft" id="resetProfileBtn"><i
+                                                class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
                                     </div>
                                 </div>
                             </div>
@@ -704,7 +1337,8 @@
                             </thead>
                             <tbody id="historyBody">
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-white-50">No session history available yet.</td>
+                                    <td colspan="7" class="text-center py-4 text-white-50">No session history available
+                                        yet.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -741,7 +1375,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="rewardHistoryBody">
-                                    <tr><td colspan="3" class="text-center py-4 text-white-50">Loading reward history...</td></tr>
+                                    <tr>
+                                        <td colspan="3" class="text-center py-4 text-white-50">Loading reward history...
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -752,7 +1389,8 @@
             <section class="section-panel" data-panel="notifications">
                 <div class="glass-card content-card">
                     <div class="section-title"><i class="bi bi-bell"></i>Notification Center</div>
-                    <div class="empty-note mb-3">Recent alerts are collected from announcements, reservations, feedback, and reward updates.</div>
+                    <div class="empty-note mb-3">Recent alerts are collected from announcements, reservations, feedback,
+                        and reward updates.</div>
                     <div class="scroll-pane" id="notificationList" style="max-height: 420px;">
                         <div class="announcement-empty">Loading notifications...</div>
                     </div>
@@ -785,61 +1423,21 @@
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="reservationLab">Lab</label>
-                                    <select id="reservationLab" class="form-select" required>
-                                        <option value="">Select a lab</option>
-                                        <option value="S1">S1</option>
-                                        <option value="S2">S2</option>
-                                        <option value="S3">S3</option>
-                                        <option value="S4">S4</option>
-                                        <option value="S5">S5</option>
-                                        <option value="S6">S6</option>
-                                        <option value="S7">S7</option>
-                                        <option value="S8">S8</option>
-                                        <option value="S9">S9</option>
-                                        <option value="S10">S10</option>
-                                        <option value="S11">S11</option>
-                                        <option value="S12">S12</option>
-                                        <option value="S13">S13</option>
-                                        <option value="S14">S14</option>
-                                        <option value="S15">S15</option>
-                                        <option value="S16">S16</option>
-                                        <option value="S17">S17</option>
-                                        <option value="S18">S18</option>
-                                        <option value="S19">S19</option>
-                                        <option value="S20">S20</option>
-                                        <option value="S21">S21</option>
-                                        <option value="S22">S22</option>
-                                        <option value="S23">S23</option>
-                                        <option value="S24">S24</option>
-                                        <option value="S25">S25</option>
-                                        <option value="S26">S26</option>
-                                        <option value="S27">S27</option>
-                                        <option value="S28">S28</option>
-                                        <option value="S29">S29</option>
-                                        <option value="S30">S30</option>
-                                        <option value="S31">S31</option>
-                                        <option value="S32">S32</option>
-                                        <option value="S33">S33</option>
-                                        <option value="S34">S34</option>
-                                        <option value="S35">S35</option>
-                                        <option value="S36">S36</option>
-                                        <option value="S37">S37</option>
-                                        <option value="S38">S38</option>
-                                        <option value="S39">S39</option>
-                                        <option value="S40">S40</option>
-                                        <option value="S41">S41</option>
-                                        <option value="S42">S42</option>
-                                        <option value="S43">S43</option>
-                                        <option value="S44">S44</option>
-                                        <option value="S45">S45</option>
-                                        <option value="S46">S46</option>
-                                        <option value="S47">S47</option>
-                                        <option value="S48">S48</option>
-                                        <option value="S49">S49</option>
-                                        <option value="S50">S50</option>
-                                    </select>
+                                <div class="col-12">
+                                    <input type="hidden" id="reservationLab" value="">
+                                    <label class="form-label">Select PC <span class="pc-selected-label"
+                                            id="pcSelectedLabel">None selected</span></label>
+                                    <div class="pc-grid-wrapper">
+                                        <div class="pc-grid-legend">
+                                            <div class="legend-item"><span class="legend-dot available"></span>
+                                                Available</div>
+                                            <div class="legend-item"><span class="legend-dot occupied"></span> Occupied
+                                            </div>
+                                            <div class="legend-item"><span class="legend-dot selected"></span> Selected
+                                            </div>
+                                        </div>
+                                        <div class="pc-grid" id="pcGrid"></div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="reservationTime">Time In</label>
@@ -851,19 +1449,23 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="reservationSessions">Remaining Sessions</label>
-                                    <input type="number" id="reservationSessions" class="form-control" value="30" readonly>
+                                    <input type="number" id="reservationSessions" class="form-control" value="30"
+                                        readonly>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Reserve</button>
+                                    <button type="submit" class="btn btn-primary-gradient"><i
+                                            class="bi bi-check2-circle me-1"></i>Reserve</button>
                                 </div>
                             </form>
                         </div>
                         <div class="col-lg-5">
-                            <div class="glass-card p-4" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="glass-card p-4"
+                                style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
                                 <div class="section-title mb-3"><i class="bi bi-lightbulb"></i> Reservation Notes</div>
                                 <ul class="rules-list ps-3 mb-0">
                                     <li>Select the programming language or use you will work on before reserving.</li>
-                                    <li>Choose the laboratory, date, and time so the reservation record is complete.</li>
+                                    <li>Choose the laboratory, date, and time so the reservation record is complete.
+                                    </li>
                                     <li>Reservation data is stored locally in this prototype.</li>
                                 </ul>
                             </div>
@@ -890,7 +1492,8 @@
                             </thead>
                             <tbody id="reservationStatusBody">
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-white-50">No reservation requests available yet.</td>
+                                    <td colspan="7" class="text-center py-4 text-white-50">No reservation requests
+                                        available yet.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -906,19 +1509,23 @@
                             <form id="feedbackForm" class="row g-3" novalidate>
                                 <div class="col-12">
                                     <label class="form-label" for="feedbackSubject">Subject</label>
-                                    <input type="text" id="feedbackSubject" class="form-control" placeholder="e.g. Lab experience" required>
+                                    <input type="text" id="feedbackSubject" class="form-control"
+                                        placeholder="e.g. Lab experience" required>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="feedbackMessage">Message</label>
-                                    <textarea id="feedbackMessage" class="form-control" rows="6" placeholder="Write your feedback here" required></textarea>
+                                    <textarea id="feedbackMessage" class="form-control" rows="6"
+                                        placeholder="Write your feedback here" required></textarea>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-send me-1"></i>Submit Feedback</button>
+                                    <button type="submit" class="btn btn-primary-gradient"><i
+                                            class="bi bi-send me-1"></i>Submit Feedback</button>
                                 </div>
                             </form>
                         </div>
                         <div class="col-lg-6">
-                            <div class="glass-card p-4" style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="glass-card p-4"
+                                style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
                                 <div class="section-title mb-3"><i class="bi bi-clock-history"></i>My Feedback</div>
                                 <div class="scroll-pane" id="feedbackList">
                                     <div class="feedback-empty">Loading feedback...</div>
@@ -938,13 +1545,16 @@
                     <h2 class="h5 fw-bold mb-1">Take Photo</h2>
                     <div class="small-note mb-0">Allow camera access, then capture your profile picture.</div>
                 </div>
-                <button type="button" class="btn btn-outline-soft" id="closeCameraBtn"><i class="bi bi-x-lg me-1"></i>Close</button>
+                <button type="button" class="btn btn-outline-soft" id="closeCameraBtn"><i
+                        class="bi bi-x-lg me-1"></i>Close</button>
             </div>
             <video id="cameraVideo" class="camera-preview mb-3" autoplay playsinline></video>
             <canvas id="cameraCanvas" class="d-none"></canvas>
             <div class="d-flex flex-wrap gap-2 justify-content-end">
-                <button type="button" class="btn btn-outline-soft" id="switchCameraBtn"><i class="bi bi-arrow-repeat me-1"></i>Switch Camera</button>
-                <button type="button" class="btn btn-primary-gradient" id="captureBtn"><i class="bi bi-camera-fill me-1"></i>Capture</button>
+                <button type="button" class="btn btn-outline-soft" id="switchCameraBtn"><i
+                        class="bi bi-arrow-repeat me-1"></i>Switch Camera</button>
+                <button type="button" class="btn btn-primary-gradient" id="captureBtn"><i
+                        class="bi bi-camera-fill me-1"></i>Capture</button>
             </div>
         </div>
     </div>
@@ -1536,11 +2146,70 @@
                 document.getElementById('reservationIdNumber').value = profile.id_number;
                 document.getElementById('reservationName').value = fullName();
                 document.getElementById('reservationDate').value = new Date().toISOString().slice(0, 10);
+                document.getElementById('reservationLab').value = '';
+                document.querySelectorAll('.pc-box.selected').forEach(b => b.classList.remove('selected'));
+                document.getElementById('pcSelectedLabel').textContent = 'None selected';
                 await loadStudentDashboard();
+                loadPcGrid();
             } else {
                 showToast(data.message || 'Failed to submit reservation.', 'error');
             }
         });
+
+        /* ── Theme Toggle ── */
+        const themeToggle = document.getElementById('themeToggle');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('ccs_theme', theme);
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+        }
+        themeToggle.addEventListener('click', function () {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+        applyTheme(localStorage.getItem('ccs_theme') || 'dark');
+
+        /* ── PC Grid ── */
+        const PC_COUNT = 50;
+        let occupiedPcs = [];
+
+        function renderPcGrid(occupiedList) {
+            occupiedPcs = occupiedList || [];
+            const grid = document.getElementById('pcGrid');
+            if (!grid) return;
+            const currentSelected = document.getElementById('reservationLab').value;
+            grid.innerHTML = '';
+            for (let i = 1; i <= PC_COUNT; i++) {
+                const pcId = `S${i}`;
+                const isOccupied = occupiedPcs.includes(pcId);
+                const isSelected = pcId === currentSelected;
+                const box = document.createElement('div');
+                box.className = `pc-box${isOccupied ? ' occupied' : ''}${isSelected ? ' selected' : ''}`;
+                box.dataset.pc = pcId;
+                box.innerHTML = `<i class="bi bi-pc-display"></i><span>${i}</span>`;
+                if (!isOccupied) {
+                    box.addEventListener('click', function () {
+                        document.querySelectorAll('.pc-box.selected').forEach(b => b.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('reservationLab').value = pcId;
+                        document.getElementById('pcSelectedLabel').textContent = pcId;
+                    });
+                }
+                grid.appendChild(box);
+            }
+        }
+
+        async function loadPcGrid() {
+            try {
+                const data = await apiGet('lab_occupancy');
+                renderPcGrid(data.occupied || []);
+            } catch (e) {
+                renderPcGrid([]);
+            }
+        }
+
+        loadPcGrid();
 
         bindSectionLinks();
         fillProfileForm();
@@ -1551,4 +2220,5 @@
         document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
     </script>
 </body>
+
 </html>

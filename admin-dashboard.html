@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
 
         :root {
             --bg-0: #081325;
@@ -35,7 +40,14 @@
             overflow-x: hidden;
         }
 
-        .orb-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -43,31 +55,138 @@
             opacity: 0.28;
             animation: orbFloat 18s ease-in-out infinite alternate;
         }
-        .orb-1 { width: 400px; height: 400px; background: #2196F3; top: -8%; left: -7%; }
-        .orb-2 { width: 330px; height: 330px; background: #7c3aed; bottom: -10%; right: -8%; animation-duration: 24s; animation-delay: -5s; }
-        .orb-3 { width: 270px; height: 270px; background: #06b6d4; top: 52%; left: 58%; animation-duration: 22s; animation-delay: -10s; }
-        @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(60px, -35px) scale(1.08); }
-            66% { transform: translate(-30px, 45px) scale(0.96); }
-            100% { transform: translate(15px, -18px) scale(1.03); }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #2196F3;
+            top: -8%;
+            left: -7%;
         }
 
-        .page-wrapper { position: relative; z-index: 1; }
+        .orb-2 {
+            width: 330px;
+            height: 330px;
+            background: #7c3aed;
+            bottom: -10%;
+            right: -8%;
+            animation-duration: 24s;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 270px;
+            height: 270px;
+            background: #06b6d4;
+            top: 52%;
+            left: 58%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(60px, -35px) scale(1.08);
+            }
+
+            66% {
+                transform: translate(-30px, 45px) scale(0.96);
+            }
+
+            100% {
+                transform: translate(15px, -18px) scale(1.03);
+            }
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
         .navbar {
             background: rgba(15, 34, 60, 0.72);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .navbar-brand { color: #fff !important; font-size: 1rem; font-weight: 600; }
-        .nav-link { color: rgba(255,255,255,0.8) !important; }
-        .nav-link:hover, .nav-link.active { color: #fff !important; }
 
-        .dashboard-shell { padding: 26px 20px 42px; }
-        .section-panel { display: none; animation: panelIn 0.3s ease both; }
-        .section-panel.active { display: block; }
-        @keyframes panelIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff !important;
+        }
+
+        .dropdown-menu-dark {
+            background: rgba(10, 22, 42, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            margin-top: 8px !important;
+        }
+
+        .dropdown-menu-dark .dropdown-item {
+            color: rgba(255, 255, 255, 0.82);
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 0.92rem;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-menu-dark .dropdown-item:hover,
+        .dropdown-menu-dark .dropdown-item:focus {
+            background: rgba(33, 150, 243, 0.18);
+            color: #fff;
+        }
+
+        .dropdown-menu-dark .dropdown-item i {
+            color: #8fd0ff;
+        }
+
+        .dropdown-menu-dark .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.08);
+            margin: 4px 0;
+        }
+
+        .dashboard-shell {
+            padding: 26px 20px 42px;
+        }
+
+        .section-panel {
+            display: none;
+            animation: panelIn 0.3s ease both;
+        }
+
+        .section-panel.active {
+            display: block;
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         .glass-card {
             background: var(--panel);
@@ -78,26 +197,84 @@
             box-shadow: var(--shadow);
         }
 
-        .hero-card { padding: 24px; }
-        .hero-title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; }
-        .hero-subtitle { color: var(--muted); margin-bottom: 22px; }
+        .hero-card {
+            padding: 24px;
+        }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+        .hero-title {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800;
+        }
+
+        .hero-subtitle {
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+        }
+
         .stat-box {
             padding: 18px 16px;
             border-radius: 14px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .stat-number { font-size: 1.8rem; font-weight: 800; color: #8fd0ff; line-height: 1.1; }
-        .stat-label { color: rgba(255,255,255,0.58); font-size: 0.83rem; text-transform: uppercase; letter-spacing: 0.06em; }
 
-        .content-grid { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .content-card { padding: 22px; }
-        .section-title { font-size: 1.03rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        .section-title i { color: #8fd0ff; }
-        .leaderboard-layout { margin-top: 20px; display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 20px; align-items: start; }
-        .leaderboard-column { display: flex; flex-direction: column; gap: 20px; }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #8fd0ff;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 0.83rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .content-grid {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .content-card {
+            padding: 22px;
+        }
+
+        .section-title {
+            font-size: 1.03rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #8fd0ff;
+        }
+
+        .leaderboard-layout {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1.25fr 0.95fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .leaderboard-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
         .btn-primary-gradient {
             border: none;
@@ -108,44 +285,69 @@
             background: linear-gradient(135deg, #2196f3, #1976d2);
             box-shadow: 0 8px 26px rgba(33, 150, 243, 0.28);
         }
-        .btn-primary-gradient:hover { color: #fff; transform: translateY(-1px); }
+
+        .btn-primary-gradient:hover {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
         .btn-outline-soft {
-            border: 1px solid rgba(255,255,255,0.16);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             color: var(--text);
             border-radius: 12px;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
         }
-        .btn-outline-soft:hover { color: #fff; background: rgba(255,255,255,0.09); }
 
-        .form-label { color: rgba(255,255,255,0.68); font-size: 0.86rem; margin-bottom: 6px; }
-        .form-control, .form-select {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
+        .btn-outline-soft:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .form-label {
+            color: rgba(255, 255, 255, 0.68);
+            font-size: 0.86rem;
+            margin-bottom: 6px;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             color: #fff;
             padding: 10px 12px;
         }
-        .form-control::placeholder { color: rgba(255,255,255,0.34); }
-        .form-control:focus, .form-select:focus {
-            border-color: rgba(33,150,243,0.5);
-            background: rgba(255,255,255,0.1);
-            box-shadow: 0 0 0 3px rgba(33,150,243,0.14);
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.34);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(33, 150, 243, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.14);
             color: #fff;
         }
-        .form-select option { background: #10263d; color: #fff; }
+
+        .form-select option {
+            background: #10263d;
+            color: #fff;
+        }
 
         .table-dark-surface {
             --bs-table-bg: transparent;
-            --bs-table-color: rgba(255,255,255,0.86);
-            --bs-table-border-color: rgba(255,255,255,0.08);
+            --bs-table-color: rgba(255, 255, 255, 0.86);
+            --bs-table-border-color: rgba(255, 255, 255, 0.08);
             margin-bottom: 0;
         }
+
         .table-dark-surface thead th {
             color: #cfe8ff;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
             white-space: nowrap;
         }
 
@@ -158,6 +360,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .toast-notif {
             padding: 12px 16px;
             border-radius: 12px;
@@ -165,19 +368,50 @@
             font-size: 0.92rem;
             min-width: 280px;
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             animation: toastIn 0.35s ease both;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .toast-notif.success { background: rgba(22,163,74,0.85); }
-        .toast-notif.error { background: rgba(220,38,38,0.85); }
-        .toast-notif.warning { background: rgba(234,179,8,0.85); color: #1a1a1a; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateX(30px); } }
 
-        .empty-note { color: var(--muted); font-size: 0.9rem; }
+        .toast-notif.success {
+            background: rgba(22, 163, 74, 0.85);
+        }
+
+        .toast-notif.error {
+            background: rgba(220, 38, 38, 0.85);
+        }
+
+        .toast-notif.warning {
+            background: rgba(234, 179, 8, 0.85);
+            color: #1a1a1a;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        .empty-note {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
         .announcement-feed {
             display: flex;
             flex-direction: column;
@@ -186,12 +420,14 @@
             overflow: auto;
             padding-right: 8px;
         }
+
         .announcement-feed-item {
             padding: 14px 16px;
             border-radius: 14px;
-            background: rgba(255,255,255,0.045);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .announcement-feed-item .announcement-head {
             display: flex;
             flex-wrap: wrap;
@@ -201,15 +437,18 @@
             color: #d7ebff;
             font-size: 0.82rem;
         }
+
         .announcement-feed-item .announcement-title {
             font-weight: 700;
             margin-bottom: 6px;
         }
+
         .announcement-feed-item .announcement-body {
-            color: rgba(255,255,255,0.82);
+            color: rgba(255, 255, 255, 0.82);
             line-height: 1.65;
             font-size: 0.94rem;
         }
+
         .feedback-feed {
             display: flex;
             flex-direction: column;
@@ -218,12 +457,14 @@
             overflow: auto;
             padding-right: 8px;
         }
+
         .feedback-feed-item {
             padding: 14px 16px;
             border-radius: 14px;
-            background: rgba(255,255,255,0.045);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .feedback-feed-item .feedback-head {
             display: flex;
             flex-wrap: wrap;
@@ -233,23 +474,34 @@
             color: #d7ebff;
             font-size: 0.82rem;
         }
+
         .feedback-feed-item .feedback-subject {
             font-weight: 700;
             margin-bottom: 6px;
         }
+
         .feedback-feed-item .feedback-body {
-            color: rgba(255,255,255,0.82);
+            color: rgba(255, 255, 255, 0.82);
             line-height: 1.65;
             font-size: 0.94rem;
         }
 
         @media (max-width: 991px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .content-grid { grid-template-columns: 1fr; }
-            .leaderboard-layout { grid-template-columns: 1fr; }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-layout {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="orb-container">
         <div class="orb orb-1"></div>
@@ -260,23 +512,73 @@
     <div class="page-wrapper">
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in Monitoring</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+                <a class="navbar-brand" href="index.html"><i class="bi bi-mortarboard-fill me-2"></i>CCS Sit-in
+                    Monitoring</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span
+                        class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav align-items-lg-center gap-lg-1">
-                        <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="announcements"><i class="bi bi-megaphone me-1"></i>Announcements</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="feedback"><i class="bi bi-chat-left-text me-1"></i>Feedback</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="search"><i class="bi bi-search me-1"></i>Search</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="sitin-form"><i class="bi bi-ui-checks-grid me-1"></i>Sit-in Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="students"><i class="bi bi-people me-1"></i>Student List</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="reservations"><i class="bi bi-inbox me-1"></i>Reservations</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="records"><i class="bi bi-journal-text me-1"></i>Current Sit-in</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>Session History</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="analytics"><i class="bi bi-graph-up me-1"></i>Analytics</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="reports"><i class="bi bi-file-earmark-text me-1"></i>Reports</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="rewards"><i class="bi bi-trophy me-1"></i>Leaderboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard"><i
+                                    class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-people me-1"></i>Students</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="search"><i
+                                            class="bi bi-search me-2"></i>Search</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="students"><i
+                                            class="bi bi-people me-2"></i>Student List</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="sitin-form"><i
+                                            class="bi bi-ui-checks-grid me-2"></i>Sit-in Form</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-journal-text me-1"></i>Sessions</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="records"><i
+                                            class="bi bi-journal-text me-2"></i>Current Sit-in</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="history"><i
+                                            class="bi bi-clock-history me-2"></i>Session History</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" data-section="reservations"><i
+                                            class="bi bi-inbox me-2"></i>Reservations</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-megaphone me-1"></i>Content</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="announcements"><i
+                                            class="bi bi-megaphone me-2"></i>Announcements</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="feedback"><i
+                                            class="bi bi-chat-left-text me-2"></i>Feedback</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bi bi-graph-up me-1"></i>Insights</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" data-section="analytics"><i
+                                            class="bi bi-graph-up me-2"></i>Analytics</a></li>
+                                <li><a class="dropdown-item" href="#" data-section="reports"><i
+                                            class="bi bi-file-earmark-text me-2"></i>Reports</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" data-section="rewards"><i
+                                            class="bi bi-trophy me-2"></i>Leaderboard</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item"><a class="nav-link" href="#" id="logoutLink"><i
+                                    class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -288,7 +590,8 @@
             <section class="section-panel active" data-panel="dashboard">
                 <div class="glass-card hero-card">
                     <h1 class="hero-title mb-2">Admin Dashboard</h1>
-                    <p class="hero-subtitle">Monitor student registration, current sit-in sessions, and reward points earned from completed work.</p>
+                    <p class="hero-subtitle">Monitor student registration, current sit-in sessions, and reward points
+                        earned from completed work.</p>
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div class="stat-number" id="registeredCount">0</div>
@@ -321,10 +624,13 @@
                     <div class="glass-card content-card">
                         <div class="section-title"><i class="bi bi-lightning-charge"></i>Quick Actions</div>
                         <div class="d-flex flex-wrap gap-2 mb-3">
-                            <button class="btn btn-primary-gradient" data-section-jump="search"><i class="bi bi-search me-1"></i>Search Student</button>
-                            <button class="btn btn-outline-soft" data-section-jump="sitin-form"><i class="bi bi-ui-checks-grid me-1"></i>Open Sit-in Form</button>
+                            <button class="btn btn-primary-gradient" data-section-jump="search"><i
+                                    class="bi bi-search me-1"></i>Search Student</button>
+                            <button class="btn btn-outline-soft" data-section-jump="sitin-form"><i
+                                    class="bi bi-ui-checks-grid me-1"></i>Open Sit-in Form</button>
                         </div>
-                        <div class="empty-note">Use Search to find registered students, then open the sit-in form and submit a session.</div>
+                        <div class="empty-note">Use Search to find registered students, then open the sit-in form and
+                            submit a session.</div>
                     </div>
                 </div>
             </section>
@@ -336,7 +642,8 @@
                         <form id="announcementForm" class="row g-3" novalidate>
                             <div class="col-12">
                                 <label class="form-label" for="announcementTitle">Title</label>
-                                <input type="text" id="announcementTitle" class="form-control" placeholder="Enter announcement title" required>
+                                <input type="text" id="announcementTitle" class="form-control"
+                                    placeholder="Enter announcement title" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="announcementAudience">Audience</label>
@@ -348,11 +655,14 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="announcementBody">Message</label>
-                                <textarea id="announcementBody" class="form-control" rows="6" placeholder="Write the announcement message here" required></textarea>
+                                <textarea id="announcementBody" class="form-control" rows="6"
+                                    placeholder="Write the announcement message here" required></textarea>
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2">
-                                <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-send me-1"></i>Post Announcement</button>
-                                <button type="button" id="refreshAnnouncementsBtn" class="btn btn-outline-soft"><i class="bi bi-arrow-clockwise me-1"></i>Refresh List</button>
+                                <button type="submit" class="btn btn-primary-gradient"><i
+                                        class="bi bi-send me-1"></i>Post Announcement</button>
+                                <button type="button" id="refreshAnnouncementsBtn" class="btn btn-outline-soft"><i
+                                        class="bi bi-arrow-clockwise me-1"></i>Refresh List</button>
                             </div>
                         </form>
                     </div>
@@ -379,7 +689,8 @@
 
                     <div class="glass-card content-card">
                         <div class="section-title mb-3"><i class="bi bi-check2-square"></i>Review Notes</div>
-                        <div class="empty-note mb-3">Use the reviewed button to mark items you have already handled.</div>
+                        <div class="empty-note mb-3">Use the reviewed button to mark items you have already handled.
+                        </div>
                         <div class="empty-note">New feedback entries appear here in reverse chronological order.</div>
                     </div>
                 </div>
@@ -390,10 +701,12 @@
                     <div class="section-title"><i class="bi bi-search"></i>Search Registered Students</div>
                     <div class="row g-2 mb-3">
                         <div class="col-md-8">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search ID number, name, email, or course...">
+                            <input type="text" id="searchInput" class="form-control"
+                                placeholder="Search ID number, name, email, or course...">
                         </div>
                         <div class="col-md-4 d-grid">
-                            <button id="searchBtn" class="btn btn-primary-gradient"><i class="bi bi-search me-1"></i>Search</button>
+                            <button id="searchBtn" class="btn btn-primary-gradient"><i
+                                    class="bi bi-search me-1"></i>Search</button>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -409,7 +722,10 @@
                                 </tr>
                             </thead>
                             <tbody id="searchBody">
-                                <tr><td colspan="6" class="text-center py-4 text-white-50">Search for registered students.</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-white-50">Search for registered
+                                        students.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -422,7 +738,8 @@
                     <form id="sitinForm" class="row g-3" novalidate>
                         <div class="col-md-4">
                             <label class="form-label" for="formIdNumber">ID Number</label>
-                            <input type="text" id="formIdNumber" class="form-control" placeholder="Select/search a student" required>
+                            <input type="text" id="formIdNumber" class="form-control"
+                                placeholder="Select/search a student" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="formStudentName">Student Name</label>
@@ -499,15 +816,19 @@
                                 <option value="Database">Database</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <div class="small-note mt-2">The selected language/use will be stored in the sit-in record.</div>
+                            <div class="small-note mt-2">The selected language/use will be stored in the sit-in record.
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="formPurposeCustom">Custom Note (optional)</label>
-                            <input type="text" id="formPurposeCustom" class="form-control" placeholder="e.g. Data Structures Lab">
+                            <input type="text" id="formPurposeCustom" class="form-control"
+                                placeholder="e.g. Data Structures Lab">
                         </div>
                         <div class="col-12 d-flex flex-wrap gap-2">
-                            <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Save Sit-in</button>
-                            <button type="button" id="clearFormBtn" class="btn btn-outline-soft"><i class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
+                            <button type="submit" class="btn btn-primary-gradient"><i
+                                    class="bi bi-check2-circle me-1"></i>Save Sit-in</button>
+                            <button type="button" id="clearFormBtn" class="btn btn-outline-soft"><i
+                                    class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
                         </div>
                     </form>
                 </div>
@@ -530,7 +851,9 @@
                                 </tr>
                             </thead>
                             <tbody id="studentsBody">
-                                <tr><td colspan="7" class="text-center py-4 text-white-50">Loading students...</td></tr>
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-white-50">Loading students...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -541,7 +864,8 @@
                 <div class="glass-card content-card">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div class="section-title mb-0"><i class="bi bi-journal-text"></i>Current Sit-in Records</div>
-                        <button id="refreshRecordsBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                        <button id="refreshRecordsBtn" class="btn btn-outline-soft btn-sm"><i
+                                class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-dark-surface align-middle">
@@ -559,7 +883,10 @@
                                 </tr>
                             </thead>
                             <tbody id="recordsBody">
-                                <tr><td colspan="8" class="text-center py-4 text-white-50">No current sit-in records.</td></tr>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-white-50">No current sit-in records.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -570,7 +897,8 @@
                 <div class="glass-card content-card">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div class="section-title mb-0"><i class="bi bi-inbox"></i>Reservation Inbox</div>
-                        <button id="refreshReservationsBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                        <button id="refreshReservationsBtn" class="btn btn-outline-soft btn-sm"><i
+                                class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-dark-surface align-middle">
@@ -587,7 +915,10 @@
                                 </tr>
                             </thead>
                             <tbody id="reservationsBody">
-                                <tr><td colspan="8" class="text-center py-4 text-white-50">No reservation requests yet.</td></tr>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-white-50">No reservation requests yet.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -598,7 +929,8 @@
                 <div class="glass-card content-card">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div class="section-title mb-0"><i class="bi bi-clock-history"></i>Session History</div>
-                        <button id="refreshHistoryBtn" class="btn btn-outline-soft btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+                        <button id="refreshHistoryBtn" class="btn btn-outline-soft btn-sm"><i
+                                class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-dark-surface align-middle">
@@ -615,7 +947,10 @@
                                 </tr>
                             </thead>
                             <tbody id="historyBodyAdmin">
-                                <tr><td colspan="8" class="text-center py-4 text-white-50">No session history available yet.</td></tr>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-white-50">No session history available
+                                        yet.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -638,10 +973,22 @@
                     <div class="glass-card content-card">
                         <div class="section-title"><i class="bi bi-activity"></i>Dashboard Highlights</div>
                         <div class="stats-grid">
-                            <div class="stat-box"><div class="stat-number" id="analyticsStudents">0</div><div class="stat-label">Students</div></div>
-                            <div class="stat-box"><div class="stat-number" id="analyticsActive">0</div><div class="stat-label">Active Sessions</div></div>
-                            <div class="stat-box"><div class="stat-number" id="analyticsPending">0</div><div class="stat-label">Pending Reservations</div></div>
-                            <div class="stat-box"><div class="stat-number" id="analyticsRewards">0</div><div class="stat-label">Reward Points</div></div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="analyticsStudents">0</div>
+                                <div class="stat-label">Students</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="analyticsActive">0</div>
+                                <div class="stat-label">Active Sessions</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="analyticsPending">0</div>
+                                <div class="stat-label">Pending Reservations</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="analyticsRewards">0</div>
+                                <div class="stat-label">Reward Points</div>
+                            </div>
                         </div>
                     </div>
                     <div class="glass-card content-card">
@@ -661,10 +1008,14 @@
                         <div class="section-title"><i class="bi bi-file-earmark-arrow-down"></i>Generate Reports</div>
                         <div class="empty-note mb-3">Export the current dashboard data as CSV files.</div>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary-gradient" id="downloadStudentsReportBtn"><i class="bi bi-people me-1"></i>Download Student Report</button>
-                            <button class="btn btn-outline-soft" id="downloadReservationsReportBtn"><i class="bi bi-inbox me-1"></i>Download Reservation Report</button>
-                            <button class="btn btn-outline-soft" id="downloadHistoryReportBtn"><i class="bi bi-clock-history me-1"></i>Download Session History Report</button>
-                            <button class="btn btn-outline-soft" id="downloadLeaderboardReportBtn"><i class="bi bi-trophy me-1"></i>Download Leaderboard Report</button>
+                            <button class="btn btn-primary-gradient" id="downloadStudentsReportBtn"><i
+                                    class="bi bi-people me-1"></i>Download Student Report</button>
+                            <button class="btn btn-outline-soft" id="downloadReservationsReportBtn"><i
+                                    class="bi bi-inbox me-1"></i>Download Reservation Report</button>
+                            <button class="btn btn-outline-soft" id="downloadHistoryReportBtn"><i
+                                    class="bi bi-clock-history me-1"></i>Download Session History Report</button>
+                            <button class="btn btn-outline-soft" id="downloadLeaderboardReportBtn"><i
+                                    class="bi bi-trophy me-1"></i>Download Leaderboard Report</button>
                         </div>
                     </div>
                     <div class="glass-card content-card">
@@ -683,7 +1034,8 @@
                     <div class="leaderboard-column">
                         <div class="glass-card content-card">
                             <div class="section-title"><i class="bi bi-trophy"></i>Leaderboard</div>
-                            <div class="empty-note mb-3">Ranking uses 50% earned points, 30% total sit-in hours, and 20% task completion.</div>
+                            <div class="empty-note mb-3">Ranking uses 50% earned points, 30% total sit-in hours, and 20%
+                                task completion.</div>
                             <div class="table-responsive">
                                 <table class="table table-dark-surface align-middle">
                                     <thead>
@@ -697,7 +1049,10 @@
                                         </tr>
                                     </thead>
                                     <tbody id="leaderboardBody">
-                                        <tr><td colspan="6" class="text-center py-4 text-white-50">Loading leaderboard...</td></tr>
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-white-50">Loading
+                                                leaderboard...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -708,19 +1063,24 @@
                             <form id="rewardForm" class="row g-3" novalidate>
                                 <div class="col-12">
                                     <label class="form-label" for="rewardIdNumber">ID Number</label>
-                                    <input type="text" id="rewardIdNumber" class="form-control" placeholder="Enter student ID number" required>
+                                    <input type="text" id="rewardIdNumber" class="form-control"
+                                        placeholder="Enter student ID number" required>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="rewardPoints">Points</label>
-                                    <input type="number" id="rewardPoints" class="form-control" min="1" value="1" required>
+                                    <input type="number" id="rewardPoints" class="form-control" min="1" value="1"
+                                        required>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="rewardDescription">Description</label>
-                                    <textarea id="rewardDescription" class="form-control" rows="4" placeholder="Reason for awarding points" required></textarea>
+                                    <textarea id="rewardDescription" class="form-control" rows="4"
+                                        placeholder="Reason for awarding points" required></textarea>
                                 </div>
                                 <div class="col-12 d-flex flex-wrap gap-2">
-                                    <button type="submit" class="btn btn-primary-gradient"><i class="bi bi-check2-circle me-1"></i>Award Points</button>
-                                    <button type="button" class="btn btn-outline-soft" id="clearRewardFormBtn"><i class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
+                                    <button type="submit" class="btn btn-primary-gradient"><i
+                                            class="bi bi-check2-circle me-1"></i>Award Points</button>
+                                    <button type="button" class="btn btn-outline-soft" id="clearRewardFormBtn"><i
+                                            class="bi bi-arrow-counterclockwise me-1"></i>Clear</button>
                                 </div>
                             </form>
                         </div>
@@ -732,23 +1092,39 @@
                             <div class="small-note mb-3">This matches the percentages from the sketch.</div>
                             <div class="d-grid gap-3">
                                 <div>
-                                    <div class="d-flex justify-content-between small mb-1"><span>Earned Points</span><span>50%</span></div>
-                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 50%; background: linear-gradient(135deg, #2196f3, #57c6ff);"></div></div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Earned
+                                            Points</span><span>50%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                        <div class="progress-bar"
+                                            style="width: 50%; background: linear-gradient(135deg, #2196f3, #57c6ff);">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div>
-                                    <div class="d-flex justify-content-between small mb-1"><span>Total Sit-in Hours</span><span>30%</span></div>
-                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 30%; background: linear-gradient(135deg, #7c3aed, #a78bfa);"></div></div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Total Sit-in
+                                            Hours</span><span>30%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                        <div class="progress-bar"
+                                            style="width: 30%; background: linear-gradient(135deg, #7c3aed, #a78bfa);">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div>
-                                    <div class="d-flex justify-content-between small mb-1"><span>Task Completed</span><span>20%</span></div>
-                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);"><div class="progress-bar" style="width: 20%; background: linear-gradient(135deg, #16a34a, #4ade80);"></div></div>
+                                    <div class="d-flex justify-content-between small mb-1"><span>Task
+                                            Completed</span><span>20%</span></div>
+                                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                        <div class="progress-bar"
+                                            style="width: 20%; background: linear-gradient(135deg, #16a34a, #4ade80);">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="glass-card content-card">
                             <div class="section-title"><i class="bi bi-bar-chart-fill"></i>Leaderboard Bar Graph</div>
-                            <div class="empty-note mb-3">Different colors show points, hours, and tasks contributions for the top five students.</div>
+                            <div class="empty-note mb-3">Different colors show points, hours, and tasks contributions
+                                for the top five students.</div>
                             <div style="height: 320px;">
                                 <canvas id="leaderboardSectionChart"></canvas>
                             </div>
@@ -770,7 +1146,10 @@
                                 </tr>
                             </thead>
                             <tbody id="rewardHistoryBody">
-                                <tr><td colspan="5" class="text-center py-4 text-white-50">Loading reward history...</td></tr>
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-white-50">Loading reward history...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1762,4 +2141,5 @@
         loadFeedbacks();
     </script>
 </body>
+
 </html>
