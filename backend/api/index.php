@@ -59,6 +59,25 @@ switch ($action) {
     case 'announcements':
         getAnnouncements($pdo);
         break;
+    case 'get_lab_software':
+        getLabSoftware($pdo);
+        break;
+    case 'import_lab_software':
+        importLabSoftware($pdo);
+        break;
+    case 'get_system_settings':
+        getSystemSettings($pdo);
+        break;
+    case 'toggle_reservations':
+        toggleReservations($pdo);
+        break;
+    case 'admin_pc_status':
+        getAdminPcStatus($pdo);
+        break;
+    case 'admin_force_logout':
+        adminForceLogout($pdo);
+        break;
+        break;
     case 'create_announcement':
         createAnnouncement($pdo);
         break;
@@ -963,11 +982,31 @@ function getStudentDashboard(PDO $pdo): void
     $leaderboard = getRewardLeaderboard($pdo, 50);
     $notifications = buildStudentNotifications($announcements, $reservations, $feedbacks, $rewards);
 
+    $statsStmt = $pdo->prepare("SELECT COUNT(id) as session_count, 
+           COALESCE(SUM(TIMESTAMPDIFF(SECOND, time_in, COALESCE(time_out, NOW()))), 0) as total_seconds,
+           COALESCE(MAX(TIMESTAMPDIFF(SECOND, time_in, COALESCE(time_out, NOW()))), 0) as longest_seconds
+           FROM sitin_sessions WHERE user_id = :user_id AND status = 'completed'");
+    $statsStmt->execute([':user_id' => (int)$user['id']]);
+    $summaryRaw = $statsStmt->fetch();
+
+    $sessionCount = (int)$summaryRaw['session_count'];
+    $totalSeconds = (int)$summaryRaw['total_seconds'];
+    $longestSeconds = (int)$summaryRaw['longest_seconds'];
+    $averageSeconds = $sessionCount > 0 ? (int)round($totalSeconds / $sessionCount) : 0;
+
+    $summary_stats = [
+        'session_count' => $sessionCount,
+        'total_hours' => round($totalSeconds / 3600, 1),
+        'average_duration_formatted' => formatDurationLabel($averageSeconds),
+        'longest_session_formatted' => formatDurationLabel($longestSeconds),
+    ];
+
     unset($user['role']);
 
     echo json_encode([
         'success' => true,
         'user' => $user,
+        'summary_stats' => $summary_stats,
         'active_sessions' => $activeStmt->fetchAll(),
         'history' => $historyStmt->fetchAll(),
         'reservations' => $reservations,
@@ -977,6 +1016,110 @@ function getStudentDashboard(PDO $pdo): void
         'leaderboard' => $leaderboard,
         'notifications' => $notifications,
     ]);
+}
+
+function getLabSoftware(PDO $pdo): void
+{
+    $stmt = $pdo->query("SELECT id, lab_room, software_name FROM lab_software ORDER BY lab_room, software_name");
+    echo json_encode([
+        'success' => true,
+        'software' => $stmt->fetchAll()
+    ]);
+}
+
+function importLabSoftware(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $labRoom = trim((string)($data['lab_room'] ?? ''));
+    $softwareList = $data['software_list'] ?? [];
+
+    if ($labRoom === '' || !is_array($softwareList) || empty($softwareList)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Lab room and software list are required']);
+        return;
+    }
+
+    $pdo->prepare("DELETE FROM lab_software WHERE lab_room = :lab")->execute([':lab' => $labRoom]);
+
+    $stmt = $pdo->prepare("INSERT INTO lab_software (lab_room, software_name) VALUES (:lab, :software)");
+    foreach ($softwareList as $sw) {
+        if (trim((string)$sw) !== '') {
+            $stmt->execute([':lab' => $labRoom, ':software' => trim((string)$sw)]);
+        }
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Software imported successfully']);
+}
+
+function getSystemSettings(PDO $pdo): void
+{
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM system_settings");
+    $settings = [];
+    foreach ($stmt->fetchAll() as $row) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+    echo json_encode(['success' => true, 'settings' => $settings]);
+}
+
+function toggleReservations(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        return;
+    }
+    
+    $data = json_decode(file_get_contents('php://input'), true);
+    $enabled = isset($data['enabled']) && $data['enabled'] ? '1' : '0';
+    
+    $pdo->prepare("UPDATE system_settings SET setting_value = :val WHERE setting_key = 'reservations_enabled'")->execute([':val' => $enabled]);
+    echo json_encode(['success' => true, 'message' => 'Reservation settings updated']);
+}
+
+function getAdminPcStatus(PDO $pdo): void
+{
+    $pc = trim($_GET['pc'] ?? '');
+    if ($pc === '') {
+        http_response_code(400);
+        return;
+    }
+
+    $stmt = $pdo->prepare("SELECT s.id, s.user_id, s.purpose, s.time_in, TIMESTAMPDIFF(SECOND, s.time_in, NOW()) AS duration_seconds, u.first_name, u.last_name, u.id_number 
+        FROM sitin_sessions s 
+        INNER JOIN users u ON u.id = s.user_id 
+        WHERE s.lab_room = :pc AND s.status = 'active' LIMIT 1");
+    $stmt->execute([':pc' => $pc]);
+    $activeSession = $stmt->fetch();
+
+    echo json_encode([
+        'success' => true,
+        'active_session' => $activeSession ?: null
+    ]);
+}
+
+function adminForceLogout(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $sessionId = (int)($data['session_id'] ?? 0);
+
+    $stmt = $pdo->prepare("UPDATE sitin_sessions SET status = 'completed', time_out = NOW() WHERE id = :id AND status = 'active'");
+    $stmt->execute([':id' => $sessionId]);
+
+    if ($stmt->rowCount() > 0) {
+        echo json_encode(['success' => true, 'message' => 'User logged out successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Session not found or already completed']);
+    }
 }
 
 function createReservation(PDO $pdo): void
@@ -997,6 +1140,14 @@ function createReservation(PDO $pdo): void
     if ($idNumber === '' || $labRoom === '' || $purpose === '') {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'ID Number, Lab Room, and Purpose are required']);
+        return;
+    }
+
+    $settingStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'reservations_enabled'");
+    $isEnabled = $settingStmt->fetchColumn();
+    if ($isEnabled !== false && $isEnabled === '0') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Reservations are currently disabled by the administrator.']);
         return;
     }
 

@@ -102,3 +102,29 @@ try {
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit();
 }
+
+try {
+    $tableCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = 'system_settings'");
+    $tableCheck->execute([':schema' => $dbname]);
+    if ((int)$tableCheck->fetchColumn() === 0) {
+        $pdo->exec("CREATE TABLE system_settings (
+            setting_key VARCHAR(50) PRIMARY KEY,
+            setting_value VARCHAR(255) NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+        $pdo->exec("INSERT INTO system_settings (setting_key, setting_value) VALUES ('reservations_enabled', '1')");
+    }
+
+    $tableCheck = $pdo->prepare("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = 'lab_software'");
+    $tableCheck->execute([':schema' => $dbname]);
+    if ((int)$tableCheck->fetchColumn() === 0) {
+        $pdo->exec("CREATE TABLE lab_software (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            lab_room VARCHAR(50) NOT NULL,
+            software_name VARCHAR(150) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+    }
+} catch (PDOException $e) {
+    // Ignore if already created or errors in subsequent creates
+}
