@@ -929,7 +929,14 @@
             <section class="section-panel" data-panel="feedback">
                 <div class="content-grid">
                     <div class="glass-card content-card">
-                        <div class="section-title mb-3"><i class="bi bi-chat-left-text"></i>Feedback Inbox</div>
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <div class="section-title mb-0"><i class="bi bi-chat-left-text"></i>Feedback Inbox</div>
+                            <div class="btn-group" role="group" id="feedbackFilterGroup">
+                                <button type="button" class="btn btn-outline-soft btn-sm active" data-filter="all">All</button>
+                                <button type="button" class="btn btn-outline-soft btn-sm" data-filter="new">New</button>
+                                <button type="button" class="btn btn-outline-soft btn-sm" data-filter="reviewed">Reviewed</button>
+                            </div>
+                        </div>
                         <div class="feedback-feed" id="adminFeedbackList">
                             <div class="empty-note">Loading feedback...</div>
                         </div>
@@ -2049,8 +2056,9 @@
                 const createdAt = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
                 const audienceLabel = item.audience ? item.audience.toUpperCase() : 'ALL';
                 return `
-                    <div class="announcement-feed-item">
-                        <div class="announcement-head">
+                    <div class="announcement-feed-item position-relative">
+                        <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2" data-delete-announcement="${item.id}" title="Delete Announcement"><i class="bi bi-trash"></i></button>
+                        <div class="announcement-head pe-5">
                             <span class="badge text-bg-info">${escapeHtml(audienceLabel)}</span>
                             <span>${escapeHtml(item.posted_by || 'CCS Admin')}</span>
                             <span>${escapeHtml(createdAt)}</span>
@@ -2062,22 +2070,40 @@
             }).join('');
         }
 
+        let currentFeedbackFilter = 'all';
+        document.getElementById('feedbackFilterGroup')?.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('#feedbackFilterGroup button').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFeedbackFilter = e.target.dataset.filter;
+                renderFeedbacks(feedbackCache);
+            }
+        });
+
         function renderFeedbacks(feedbacks) {
             const container = document.getElementById('adminFeedbackList');
             if (!container) return;
 
-            if (!feedbacks.length) {
-                container.innerHTML = '<div class="empty-note">No feedback submitted yet.</div>';
+            let filtered = feedbacks;
+            if (currentFeedbackFilter === 'new') {
+                filtered = feedbacks.filter(f => f.status !== 'reviewed');
+            } else if (currentFeedbackFilter === 'reviewed') {
+                filtered = feedbacks.filter(f => f.status === 'reviewed');
+            }
+
+            if (!filtered.length) {
+                container.innerHTML = '<div class="empty-note">No feedback matches this filter.</div>';
                 return;
             }
 
-            container.innerHTML = feedbacks.map(item => {
+            container.innerHTML = filtered.map(item => {
                 const createdAt = item.created_at ? new Date(item.created_at).toLocaleString() : '-';
                 const statusLabel = item.status === 'reviewed' ? 'Reviewed' : 'New';
                 const statusClass = item.status === 'reviewed' ? 'text-bg-success' : 'text-bg-warning';
                 return `
-                    <div class="feedback-feed-item">
-                        <div class="feedback-head">
+                    <div class="feedback-feed-item position-relative">
+                        <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2" data-delete-feedback="${item.id}" title="Delete Feedback"><i class="bi bi-trash"></i></button>
+                        <div class="feedback-head pe-5">
                             <span class="badge ${statusClass}">${escapeHtml(statusLabel)}</span>
                             <span>${escapeHtml(item.id_number || '')}</span>
                             <span>${escapeHtml(item.first_name || '')} ${escapeHtml(item.last_name || '')}</span>
@@ -2375,6 +2401,20 @@
                 return;
             }
 
+            const delFeedbackBtn = e.target.closest('[data-delete-feedback]');
+            if (delFeedbackBtn) {
+                if(confirm('Are you sure you want to delete this feedback?')) {
+                    const data = await apiPost('delete_feedback', { id: Number(delFeedbackBtn.dataset.deleteFeedback) });
+                    if (data.success) {
+                        showToast('Feedback deleted.', 'success');
+                        await loadFeedbacks();
+                    } else {
+                        showToast(data.message || 'Could not delete feedback.', 'error');
+                    }
+                }
+                return;
+            }
+
             const endBtn = e.target.closest('[data-end-session]');
             if (endBtn) {
                 const sessionId = Number(endBtn.dataset.endSession);
@@ -2413,6 +2453,22 @@
                 await loadAnnouncements();
             } else {
                 showToast(data.message || 'Failed to post announcement.', 'error');
+            }
+        });
+
+        document.getElementById('adminAnnouncementList')?.addEventListener('click', async function (e) {
+            const delAnnounceBtn = e.target.closest('[data-delete-announcement]');
+            if (delAnnounceBtn) {
+                if(confirm('Are you sure you want to delete this announcement?')) {
+                    const data = await apiPost('delete_announcement', { id: Number(delAnnounceBtn.dataset.deleteAnnouncement) });
+                    if (data.success) {
+                        showToast('Announcement deleted.', 'success');
+                        await loadAnnouncements();
+                    } else {
+                        showToast(data.message || 'Could not delete announcement.', 'error');
+                    }
+                }
+                return;
             }
         });
 

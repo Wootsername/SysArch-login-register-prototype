@@ -1127,7 +1127,9 @@
                                             class="bi bi-journal-bookmark me-2"></i>Reservation</a></li>
                                 <li><a class="dropdown-item" href="#" data-section="reservation-status"><i
                                             class="bi bi-inbox me-2"></i>Reservation Status</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item" href="#" data-section="software"><i
                                             class="bi bi-box-seam me-2"></i>Software Availability</a></li>
                             </ul>
@@ -1406,7 +1408,8 @@
             <section class="section-panel" data-panel="software">
                 <div class="glass-card content-card">
                     <div class="section-title"><i class="bi bi-box-seam"></i>Software Availability</div>
-                    <div class="empty-note mb-3">Check what software applications are available in each laboratory.</div>
+                    <div class="empty-note mb-3">Check what software applications are available in each laboratory.
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-dark-surface align-middle">
                             <thead>
@@ -1417,7 +1420,8 @@
                             </thead>
                             <tbody id="softwareListBody">
                                 <tr>
-                                    <td colspan="2" class="text-center py-4 text-white-50">Loading software availability...</td>
+                                    <td colspan="2" class="text-center py-4 text-white-50">Loading software
+                                        availability...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1530,35 +1534,32 @@
             </section>
 
             <section class="section-panel" data-panel="feedback">
-                <div class="glass-card content-card">
-                    <div class="section-title"><i class="bi bi-chat-left-text"></i> Feedback</div>
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <form id="feedbackForm" class="row g-3" novalidate>
-                                <div class="col-12">
-                                    <label class="form-label" for="feedbackSubject">Subject</label>
-                                    <input type="text" id="feedbackSubject" class="form-control"
-                                        placeholder="e.g. Lab experience" required>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="feedbackMessage">Message</label>
-                                    <textarea id="feedbackMessage" class="form-control" rows="6"
-                                        placeholder="Write your feedback here" required></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-primary-gradient"><i
-                                            class="bi bi-send me-1"></i>Submit Feedback</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="glass-card p-4"
-                                style="background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
-                                <div class="section-title mb-3"><i class="bi bi-clock-history"></i>My Feedback</div>
-                                <div class="scroll-pane" id="feedbackList">
-                                    <div class="feedback-empty">Loading feedback...</div>
-                                </div>
+                <div class="content-grid">
+                    <div class="glass-card content-card">
+                        <div class="section-title mb-3"><i class="bi bi-chat-left-text"></i> Submit Feedback</div>
+                        <form id="feedbackForm" class="row g-3" novalidate>
+                            <div class="col-12">
+                                <label class="form-label" for="feedbackSubject">Subject</label>
+                                <input type="text" id="feedbackSubject" class="form-control"
+                                    placeholder="e.g. Lab experience" required>
                             </div>
+                            <div class="col-12">
+                                <label class="form-label" for="feedbackMessage">Message</label>
+                                <textarea id="feedbackMessage" class="form-control" rows="6"
+                                    placeholder="Write your feedback here" required></textarea>
+                            </div>
+                            <div class="col-12 d-flex mt-4">
+                                <button type="submit" class="btn btn-primary-gradient"><i
+                                        class="bi bi-send me-1"></i>Submit Feedback</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="glass-card content-card">
+                        <div class="section-title mb-3"><i class="bi bi-clock-history"></i> My Feedback</div>
+                        <div class="empty-note mb-3">View the status of your submitted feedback below.</div>
+                        <div class="scroll-pane" id="feedbackList">
+                            <div class="feedback-empty">Loading feedback...</div>
                         </div>
                     </div>
                 </div>
@@ -1725,8 +1726,8 @@
             document.getElementById('avatarName').textContent = fullName();
             document.getElementById('avatarInfo').textContent = `${profile.course} - Year ${profile.year_level}`;
             document.getElementById('previewName').textContent = fullName();
-            document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
-            document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
+            document.getElementById('summaryRemaining').textContent = `Remaining Sessions: ${profile.remaining_sessions}`;
+            document.getElementById('summaryPoints').textContent = `Reward Points: ${profile.reward_points}`;
             const remainingLabel = document.querySelector('[data-remaining-label]');
             if (remainingLabel) {
                 remainingLabel.textContent = 'Remaining Sessions';
@@ -1806,17 +1807,38 @@
                 return;
             }
 
-            container.innerHTML = announcements.map(item => {
+            const accordionId = 'announcementAccordion';
+            let html = `<div class="accordion accordion-flush" id="${accordionId}">`;
+
+            html += announcements.map((item, index) => {
                 const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Today';
                 const icon = item.audience === 'all' ? 'bi-people' : item.audience === 'admin' ? 'bi-shield-lock' : 'bi-bell';
+                const headingId = `announceHeading${index}`;
+                const collapseId = `announceCollapse${index}`;
+
                 return `
-                    <div class="announcement-item">
-                        <div class="announcement-chip"><i class="bi ${icon}"></i> ${escapeHtml(item.posted_by || 'CCS Admin')} | ${escapeHtml(createdAt)}</div>
-                        <div class="fw-semibold mb-1">${escapeHtml(item.title || 'Announcement')}</div>
-                        <div>${escapeHtml(item.body || '')}</div>
+                    <div class="accordion-item bg-transparent border-bottom border-secondary">
+                        <h2 class="accordion-header" id="${headingId}">
+                            <button class="accordion-button collapsed bg-transparent text-light shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                                <div class="d-flex flex-column text-start w-100">
+                                    <div class="d-flex justify-content-between align-items-center w-100 pe-3">
+                                        <div class="fw-semibold text-info"><i class="bi ${icon} me-1"></i>${escapeHtml(item.title || 'Announcement')}</div>
+                                    </div>
+                                    <small class="text-white-50">${escapeHtml(item.posted_by || 'CCS Admin')} • ${escapeHtml(createdAt)}</small>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headingId}" data-bs-parent="#${accordionId}">
+                            <div class="accordion-body text-light opacity-75">
+                                ${escapeHtml(item.body || '')}
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
 
         function renderFeedbacks(feedbacks) {
@@ -1828,18 +1850,40 @@
                 return;
             }
 
-            container.innerHTML = feedbacks.map(item => {
+            const accordionId = 'feedbackAccordion';
+            let html = `<div class="accordion accordion-flush" id="${accordionId}">`;
+
+            html += feedbacks.map((item, index) => {
                 const createdAt = item.created_at ? new Date(item.created_at).toLocaleString() : 'Today';
                 const statusLabel = item.status === 'reviewed' ? 'Reviewed' : 'New';
                 const statusClass = item.status === 'reviewed' ? 'text-bg-success' : 'text-bg-warning';
+                const headingId = `feedbackHeading${index}`;
+                const collapseId = `feedbackCollapse${index}`;
+
                 return `
-                    <div class="feedback-item">
-                        <div class="feedback-chip"><i class="bi bi-chat-dots"></i> ${escapeHtml(item.subject || 'Feedback')} | ${escapeHtml(createdAt)}</div>
-                        <div class="mb-2">${escapeHtml(item.message || '')}</div>
-                        <span class="badge ${statusClass}">${statusLabel}</span>
+                    <div class="accordion-item bg-transparent border-bottom border-secondary">
+                        <h2 class="accordion-header" id="${headingId}">
+                            <button class="accordion-button collapsed bg-transparent text-light shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                                <div class="d-flex flex-column text-start w-100 pe-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="fw-semibold text-info"><i class="bi bi-chat-dots me-1"></i>${escapeHtml(item.subject || 'Feedback')}</div>
+                                        <span class="badge ${statusClass}">${statusLabel}</span>
+                                    </div>
+                                    <small class="text-white-50">${escapeHtml(createdAt)}</small>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headingId}" data-bs-parent="#${accordionId}">
+                            <div class="accordion-body text-light opacity-75">
+                                ${escapeHtml(item.message || '')}
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
 
         function renderRewardHistory(rewards) {
@@ -2070,10 +2114,11 @@
                 const leaderboard = data.leaderboard || [];
                 const notifications = data.notifications || [];
 
-                document.getElementById('statSessions').textContent = activeSessions.length;
-                document.getElementById('statReservations').textContent = reservations.length;
-                document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
-                document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
+                const summary = data.summary_stats || {};
+                document.getElementById('statTotalHours').textContent = summary.total_hours || '0';
+                document.getElementById('statNumberSessions').textContent = summary.session_count || '0';
+                document.getElementById('statAvgDuration').textContent = summary.average_duration_formatted || '-';
+                document.getElementById('statLongestSession').textContent = summary.longest_session_formatted || '-';
                 document.getElementById('reservationSessions').value = profile.remaining_sessions;
 
                 const reserveBtn = document.querySelector('#reservationForm button[type="submit"]');
@@ -2243,9 +2288,10 @@
         fillProfileForm();
         loadStudentDashboard();
         setActiveSection('home');
-        document.getElementById('statSessions').textContent = '0';
-        document.getElementById('statProfile').textContent = `${profile.remaining_sessions}`;
-        document.getElementById('statPhoto').textContent = `${profile.reward_points}`;
+        document.getElementById('statTotalHours').textContent = '0';
+        document.getElementById('statNumberSessions').textContent = '0';
+        document.getElementById('statAvgDuration').textContent = '-';
+        document.getElementById('statLongestSession').textContent = '-';
     </script>
 </body>
 

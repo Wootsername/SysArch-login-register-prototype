@@ -90,6 +90,12 @@ switch ($action) {
     case 'review_feedback':
         reviewFeedback($pdo);
         break;
+    case 'delete_feedback':
+        deleteFeedback($pdo);
+        break;
+    case 'delete_announcement':
+        deleteAnnouncement($pdo);
+        break;
     case 'end_session':
         endSession($pdo);
         break;
@@ -182,6 +188,33 @@ function createAnnouncement(PDO $pdo): void
         'success' => true,
         'message' => 'Announcement posted successfully',
     ]);
+}
+
+function deleteAnnouncement(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+
+    if ($id <= 0) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Announcement ID is required']);
+        return;
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM announcements WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    if ($stmt->rowCount() > 0) {
+        echo json_encode(['success' => true, 'message' => 'Announcement deleted successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Announcement not found']);
+    }
 }
 
 function calculateRewardPoints(int $durationSeconds): int
@@ -511,6 +544,33 @@ function reviewFeedback(PDO $pdo): void
     }
 
     echo json_encode(['success' => true, 'message' => 'Feedback marked as reviewed']);
+}
+
+function deleteFeedback(PDO $pdo): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+
+    if ($id <= 0) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Feedback ID is required']);
+        return;
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM feedback_entries WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    if ($stmt->rowCount() > 0) {
+        echo json_encode(['success' => true, 'message' => 'Feedback deleted successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Feedback not found']);
+    }
 }
 
 function handleLogin(PDO $pdo): void
