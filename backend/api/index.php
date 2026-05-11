@@ -709,7 +709,7 @@ function getStats(PDO $pdo): void
     $activeCount = $pdo->query("SELECT COUNT(*) FROM sitin_sessions WHERE status = 'active'")->fetchColumn();
     $todayCount = $pdo->query("SELECT COUNT(*) FROM sitin_sessions WHERE DATE(time_in) = CURDATE()")->fetchColumn();
     $totalStudents = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
-    $pendingReservations = $pdo->query("SELECT COUNT(*) FROM reservations WHERE status = 'pending'")->fetchColumn();
+    $pendingReservations = $pdo->query("SELECT COUNT(*) FROM reservations WHERE LOWER(TRIM(status)) = 'pending'")->fetchColumn();
 
     echo json_encode([
         'success' => true,

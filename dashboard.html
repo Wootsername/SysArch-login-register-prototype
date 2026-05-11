@@ -1590,7 +1590,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const API_BASE = 'backend/api/index.php';
+        function resolveApiBase() {
+            if (window.location.protocol === 'file:') {
+                const parts = window.location.pathname.split(/[\\/]/).filter(Boolean);
+                const projectFolder = parts.length >= 2 ? parts[parts.length - 2] : 'SysArch-login-register-prototype';
+                return `http://localhost/${projectFolder}/backend/api/index.php`;
+            }
+
+            return new URL('backend/api/index.php', window.location.href).href;
+        }
+
+        const API_BASE = resolveApiBase();
         const USER_KEY = 'ccs_user';
         const PROFILE_KEY = 'ccs_student_profile';
 
@@ -1939,6 +1949,52 @@
             `).join('');
         }
 
+        function renderSoftwareAvailability(softwareItems) {
+            const tbody = document.getElementById('softwareListBody');
+            if (!tbody) return;
+
+            const items = Array.isArray(softwareItems) ? softwareItems : [];
+            if (!items.length) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-white-50">No software availability data has been added yet.</td></tr>';
+                return;
+            }
+
+            const grouped = items.reduce((accumulator, item) => {
+                const labRoom = item.lab_room || 'Unassigned';
+                if (!accumulator[labRoom]) accumulator[labRoom] = [];
+                accumulator[labRoom].push(item.software_name || 'Unknown software');
+                return accumulator;
+            }, {});
+
+            tbody.innerHTML = Object.keys(grouped).sort().map(labRoom => `
+                <tr>
+                    <td class="fw-semibold">${escapeHtml(labRoom)}</td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${grouped[labRoom].map(name => `<span class="badge bg-secondary">${escapeHtml(name)}</span>`).join('')}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadSoftwareAvailability() {
+            const tbody = document.getElementById('softwareListBody');
+            if (!tbody) return;
+
+            try {
+                const data = await apiGet('get_lab_software');
+                if (data.success) {
+                    renderSoftwareAvailability(data.software || []);
+                    return;
+                }
+
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-white-50">Unable to load software availability.</td></tr>';
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4 text-white-50">Unable to load software availability.</td></tr>';
+            }
+        }
+
         function logout() {
             localStorage.removeItem(USER_KEY);
             window.location.href = 'login.html';
@@ -2155,6 +2211,7 @@
                 renderFeedbacks(feedbacks);
                 renderRewardHistory(rewards);
                 renderNotifications(notifications);
+                loadSoftwareAvailability();
 
                 document.getElementById('rewardTotalPoints').textContent = `${profile.reward_points}`;
                 const currentStudent = leaderboard.find(item => item.id_number === profile.id_number);
