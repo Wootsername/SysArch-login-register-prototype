@@ -5,6 +5,10 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/../config/database.php';
 
+if (php_sapi_name() === 'cli') {
+    return;
+}
+
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
@@ -688,6 +692,7 @@ function handleRegister(PDO $pdo): void
 
 function getActiveSessions(PDO $pdo): void
 {
+    activateScheduledReservations($pdo);
     $stmt = $pdo->prepare("
         SELECT s.id, s.lab_room, s.purpose, s.time_in, s.status,
                u.id_number, u.first_name, u.last_name, u.course, u.year_level, u.remaining_sessions,
@@ -784,6 +789,7 @@ function endSession(PDO $pdo): void
 
 function getAdminDashboard(PDO $pdo): void
 {
+    activateScheduledReservations($pdo);
     $totalStudents = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
     $currentlySitin = (int)$pdo->query("SELECT COUNT(*) FROM sitin_sessions WHERE status = 'active'")->fetchColumn();
     $totalSitin = (int)$pdo->query("SELECT COUNT(*) FROM sitin_sessions")->fetchColumn();
@@ -906,6 +912,13 @@ function createSitin(PDO $pdo): void
         return;
     }
 
+    // Validate PC Selection
+    if (!preg_match('/^S([1-9]|[1-4][0-9]|50)$/', $labRoom)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid PC selection']);
+        return;
+    }
+
     $userStmt = $pdo->prepare("SELECT id FROM users WHERE id_number = :id_number AND role = 'student' LIMIT 1");
     $userStmt->execute([':id_number' => $idNumber]);
     $user = $userStmt->fetch();
@@ -922,6 +935,15 @@ function createSitin(PDO $pdo): void
     if ($remainingSessions <= 0) {
         http_response_code(409);
         echo json_encode(['success' => false, 'message' => 'No remaining sessions left']);
+        return;
+    }
+
+    // Check PC occupancy first
+    $pcCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE lab_room = :lab_room AND status = 'active' LIMIT 1");
+    $pcCheck->execute([':lab_room' => $labRoom]);
+    if ($pcCheck->fetch()) {
+        http_response_code(409);
+        echo json_encode(['success' => false, 'message' => 'PC ' . $labRoom . ' is already occupied by an active session']);
         return;
     }
 
@@ -949,6 +971,7 @@ function createSitin(PDO $pdo): void
 
 function getCurrentSitinRecords(PDO $pdo): void
 {
+    activateScheduledReservations($pdo);
     $stmt = $pdo->prepare("SELECT
             s.id,
             s.time_in,
@@ -1021,6 +1044,13 @@ function getStudentDashboard(PDO $pdo): void
         echo json_encode(['success' => false, 'message' => 'Student not found']);
         return;
     }
+
+    // Auto-activate scheduled reservations for this user
+    activateScheduledReservations($pdo, (int)$user['id']);
+
+    // Re-fetch user to get latest remaining_sessions
+    $userStmt->execute([':id_number' => $idNumber]);
+    $user = $userStmt->fetch();
 
     $activeStmt = $pdo->prepare("SELECT id, lab_room, purpose, status, time_in, time_out, TIMESTAMPDIFF(SECOND, time_in, NOW()) AS duration_seconds, SEC_TO_TIME(TIMESTAMPDIFF(SECOND, time_in, NOW())) AS duration_time FROM sitin_sessions WHERE user_id = :user_id AND status = 'active' ORDER BY time_in DESC");
     $activeStmt->execute([':user_id' => (int)$user['id']]);
@@ -1182,6 +1212,79 @@ function adminForceLogout(PDO $pdo): void
     }
 }
 
+function activateScheduledReservations(PDO $pdo, ?int $userId = null): void
+{
+    $sql = "SELECT r.id, r.user_id, r.lab_room, r.purpose, u.remaining_sessions 
+            FROM reservations r 
+            INNER JOIN users u ON u.id = r.user_id 
+            WHERE r.status = 'approved' 
+              AND r.preferred_date <= CURDATE()";
+    
+    if ($userId !== null) {
+        $sql .= " AND r.user_id = :user_id";
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    if ($userId !== null) {
+        $stmt->execute([':user_id' => $userId]);
+    } else {
+        $stmt->execute();
+    }
+    
+    $reservations = $stmt->fetchAll();
+    foreach ($reservations as $res) {
+        $activeCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE user_id = :user_id AND status = 'active' LIMIT 1");
+        $activeCheck->execute([':user_id' => (int)$res['user_id']]);
+        if ($activeCheck->fetch()) {
+            continue;
+        }
+        
+        $pcCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE lab_room = :lab_room AND status = 'active' LIMIT 1");
+        $pcCheck->execute([':lab_room' => $res['lab_room']]);
+        if ($pcCheck->fetch()) {
+            continue;
+        }
+        
+        if ((int)$res['remaining_sessions'] <= 0) {
+            continue;
+        }
+        
+        $inTransaction = $pdo->inTransaction();
+        if (!$inTransaction) {
+            $pdo->beginTransaction();
+        }
+        try {
+            $userStmt = $pdo->prepare("SELECT remaining_sessions FROM users WHERE id = :id FOR UPDATE");
+            $userStmt->execute([':id' => (int)$res['user_id']]);
+            $rem = (int)$userStmt->fetchColumn();
+            if ($rem <= 0) {
+                if (!$inTransaction) {
+                    $pdo->rollBack();
+                }
+                continue;
+            }
+            
+            $pdo->prepare("INSERT INTO sitin_sessions (user_id, lab_room, purpose, status, time_in) VALUES (:user_id, :lab_room, :purpose, 'active', NOW())")
+                ->execute([
+                    ':user_id' => (int)$res['user_id'],
+                    ':lab_room' => $res['lab_room'],
+                    ':purpose' => $res['purpose']
+                ]);
+                
+            $pdo->prepare("UPDATE users SET remaining_sessions = remaining_sessions - 1 WHERE id = :user_id")
+                ->execute([':user_id' => (int)$res['user_id']]);
+                
+            if (!$inTransaction) {
+                $pdo->commit();
+            }
+        } catch (Exception $e) {
+            if (!$inTransaction && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+        }
+    }
+}
+
 function createReservation(PDO $pdo): void
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -1201,6 +1304,31 @@ function createReservation(PDO $pdo): void
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'ID Number, Lab Room, and Purpose are required']);
         return;
+    }
+
+    // Validate PC ID format S1 to S50
+    if (!preg_match('/^S([1-9]|[1-4][0-9]|50)$/', $labRoom)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid PC selection']);
+        return;
+    }
+
+    // Validate date and time
+    if ($preferredDate !== null) {
+        $today = date('Y-m-d');
+        if ($preferredDate < $today) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Preferred date cannot be in the past']);
+            return;
+        }
+
+        if ($preferredDate === $today && $preferredTime !== null) {
+            if ($preferredTime < date('H:i', strtotime('-15 minutes'))) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Preferred time cannot be in the past']);
+                return;
+            }
+        }
     }
 
     $settingStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'reservations_enabled'");
@@ -1225,6 +1353,46 @@ function createReservation(PDO $pdo): void
         http_response_code(409);
         echo json_encode(['success' => false, 'message' => 'No remaining sessions left']);
         return;
+    }
+
+    // Check if the student already has an active session today if they are trying to reserve for today
+    if ($preferredDate === date('Y-m-d')) {
+        $activeCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE user_id = :user_id AND status = 'active' LIMIT 1");
+        $activeCheck->execute([':user_id' => (int)$user['id']]);
+        if ($activeCheck->fetch()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'message' => 'You already have an active sit-in session today']);
+            return;
+        }
+    }
+
+    // Check if the student already has a pending reservation for the same date
+    if ($preferredDate !== null) {
+        $stmt = $pdo->prepare("SELECT id FROM reservations WHERE user_id = :user_id AND preferred_date = :preferred_date AND status = 'pending' LIMIT 1");
+        $stmt->execute([
+            ':user_id' => $user['id'],
+            ':preferred_date' => $preferredDate
+        ]);
+        if ($stmt->fetch()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'message' => 'You already have a pending reservation for this date']);
+            return;
+        }
+    }
+
+    // Check if the PC is already reserved for the same date and time by another student
+    if ($preferredDate !== null && $preferredTime !== null) {
+        $stmt = $pdo->prepare("SELECT id FROM reservations WHERE lab_room = :lab_room AND preferred_date = :preferred_date AND preferred_time = :preferred_time AND status IN ('pending', 'approved') LIMIT 1");
+        $stmt->execute([
+            ':lab_room' => $labRoom,
+            ':preferred_date' => $preferredDate,
+            ':preferred_time' => $preferredTime
+        ]);
+        if ($stmt->fetch()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'message' => 'This PC is already reserved for the selected date and time']);
+            return;
+        }
     }
 
     $insertStmt = $pdo->prepare("INSERT INTO reservations (user_id, lab_room, purpose, preferred_date, preferred_time, status) VALUES (:user_id, :lab_room, :purpose, :preferred_date, :preferred_time, 'pending')");
@@ -1265,6 +1433,7 @@ function getStudentReservations(PDO $pdo): void
 
 function getAdminReservations(PDO $pdo): void
 {
+    activateScheduledReservations($pdo);
     $stmt = $pdo->prepare("SELECT r.id, r.lab_room, r.purpose, r.preferred_date, r.preferred_time, r.status, r.created_at, u.id_number, u.first_name, u.last_name, u.remaining_sessions FROM reservations r INNER JOIN users u ON u.id = r.user_id ORDER BY r.created_at DESC");
     $stmt->execute();
 
@@ -1289,7 +1458,7 @@ function approveReservation(PDO $pdo): void
 
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare("SELECT r.id, r.user_id, r.lab_room, r.purpose, r.status, u.remaining_sessions FROM reservations r INNER JOIN users u ON u.id = r.user_id WHERE r.id = :id LIMIT 1 FOR UPDATE");
+        $stmt = $pdo->prepare("SELECT r.id, r.user_id, r.lab_room, r.purpose, r.status, r.preferred_date, r.preferred_time, u.remaining_sessions FROM reservations r INNER JOIN users u ON u.id = r.user_id WHERE r.id = :id LIMIT 1 FOR UPDATE");
         $stmt->execute([':id' => $reservationId]);
         $reservation = $stmt->fetch();
 
@@ -1314,30 +1483,54 @@ function approveReservation(PDO $pdo): void
             return;
         }
 
-        $activeCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE user_id = :user_id AND status = 'active' LIMIT 1");
-        $activeCheck->execute([':user_id' => (int)$reservation['user_id']]);
-        if ($activeCheck->fetch()) {
-            $pdo->rollBack();
-            http_response_code(409);
-            echo json_encode(['success' => false, 'message' => 'Student already has an active session']);
-            return;
+        $preferredDate = $reservation['preferred_date'];
+        $isFuture = ($preferredDate !== null && $preferredDate > date('Y-m-d'));
+
+        if ($isFuture) {
+            // Decoupled approval: Set status to approved, do NOT start the session yet.
+            $pdo->prepare("UPDATE reservations SET status = 'approved' WHERE id = :id")
+                ->execute([':id' => $reservationId]);
+
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => 'Reservation approved successfully']);
+        } else {
+            // Immediate approval (today or past/none): start session now.
+            // Check PC occupancy first
+            $pcCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE lab_room = :lab_room AND status = 'active' LIMIT 1");
+            $pcCheck->execute([':lab_room' => $reservation['lab_room']]);
+            if ($pcCheck->fetch()) {
+                $pdo->rollBack();
+                http_response_code(409);
+                echo json_encode(['success' => false, 'message' => 'PC ' . $reservation['lab_room'] . ' is already occupied by an active session']);
+                return;
+            }
+
+            // Check if student already has an active session
+            $activeCheck = $pdo->prepare("SELECT id FROM sitin_sessions WHERE user_id = :user_id AND status = 'active' LIMIT 1");
+            $activeCheck->execute([':user_id' => (int)$reservation['user_id']]);
+            if ($activeCheck->fetch()) {
+                $pdo->rollBack();
+                http_response_code(409);
+                echo json_encode(['success' => false, 'message' => 'Student already has an active session']);
+                return;
+            }
+
+            $pdo->prepare("INSERT INTO sitin_sessions (user_id, lab_room, purpose, status, time_in) VALUES (:user_id, :lab_room, :purpose, 'active', NOW())")
+                ->execute([
+                    ':user_id' => (int)$reservation['user_id'],
+                    ':lab_room' => $reservation['lab_room'],
+                    ':purpose' => $reservation['purpose'],
+                ]);
+
+            $pdo->prepare("UPDATE users SET remaining_sessions = remaining_sessions - 1 WHERE id = :user_id AND remaining_sessions > 0")
+                ->execute([':user_id' => (int)$reservation['user_id']]);
+
+            $pdo->prepare("UPDATE reservations SET status = 'approved' WHERE id = :id")
+                ->execute([':id' => $reservationId]);
+
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => 'Reservation approved and session started']);
         }
-
-        $pdo->prepare("INSERT INTO sitin_sessions (user_id, lab_room, purpose, status, time_in) VALUES (:user_id, :lab_room, :purpose, 'active', NOW())")
-            ->execute([
-                ':user_id' => (int)$reservation['user_id'],
-                ':lab_room' => $reservation['lab_room'],
-                ':purpose' => $reservation['purpose'],
-            ]);
-
-        $pdo->prepare("UPDATE users SET remaining_sessions = remaining_sessions - 1 WHERE id = :user_id AND remaining_sessions > 0")
-            ->execute([':user_id' => (int)$reservation['user_id']]);
-
-        $pdo->prepare("UPDATE reservations SET status = 'approved' WHERE id = :id")
-            ->execute([':id' => $reservationId]);
-
-        $pdo->commit();
-        echo json_encode(['success' => true, 'message' => 'Reservation approved and session started']);
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();

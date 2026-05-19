@@ -163,10 +163,123 @@
         @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(0.9); } }
 
+        /* ── Leaderboard Section ── */
+        .lb-section {
+            padding: 40px 20px 60px;
+            max-width: 860px;
+            margin: 0 auto;
+            animation: cardReveal 0.8s ease-out 0.5s both;
+        }
+        .lb-section-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .lb-section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd700 0%, #f0c040 40%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+        .lb-section-header p {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.9rem;
+        }
+        .lb-podium {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .lb-pod-card {
+            flex: 0 1 160px;
+            padding: 18px 12px;
+            text-align: center;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform .3s ease;
+        }
+        .lb-pod-card:hover { transform: translateY(-4px); }
+        .lb-pod-card.gold { border-color: rgba(255,215,0,0.3); box-shadow: 0 6px 24px rgba(255,215,0,0.1); }
+        .lb-pod-card.gold::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg,#ffd700,#f0a500); border-radius: 3px 3px 0 0; margin: -18px -12px 12px; }
+        .lb-pod-card.silver { border-color: rgba(192,192,192,0.25); }
+        .lb-pod-card.silver::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg,#c0c0c0,#888); border-radius: 3px 3px 0 0; margin: -18px -12px 12px; }
+        .lb-pod-card.bronze { border-color: rgba(205,127,50,0.25); }
+        .lb-pod-card.bronze::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg,#cd7f32,#a0622e); border-radius: 3px 3px 0 0; margin: -18px -12px 12px; }
+        .lb-pod-icon { font-size: 1.6rem; margin-bottom: 6px; }
+        .lb-pod-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-pod-id { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-bottom: 6px; }
+        .lb-pod-count { font-size: 1.3rem; font-weight: 800; color: #8fd0ff; }
+        .lb-pod-label { color: rgba(255,255,255,0.4); font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; }
+        .lb-mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .lb-mini-table th {
+            padding: 10px 16px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: rgba(207,232,255,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+        }
+        .lb-mini-table td {
+            padding: 10px 16px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .lb-mini-table tr:last-child td { border-bottom: none; }
+        .lb-mini-table .lb-rank {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5);
+        }
+        .lb-mini-table .lb-sessions { font-weight: 700; color: #8fd0ff; }
+        .lb-view-all {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #60a5fa;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .lb-view-all:hover { color: #93c5fd; text-decoration: underline; }
+        .lb-empty-login { text-align: center; color: rgba(255,255,255,0.35); font-size: 0.88rem; padding: 24px 0; }
+
+        /* Light theme overrides for login leaderboard */
+        [data-theme="light"] .lb-section-header h2 {
+            background: linear-gradient(135deg, #b8860b 0%, #8b6914 40%, #1e293b 100%);
+            -webkit-background-clip: text; background-clip: text;
+        }
+        [data-theme="light"] .lb-section-header p { color: rgba(30,41,59,0.5); }
+        [data-theme="light"] .lb-pod-card { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); }
+        [data-theme="light"] .lb-pod-id { color: rgba(30,41,59,0.4); }
+        [data-theme="light"] .lb-pod-count { color: #2563eb; }
+        [data-theme="light"] .lb-pod-label { color: rgba(30,41,59,0.4); }
+        [data-theme="light"] .lb-mini-table { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); }
+        [data-theme="light"] .lb-mini-table th { color: #1e40af; border-bottom: 1px solid rgba(0,0,0,0.08); }
+        [data-theme="light"] .lb-mini-table td { border-bottom: 1px solid rgba(0,0,0,0.04); color: #334155; }
+        [data-theme="light"] .lb-mini-table .lb-rank { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08); color: rgba(30,41,59,0.5); }
+        [data-theme="light"] .lb-mini-table .lb-sessions { color: #2563eb; }
+        [data-theme="light"] .lb-empty-login { color: rgba(30,41,59,0.35); }
+
         @media (max-width: 768px) {
             .login-wrapper { flex-direction: column; gap: 30px; }
             .logo-side img { max-width: 220px; }
             .form-side { max-width: 100%; padding: 30px 24px; }
+            .lb-podium { flex-direction: column; align-items: center; }
+            .lb-pod-card { flex: 0 1 100%; max-width: 220px; }
         }
 
         /* ── Light Theme ── */
@@ -332,6 +445,21 @@
                 </div>
             </div>
         </div>
+
+        <!-- Leaderboard Showcase -->
+        <div class="lb-section" id="lbSection">
+            <div class="lb-section-header">
+                <h2>🏆 Top Students</h2>
+                <p>Students with the most completed sit-in Points</p>
+            </div>
+            <div class="lb-podium" id="lbPodium" style="display:none;"></div>
+            <table class="lb-mini-table" id="lbMiniTable" style="display:none;">
+                <thead><tr><th>Rank</th><th>Student</th><th style="text-align:right">Points</th></tr></thead>
+                <tbody id="lbMiniBody"></tbody>
+            </table>
+            <div class="lb-empty-login" id="lbEmptyLogin">Loading leaderboard…</div>
+            <a href="leaderboard.html" class="lb-view-all" id="lbViewAll" style="display:none;">View Full Leaderboard →</a>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -462,6 +590,58 @@
                 setTimeout(() => { window.location.href = href; }, 350);
             });
         });
+
+        /* ── Login Page Leaderboard ── */
+        (async function loadLoginLeaderboard() {
+            const podiumEl = document.getElementById('lbPodium');
+            const tableEl = document.getElementById('lbMiniTable');
+            const bodyEl = document.getElementById('lbMiniBody');
+            const emptyEl = document.getElementById('lbEmptyLogin');
+            const viewAll = document.getElementById('lbViewAll');
+            try {
+                const base = window.location.protocol === 'file:'
+                    ? 'http://localhost/SysArch-login-register-prototype/backend/api/leaderboard.php'
+                    : new URL('backend/api/leaderboard.php', window.location.href).href;
+                const res = await fetch(base);
+                const data = await res.json();
+                if (!data.success || !data.leaderboard || data.leaderboard.length === 0) {
+                    emptyEl.textContent = 'No sit-in sessions recorded yet.';
+                    return;
+                }
+                const rows = data.leaderboard;
+                emptyEl.style.display = 'none';
+                viewAll.style.display = 'block';
+                // Podium
+                const medals = ['gold','silver','bronze'];
+                const icons = ['🥇','🥈','🥉'];
+                const top3 = rows.slice(0,3);
+                if (top3.length) {
+                    podiumEl.style.display = 'flex';
+                    podiumEl.innerHTML = top3.map((s,i) => `
+                        <div class="lb-pod-card ${medals[i]}">
+                            <div class="lb-pod-icon">${icons[i]}</div>
+                            <div class="lb-pod-name">${esc(s.student_name)}</div>
+                            <div class="lb-pod-id">${esc(s.id_number)}</div>
+                            <div class="lb-pod-count">${s.total_points}</div>
+                            <div class="lb-pod-label">Points</div>
+                        </div>`).join('');
+                }
+                // Table for rank 4+
+                const rest = rows.slice(3);
+                if (rest.length) {  
+                    tableEl.style.display = 'table';
+                    bodyEl.innerHTML = rest.map((s,i) => `
+                        <tr>
+                            <td><span class="lb-rank">${i+4}</span></td>
+                            <td>${esc(s.student_name)}</td>
+                            <td style="text-align:right" class="lb-sessions">${s.total_points}</td>
+                        </tr>`).join('');
+                }
+            } catch(e) {
+                emptyEl.textContent = 'Unable to load leaderboard.';
+            }
+            function esc(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
+        })();
 
         /* ── Theme Toggle ── */
         const themeToggle = document.getElementById('themeToggle');
