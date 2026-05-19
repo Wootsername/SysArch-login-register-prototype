@@ -983,7 +983,7 @@
 
         .pc-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+            grid-template-columns: repeat(16, 1fr);
             gap: 8px;
         }
 
@@ -2319,7 +2319,7 @@
                 const box = document.createElement('div');
                 box.className = `pc-box${isOccupied ? ' occupied' : ''}${isSelected ? ' selected' : ''}`;
                 box.dataset.pc = pcId;
-                box.innerHTML = `<i class="bi bi-pc-display"></i><span>${i}</span>`;
+                box.innerHTML = `<i class="bi bi-pc"></i><span>${i}</span>`;
                 if (!isOccupied) {
                     box.addEventListener('click', function () {
                         document.querySelectorAll('.pc-box.selected').forEach(b => b.classList.remove('selected'));

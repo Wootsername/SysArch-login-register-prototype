@@ -660,7 +660,7 @@
         .legend-dot.selected { background: rgba(59,130,246,0.8); border: 1px solid rgba(59,130,246,1); }
         .pc-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+            grid-template-columns: repeat(16, 1fr);
             gap: 8px;
         }
         .pc-box {
@@ -1017,7 +1017,7 @@
                                 <div class="pc-grid" id="pcGrid"></div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="formPurpose">Purpose / Language</label>
                             <select id="formPurpose" class="form-select" required>
                                 <option value="">Select language/use</option>
@@ -1028,10 +1028,8 @@
                                 <option value="Database">Database</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <div class="small-note mt-2">The selected language/use will be stored in the sit-in record.
-                            </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="formPurposeCustom">Custom Note (optional)</label>
                             <input type="text" id="formPurposeCustom" class="form-control"
                                 placeholder="e.g. Data Structures Lab">
@@ -1443,7 +1441,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-bg-dark border-secondary">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title"><i class="bi bi-pc-display me-2 text-info"></i>PC Control - <span id="pcControlTitle"></span></h5>
+                    <h5 class="modal-title"><i class="bi bi-pc me-2 text-info"></i>PC Control - <span id="pcControlTitle"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -2567,7 +2565,7 @@
                 const box = document.createElement('div');
                 box.className = `pc-box${isOccupied ? ' occupied' : ''}${isSelected ? ' selected' : ''}`;
                 box.dataset.pc = pcId;
-                box.innerHTML = `<i class="bi bi-pc-display"></i><span>${i}</span>`;
+                box.innerHTML = `<i class="bi bi-pc"></i><span>${i}</span>`;
                 if (!isOccupied) {
                     box.addEventListener('click', function () {
                         document.querySelectorAll('.pc-box.selected').forEach(b => b.classList.remove('selected'));

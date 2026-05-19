@@ -32,8 +32,6 @@ CREATE TABLE IF NOT EXISTS sitin_sessions (
     time_out TIMESTAMP NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE INDEX idx_session_status ON sitin_sessions(status);
-CREATE INDEX idx_session_lab_room ON sitin_sessions(lab_room);
 
 -- Reservation requests table
 CREATE TABLE IF NOT EXISTS reservations (
@@ -48,9 +46,6 @@ CREATE TABLE IF NOT EXISTS reservations (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE INDEX idx_res_status ON reservations(status);
-CREATE INDEX idx_res_date_time ON reservations(preferred_date, preferred_time);
-CREATE INDEX idx_res_lab_room ON reservations(lab_room);
 
 -- Reward events table
 CREATE TABLE IF NOT EXISTS reward_events (
